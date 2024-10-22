@@ -1,0 +1,14 @@
+D1 = A.+B' ; # add element-wise A with transpose of B
+one=1;
+res1 = 60.500;
+res2 = 60.;
+res3 = .500;
+res4 = 60.52E2;
+sum_short_1=3+4;
+sum_short_2=3 +4;
+sum_short_3=3+ 4;
+no_semicolon = "hehe"
+err = 3..9;
+err2 = 3....9;
+scientific = 3.e+4
+3illegal_id_and_number= 21_100_000;
