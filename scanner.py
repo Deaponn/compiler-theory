@@ -3,11 +3,9 @@ from sly import Lexer
 
 class Scanner(Lexer):
     # Set of token names.   This is always required
-    tokens = { PLUS, MINUS, TIMES, DIVIDE, MPLUS, MMINUS, MTIMES, MDIVIDE,
-               ASSIGN, PASSIGN, MASSIGN, TASSIGN, DASSIGN,
+    tokens = { MPLUS, MMINUS, MTIMES, MDIVIDE,
+               PASSIGN, MASSIGN, TASSIGN, DASSIGN,
                LSS, LEQ, GTR, GEQ, EQ, NEQ,
-               LBRCKR, RBRCKR, LBRCKS, RBRCKS, LBRCKC, RBRCKC,
-               RANGE, TRANSPOSITION, COMMA, SEMICOLON,
                IF, ELSE, FOR, WHILE, BREAK, CONTINUE, RETURN,
                EYE, ZEROS, ONES, PRINT,
                ID, INT, FLOAT, STRING }
@@ -40,9 +38,9 @@ class Scanner(Lexer):
 
     # Regular expression rules for tokens
     # FLOAT           = r'[+-]?([0-9]*([.][0-9]*))'
-    FLOAT           = r'[-+]?(([0-9]+[.][0-9]*)|([0-9]*[.][0-9]+))([eE][-+]?\d+)?'
-    INT             = r'[+-]?[0-9]+'
-    STRING          = r'["].+["]'
+    FLOAT           = r'(([0-9]+[.][0-9]*)|([.][0-9]+))([eE][-+]?\d+)?'
+    INT             = r'[0-9]+'
+    STRING          = r'["][^"]+["]'
     ID              = r'[a-zA-Z_][a-zA-Z0-9_]*'
     ID['if']        = IF
     ID['else']      = ELSE
@@ -67,3 +65,13 @@ class Scanner(Lexer):
     GEQ             = r'>='
     EQ              = r'=='
     NEQ             = r'!='
+
+    @_(FLOAT)
+    def FLOAT(self, t):
+        t.value = float(t.value)
+        return t
+
+    @_(INT)
+    def INT(self, t):
+        t.value = int(t.value)
+        return t

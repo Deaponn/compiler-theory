@@ -1,5 +1,6 @@
 import sys
 from scanner import Scanner
+from parser import Parser
 
 if __name__ == '__main__':
     try:
@@ -11,6 +12,9 @@ if __name__ == '__main__':
 
     text = file.read()
     lexer = Scanner()
-    
-    for tok in lexer.tokenize(text):
-        print(f"({tok.lineno}): {tok.type}({tok.value})")
+    parser = Parser()
+
+    # for tok in lexer.tokenize(text):
+    #     print(f"{tok.type} {tok.value} line {tok.lineno}")
+
+    parser.parse(lexer.tokenize(text))

@@ -1,0 +1,799 @@
+Grammar:
+
+Rule 0     S' -> start
+Rule 1     empty -> <empty>
+Rule 2     start -> empty
+Rule 3     start -> statement ; start
+Rule 4     statement -> expr
+Rule 5     statement -> ID = expr  [precedence=nonassoc, level=1]
+Rule 6     expr -> EYE ( expr )
+Rule 7     expr -> ONES ( expr )
+Rule 8     expr -> ZEROS ( expr )
+Rule 9     expr -> ID
+Rule 10    expr -> FLOAT
+Rule 11    expr -> INT
+Rule 12    expr -> ( expr )
+Rule 13    expr -> - expr  [precedence=right, level=4]
+Rule 14    expr -> expr / expr  [precedence=left, level=3]
+Rule 15    expr -> expr * expr  [precedence=left, level=3]
+Rule 16    expr -> expr - expr  [precedence=left, level=2]
+Rule 17    expr -> expr MPLUS expr  [precedence=left, level=2]
+Rule 18    expr -> expr + expr  [precedence=left, level=2]
+
+Unused terminals:
+
+    RETURN
+    CONTINUE
+    WHILE
+    MTIMES
+    GEQ
+    TASSIGN
+    EQ
+    PRINT
+    FOR
+    LSS
+    LEQ
+    BREAK
+    PASSIGN
+    GTR
+    ELSE
+    IF
+    NEQ
+    STRING
+    MMINUS
+    DASSIGN
+    MASSIGN
+    MDIVIDE
+
+Terminals, with rules where they appear:
+
+(                    : 6 7 8 12
+)                    : 6 7 8 12
+*                    : 15
++                    : 18
+-                    : 13 16
+/                    : 14
+;                    : 3
+=                    : 5
+BREAK                : 
+CONTINUE             : 
+DASSIGN              : 
+ELSE                 : 
+EQ                   : 
+EYE                  : 6
+FLOAT                : 10
+FOR                  : 
+GEQ                  : 
+GTR                  : 
+ID                   : 5 9
+IF                   : 
+INT                  : 11
+LEQ                  : 
+LSS                  : 
+MASSIGN              : 
+MDIVIDE              : 
+MMINUS               : 
+MPLUS                : 17
+MTIMES               : 
+NEQ                  : 
+ONES                 : 7
+PASSIGN              : 
+PRINT                : 
+RETURN               : 
+STRING               : 
+TASSIGN              : 
+WHILE                : 
+ZEROS                : 8
+error                : 
+
+Nonterminals, with rules where they appear:
+
+empty                : 2
+expr                 : 4 5 6 7 8 12 13 14 14 15 15 16 16 17 17 18 18
+start                : 3 0
+statement            : 3
+
+
+state 0
+
+    (0) S' -> . start
+    (2) start -> . empty
+    (3) start -> . statement ; start
+    (1) empty -> .
+    (4) statement -> . expr
+    (5) statement -> . ID = expr
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    $end            reduce using rule 1 (empty -> .)
+    ID              shift and go to state 5
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    start                          shift and go to state 1
+    empty                          shift and go to state 2
+    statement                      shift and go to state 3
+    expr                           shift and go to state 4
+
+state 1
+
+    (0) S' -> start .
+
+
+state 2
+
+    (2) start -> empty .
+    $end            reduce using rule 2 (start -> empty .)
+
+
+state 3
+
+    (3) start -> statement . ; start
+    ;               shift and go to state 13
+
+
+state 4
+
+    (4) statement -> expr .
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    ;               reduce using rule 4 (statement -> expr .)
+    /               shift and go to state 14
+    *               shift and go to state 15
+    -               shift and go to state 16
+    MPLUS           shift and go to state 17
+    +               shift and go to state 18
+
+
+state 5
+
+    (5) statement -> ID . = expr
+    (9) expr -> ID .
+    =               shift and go to state 19
+    /               reduce using rule 9 (expr -> ID .)
+    *               reduce using rule 9 (expr -> ID .)
+    -               reduce using rule 9 (expr -> ID .)
+    MPLUS           reduce using rule 9 (expr -> ID .)
+    +               reduce using rule 9 (expr -> ID .)
+    ;               reduce using rule 9 (expr -> ID .)
+
+
+state 6
+
+    (6) expr -> EYE . ( expr )
+    (               shift and go to state 20
+
+
+state 7
+
+    (12) expr -> ( . expr )
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 21
+
+state 8
+
+    (7) expr -> ONES . ( expr )
+    (               shift and go to state 23
+
+
+state 9
+
+    (8) expr -> ZEROS . ( expr )
+    (               shift and go to state 24
+
+
+state 10
+
+    (10) expr -> FLOAT .
+    /               reduce using rule 10 (expr -> FLOAT .)
+    *               reduce using rule 10 (expr -> FLOAT .)
+    -               reduce using rule 10 (expr -> FLOAT .)
+    MPLUS           reduce using rule 10 (expr -> FLOAT .)
+    +               reduce using rule 10 (expr -> FLOAT .)
+    ;               reduce using rule 10 (expr -> FLOAT .)
+    )               reduce using rule 10 (expr -> FLOAT .)
+
+
+state 11
+
+    (11) expr -> INT .
+    /               reduce using rule 11 (expr -> INT .)
+    *               reduce using rule 11 (expr -> INT .)
+    -               reduce using rule 11 (expr -> INT .)
+    MPLUS           reduce using rule 11 (expr -> INT .)
+    +               reduce using rule 11 (expr -> INT .)
+    ;               reduce using rule 11 (expr -> INT .)
+    )               reduce using rule 11 (expr -> INT .)
+
+
+state 12
+
+    (13) expr -> - . expr
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 25
+
+state 13
+
+    (3) start -> statement ; . start
+    (2) start -> . empty
+    (3) start -> . statement ; start
+    (1) empty -> .
+    (4) statement -> . expr
+    (5) statement -> . ID = expr
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    $end            reduce using rule 1 (empty -> .)
+    ID              shift and go to state 5
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    statement                      shift and go to state 3
+    start                          shift and go to state 26
+    empty                          shift and go to state 2
+    expr                           shift and go to state 4
+
+state 14
+
+    (14) expr -> expr / . expr
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 27
+
+state 15
+
+    (15) expr -> expr * . expr
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 28
+
+state 16
+
+    (16) expr -> expr - . expr
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 29
+
+state 17
+
+    (17) expr -> expr MPLUS . expr
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 30
+
+state 18
+
+    (18) expr -> expr + . expr
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 31
+
+state 19
+
+    (5) statement -> ID = . expr
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 32
+
+state 20
+
+    (6) expr -> EYE ( . expr )
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 33
+
+state 21
+
+    (12) expr -> ( expr . )
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    )               shift and go to state 34
+    /               shift and go to state 14
+    *               shift and go to state 15
+    -               shift and go to state 16
+    MPLUS           shift and go to state 17
+    +               shift and go to state 18
+
+
+state 22
+
+    (9) expr -> ID .
+    )               reduce using rule 9 (expr -> ID .)
+    /               reduce using rule 9 (expr -> ID .)
+    *               reduce using rule 9 (expr -> ID .)
+    -               reduce using rule 9 (expr -> ID .)
+    MPLUS           reduce using rule 9 (expr -> ID .)
+    +               reduce using rule 9 (expr -> ID .)
+    ;               reduce using rule 9 (expr -> ID .)
+
+
+state 23
+
+    (7) expr -> ONES ( . expr )
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 35
+
+state 24
+
+    (8) expr -> ZEROS ( . expr )
+    (6) expr -> . EYE ( expr )
+    (7) expr -> . ONES ( expr )
+    (8) expr -> . ZEROS ( expr )
+    (9) expr -> . ID
+    (10) expr -> . FLOAT
+    (11) expr -> . INT
+    (12) expr -> . ( expr )
+    (13) expr -> . - expr
+    (14) expr -> . expr / expr
+    (15) expr -> . expr * expr
+    (16) expr -> . expr - expr
+    (17) expr -> . expr MPLUS expr
+    (18) expr -> . expr + expr
+    EYE             shift and go to state 6
+    ONES            shift and go to state 8
+    ZEROS           shift and go to state 9
+    ID              shift and go to state 22
+    FLOAT           shift and go to state 10
+    INT             shift and go to state 11
+    (               shift and go to state 7
+    -               shift and go to state 12
+
+    expr                           shift and go to state 36
+
+state 25
+
+    (13) expr -> - expr .
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    /               reduce using rule 13 (expr -> - expr .)
+    *               reduce using rule 13 (expr -> - expr .)
+    -               reduce using rule 13 (expr -> - expr .)
+    MPLUS           reduce using rule 13 (expr -> - expr .)
+    +               reduce using rule 13 (expr -> - expr .)
+    ;               reduce using rule 13 (expr -> - expr .)
+    )               reduce using rule 13 (expr -> - expr .)
+
+
+state 26
+
+    (3) start -> statement ; start .
+    $end            reduce using rule 3 (start -> statement ; start .)
+
+
+state 27
+
+    (14) expr -> expr / expr .
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    /               reduce using rule 14 (expr -> expr / expr .)
+    *               reduce using rule 14 (expr -> expr / expr .)
+    -               reduce using rule 14 (expr -> expr / expr .)
+    MPLUS           reduce using rule 14 (expr -> expr / expr .)
+    +               reduce using rule 14 (expr -> expr / expr .)
+    ;               reduce using rule 14 (expr -> expr / expr .)
+    )               reduce using rule 14 (expr -> expr / expr .)
+
+
+state 28
+
+    (15) expr -> expr * expr .
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    /               reduce using rule 15 (expr -> expr * expr .)
+    *               reduce using rule 15 (expr -> expr * expr .)
+    -               reduce using rule 15 (expr -> expr * expr .)
+    MPLUS           reduce using rule 15 (expr -> expr * expr .)
+    +               reduce using rule 15 (expr -> expr * expr .)
+    ;               reduce using rule 15 (expr -> expr * expr .)
+    )               reduce using rule 15 (expr -> expr * expr .)
+
+
+state 29
+
+    (16) expr -> expr - expr .
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    -               reduce using rule 16 (expr -> expr - expr .)
+    MPLUS           reduce using rule 16 (expr -> expr - expr .)
+    +               reduce using rule 16 (expr -> expr - expr .)
+    ;               reduce using rule 16 (expr -> expr - expr .)
+    )               reduce using rule 16 (expr -> expr - expr .)
+    /               shift and go to state 14
+    *               shift and go to state 15
+
+
+state 30
+
+    (17) expr -> expr MPLUS expr .
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    -               reduce using rule 17 (expr -> expr MPLUS expr .)
+    MPLUS           reduce using rule 17 (expr -> expr MPLUS expr .)
+    +               reduce using rule 17 (expr -> expr MPLUS expr .)
+    ;               reduce using rule 17 (expr -> expr MPLUS expr .)
+    )               reduce using rule 17 (expr -> expr MPLUS expr .)
+    /               shift and go to state 14
+    *               shift and go to state 15
+
+
+state 31
+
+    (18) expr -> expr + expr .
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    -               reduce using rule 18 (expr -> expr + expr .)
+    MPLUS           reduce using rule 18 (expr -> expr + expr .)
+    +               reduce using rule 18 (expr -> expr + expr .)
+    ;               reduce using rule 18 (expr -> expr + expr .)
+    )               reduce using rule 18 (expr -> expr + expr .)
+    /               shift and go to state 14
+    *               shift and go to state 15
+
+
+state 32
+
+    (5) statement -> ID = expr .
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    ;               reduce using rule 5 (statement -> ID = expr .)
+    /               shift and go to state 14
+    *               shift and go to state 15
+    -               shift and go to state 16
+    MPLUS           shift and go to state 17
+    +               shift and go to state 18
+
+
+state 33
+
+    (6) expr -> EYE ( expr . )
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    )               shift and go to state 37
+    /               shift and go to state 14
+    *               shift and go to state 15
+    -               shift and go to state 16
+    MPLUS           shift and go to state 17
+    +               shift and go to state 18
+
+
+state 34
+
+    (12) expr -> ( expr ) .
+    /               reduce using rule 12 (expr -> ( expr ) .)
+    *               reduce using rule 12 (expr -> ( expr ) .)
+    -               reduce using rule 12 (expr -> ( expr ) .)
+    MPLUS           reduce using rule 12 (expr -> ( expr ) .)
+    +               reduce using rule 12 (expr -> ( expr ) .)
+    ;               reduce using rule 12 (expr -> ( expr ) .)
+    )               reduce using rule 12 (expr -> ( expr ) .)
+
+
+state 35
+
+    (7) expr -> ONES ( expr . )
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    )               shift and go to state 38
+    /               shift and go to state 14
+    *               shift and go to state 15
+    -               shift and go to state 16
+    MPLUS           shift and go to state 17
+    +               shift and go to state 18
+
+
+state 36
+
+    (8) expr -> ZEROS ( expr . )
+    (14) expr -> expr . / expr
+    (15) expr -> expr . * expr
+    (16) expr -> expr . - expr
+    (17) expr -> expr . MPLUS expr
+    (18) expr -> expr . + expr
+    )               shift and go to state 39
+    /               shift and go to state 14
+    *               shift and go to state 15
+    -               shift and go to state 16
+    MPLUS           shift and go to state 17
+    +               shift and go to state 18
+
+
+state 37
+
+    (6) expr -> EYE ( expr ) .
+    /               reduce using rule 6 (expr -> EYE ( expr ) .)
+    *               reduce using rule 6 (expr -> EYE ( expr ) .)
+    -               reduce using rule 6 (expr -> EYE ( expr ) .)
+    MPLUS           reduce using rule 6 (expr -> EYE ( expr ) .)
+    +               reduce using rule 6 (expr -> EYE ( expr ) .)
+    ;               reduce using rule 6 (expr -> EYE ( expr ) .)
+    )               reduce using rule 6 (expr -> EYE ( expr ) .)
+
+
+state 38
+
+    (7) expr -> ONES ( expr ) .
+    /               reduce using rule 7 (expr -> ONES ( expr ) .)
+    *               reduce using rule 7 (expr -> ONES ( expr ) .)
+    -               reduce using rule 7 (expr -> ONES ( expr ) .)
+    MPLUS           reduce using rule 7 (expr -> ONES ( expr ) .)
+    +               reduce using rule 7 (expr -> ONES ( expr ) .)
+    ;               reduce using rule 7 (expr -> ONES ( expr ) .)
+    )               reduce using rule 7 (expr -> ONES ( expr ) .)
+
+
+state 39
+
+    (8) expr -> ZEROS ( expr ) .
+    /               reduce using rule 8 (expr -> ZEROS ( expr ) .)
+    *               reduce using rule 8 (expr -> ZEROS ( expr ) .)
+    -               reduce using rule 8 (expr -> ZEROS ( expr ) .)
+    MPLUS           reduce using rule 8 (expr -> ZEROS ( expr ) .)
+    +               reduce using rule 8 (expr -> ZEROS ( expr ) .)
+    ;               reduce using rule 8 (expr -> ZEROS ( expr ) .)
+    )               reduce using rule 8 (expr -> ZEROS ( expr ) .)

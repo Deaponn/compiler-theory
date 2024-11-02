@@ -7,7 +7,7 @@ res4 = 60.52E2;
 sum_short_1=3+4;
 sum_short_2=3 +4;
 sum_short_3=3+ 4;
-no_semicolon = "hehe"
+no_semicolon = "hehe" ; b ="hello"
 err = 3..9;
 err2 = 3....9;
 scientific = 3.e+4
