@@ -4,94 +4,118 @@ Rule 0     S' -> start
 Rule 1     empty -> <empty>
 Rule 2     start -> empty
 Rule 3     start -> statement ; start
-Rule 4     statement -> expr
-Rule 5     statement -> ID = expr  [precedence=nonassoc, level=1]
-Rule 6     expr -> EYE ( expr )
-Rule 7     expr -> ONES ( expr )
-Rule 8     expr -> ZEROS ( expr )
-Rule 9     expr -> ID
-Rule 10    expr -> FLOAT
-Rule 11    expr -> INT
-Rule 12    expr -> ( expr )
-Rule 13    expr -> - expr  [precedence=right, level=4]
-Rule 14    expr -> expr / expr  [precedence=left, level=3]
-Rule 15    expr -> expr * expr  [precedence=left, level=3]
-Rule 16    expr -> expr - expr  [precedence=left, level=2]
-Rule 17    expr -> expr MPLUS expr  [precedence=left, level=2]
-Rule 18    expr -> expr + expr  [precedence=left, level=2]
+Rule 4     statement -> FOR ID = range block
+Rule 5     statement -> WHILE expr block
+Rule 6     statement -> IF expr block ELSE block
+Rule 7     statement -> IF expr block
+Rule 8     statement -> PRINT expr
+Rule 9     statement -> expr
+Rule 10    statement -> ID DASSIGN expr
+Rule 11    statement -> ID TASSIGN expr
+Rule 12    statement -> ID MASSIGN expr
+Rule 13    statement -> ID PASSIGN expr
+Rule 14    statement -> ID = expr
+Rule 15    block -> { start }
+Rule 16    block -> statement
+Rule 17    expr -> EYE ( expr )
+Rule 18    expr -> ONES ( expr )
+Rule 19    expr -> ZEROS ( expr )
+Rule 20    expr -> ID
+Rule 21    expr -> [ outerlist ]
+Rule 22    expr -> STRING
+Rule 23    expr -> FLOAT
+Rule 24    expr -> INT
+Rule 25    expr -> expr '  [precedence=left, level=4]
+Rule 26    expr -> ( expr )
+Rule 27    expr -> expr NEQ expr  [precedence=nonassoc, level=1]
+Rule 28    expr -> expr EQ expr  [precedence=nonassoc, level=1]
+Rule 29    expr -> expr GEQ expr  [precedence=nonassoc, level=1]
+Rule 30    expr -> expr > expr  [precedence=nonassoc, level=1]
+Rule 31    expr -> expr LEQ expr  [precedence=nonassoc, level=1]
+Rule 32    expr -> expr < expr  [precedence=nonassoc, level=1]
+Rule 33    expr -> - expr  [precedence=right, level=5]
+Rule 34    expr -> expr MDIVIDE expr  [precedence=left, level=3]
+Rule 35    expr -> expr MTIMES expr  [precedence=left, level=3]
+Rule 36    expr -> expr MMINUS expr  [precedence=left, level=2]
+Rule 37    expr -> expr MPLUS expr  [precedence=left, level=2]
+Rule 38    expr -> expr / expr  [precedence=left, level=3]
+Rule 39    expr -> expr * expr  [precedence=left, level=3]
+Rule 40    expr -> expr - expr  [precedence=left, level=2]
+Rule 41    expr -> expr + expr  [precedence=left, level=2]
+Rule 42    range -> INT : INT
+Rule 43    outerlist -> [ innerlist ]
+Rule 44    outerlist -> outerlist , [ innerlist ]
+Rule 45    innerlist -> elem
+Rule 46    innerlist -> innerlist , elem
+Rule 47    elem -> STRING
+Rule 48    elem -> FLOAT
+Rule 49    elem -> INT
 
 Unused terminals:
 
     RETURN
     CONTINUE
-    WHILE
-    MTIMES
-    GEQ
-    TASSIGN
-    EQ
-    PRINT
-    FOR
-    LSS
-    LEQ
     BREAK
-    PASSIGN
-    GTR
-    ELSE
-    IF
-    NEQ
-    STRING
-    MMINUS
-    DASSIGN
-    MASSIGN
-    MDIVIDE
 
 Terminals, with rules where they appear:
 
-(                    : 6 7 8 12
-)                    : 6 7 8 12
-*                    : 15
-+                    : 18
--                    : 13 16
-/                    : 14
+'                    : 25
+(                    : 17 18 19 26
+)                    : 17 18 19 26
+*                    : 39
++                    : 41
+,                    : 44 46
+-                    : 33 40
+/                    : 38
+:                    : 42
 ;                    : 3
-=                    : 5
+<                    : 32
+=                    : 4 14
+>                    : 30
 BREAK                : 
 CONTINUE             : 
-DASSIGN              : 
-ELSE                 : 
-EQ                   : 
-EYE                  : 6
-FLOAT                : 10
-FOR                  : 
-GEQ                  : 
-GTR                  : 
-ID                   : 5 9
-IF                   : 
-INT                  : 11
-LEQ                  : 
-LSS                  : 
-MASSIGN              : 
-MDIVIDE              : 
-MMINUS               : 
-MPLUS                : 17
-MTIMES               : 
-NEQ                  : 
-ONES                 : 7
-PASSIGN              : 
-PRINT                : 
+DASSIGN              : 10
+ELSE                 : 6
+EQ                   : 28
+EYE                  : 17
+FLOAT                : 23 48
+FOR                  : 4
+GEQ                  : 29
+ID                   : 4 10 11 12 13 14 20
+IF                   : 6 7
+INT                  : 24 42 42 49
+LEQ                  : 31
+MASSIGN              : 12
+MDIVIDE              : 34
+MMINUS               : 36
+MPLUS                : 37
+MTIMES               : 35
+NEQ                  : 27
+ONES                 : 18
+PASSIGN              : 13
+PRINT                : 8
 RETURN               : 
-STRING               : 
-TASSIGN              : 
-WHILE                : 
-ZEROS                : 8
+STRING               : 22 47
+TASSIGN              : 11
+WHILE                : 5
+ZEROS                : 19
+[                    : 21 43 44
+]                    : 21 43 44
 error                : 
+{                    : 15
+}                    : 15
 
 Nonterminals, with rules where they appear:
 
+block                : 4 5 6 6 7
+elem                 : 45 46
 empty                : 2
-expr                 : 4 5 6 7 8 12 13 14 14 15 15 16 16 17 17 18 18
-start                : 3 0
-statement            : 3
+expr                 : 5 6 7 8 9 10 11 12 13 14 17 18 19 25 26 27 27 28 28 29 29 30 30 31 31 32 32 33 34 34 35 35 36 36 37 37 38 38 39 39 40 40 41 41
+innerlist            : 43 44 46
+outerlist            : 21 44
+range                : 4
+start                : 3 15 0
+statement            : 3 16
 
 
 state 0
@@ -100,35 +124,62 @@ state 0
     (2) start -> . empty
     (3) start -> . statement ; start
     (1) empty -> .
-    (4) statement -> . expr
-    (5) statement -> . ID = expr
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
+    (4) statement -> . FOR ID = range block
+    (5) statement -> . WHILE expr block
+    (6) statement -> . IF expr block ELSE block
+    (7) statement -> . IF expr block
+    (8) statement -> . PRINT expr
+    (9) statement -> . expr
+    (10) statement -> . ID DASSIGN expr
+    (11) statement -> . ID TASSIGN expr
+    (12) statement -> . ID MASSIGN expr
+    (13) statement -> . ID PASSIGN expr
+    (14) statement -> . ID = expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
     $end            reduce using rule 1 (empty -> .)
+    FOR             shift and go to state 4
+    WHILE           shift and go to state 6
+    IF              shift and go to state 8
+    PRINT           shift and go to state 9
     ID              shift and go to state 5
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
     start                          shift and go to state 1
     empty                          shift and go to state 2
     statement                      shift and go to state 3
-    expr                           shift and go to state 4
+    expr                           shift and go to state 7
 
 state 1
 
@@ -139,661 +190,3506 @@ state 2
 
     (2) start -> empty .
     $end            reduce using rule 2 (start -> empty .)
+    }               reduce using rule 2 (start -> empty .)
 
 
 state 3
 
     (3) start -> statement . ; start
-    ;               shift and go to state 13
+    ;               shift and go to state 19
 
 
 state 4
 
-    (4) statement -> expr .
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    ;               reduce using rule 4 (statement -> expr .)
-    /               shift and go to state 14
-    *               shift and go to state 15
-    -               shift and go to state 16
-    MPLUS           shift and go to state 17
-    +               shift and go to state 18
+    (4) statement -> FOR . ID = range block
+    ID              shift and go to state 20
 
 
 state 5
 
-    (5) statement -> ID . = expr
-    (9) expr -> ID .
-    =               shift and go to state 19
-    /               reduce using rule 9 (expr -> ID .)
-    *               reduce using rule 9 (expr -> ID .)
-    -               reduce using rule 9 (expr -> ID .)
-    MPLUS           reduce using rule 9 (expr -> ID .)
-    +               reduce using rule 9 (expr -> ID .)
-    ;               reduce using rule 9 (expr -> ID .)
+    (10) statement -> ID . DASSIGN expr
+    (11) statement -> ID . TASSIGN expr
+    (12) statement -> ID . MASSIGN expr
+    (13) statement -> ID . PASSIGN expr
+    (14) statement -> ID . = expr
+    (20) expr -> ID .
+    DASSIGN         shift and go to state 21
+    TASSIGN         shift and go to state 22
+    MASSIGN         shift and go to state 23
+    PASSIGN         shift and go to state 24
+    =               shift and go to state 25
+    '               reduce using rule 20 (expr -> ID .)
+    NEQ             reduce using rule 20 (expr -> ID .)
+    EQ              reduce using rule 20 (expr -> ID .)
+    GEQ             reduce using rule 20 (expr -> ID .)
+    >               reduce using rule 20 (expr -> ID .)
+    LEQ             reduce using rule 20 (expr -> ID .)
+    <               reduce using rule 20 (expr -> ID .)
+    MDIVIDE         reduce using rule 20 (expr -> ID .)
+    MTIMES          reduce using rule 20 (expr -> ID .)
+    MMINUS          reduce using rule 20 (expr -> ID .)
+    MPLUS           reduce using rule 20 (expr -> ID .)
+    /               reduce using rule 20 (expr -> ID .)
+    *               reduce using rule 20 (expr -> ID .)
+    -               reduce using rule 20 (expr -> ID .)
+    +               reduce using rule 20 (expr -> ID .)
+    ;               reduce using rule 20 (expr -> ID .)
+    ELSE            reduce using rule 20 (expr -> ID .)
 
 
 state 6
 
-    (6) expr -> EYE . ( expr )
-    (               shift and go to state 20
+    (5) statement -> WHILE . expr block
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 26
 
 state 7
 
-    (12) expr -> ( . expr )
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
+    (9) statement -> expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    ;               reduce using rule 9 (statement -> expr .)
+    ELSE            reduce using rule 9 (statement -> expr .)
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
 
-    expr                           shift and go to state 21
 
 state 8
 
-    (7) expr -> ONES . ( expr )
-    (               shift and go to state 23
+    (6) statement -> IF . expr block ELSE block
+    (7) statement -> IF . expr block
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 43
 
 state 9
 
-    (8) expr -> ZEROS . ( expr )
-    (               shift and go to state 24
+    (8) statement -> PRINT . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 44
 
 state 10
 
-    (10) expr -> FLOAT .
-    /               reduce using rule 10 (expr -> FLOAT .)
-    *               reduce using rule 10 (expr -> FLOAT .)
-    -               reduce using rule 10 (expr -> FLOAT .)
-    MPLUS           reduce using rule 10 (expr -> FLOAT .)
-    +               reduce using rule 10 (expr -> FLOAT .)
-    ;               reduce using rule 10 (expr -> FLOAT .)
-    )               reduce using rule 10 (expr -> FLOAT .)
+    (17) expr -> EYE . ( expr )
+    (               shift and go to state 45
 
 
 state 11
 
-    (11) expr -> INT .
-    /               reduce using rule 11 (expr -> INT .)
-    *               reduce using rule 11 (expr -> INT .)
-    -               reduce using rule 11 (expr -> INT .)
-    MPLUS           reduce using rule 11 (expr -> INT .)
-    +               reduce using rule 11 (expr -> INT .)
-    ;               reduce using rule 11 (expr -> INT .)
-    )               reduce using rule 11 (expr -> INT .)
+    (26) expr -> ( . expr )
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 46
 
 state 12
 
-    (13) expr -> - . expr
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
+    (18) expr -> ONES . ( expr )
+    (               shift and go to state 47
 
-    expr                           shift and go to state 25
 
 state 13
+
+    (19) expr -> ZEROS . ( expr )
+    (               shift and go to state 48
+
+
+state 14
+
+    (21) expr -> [ . outerlist ]
+    (43) outerlist -> . [ innerlist ]
+    (44) outerlist -> . outerlist , [ innerlist ]
+    [               shift and go to state 49
+
+    outerlist                      shift and go to state 50
+
+state 15
+
+    (22) expr -> STRING .
+    '               reduce using rule 22 (expr -> STRING .)
+    NEQ             reduce using rule 22 (expr -> STRING .)
+    EQ              reduce using rule 22 (expr -> STRING .)
+    GEQ             reduce using rule 22 (expr -> STRING .)
+    >               reduce using rule 22 (expr -> STRING .)
+    LEQ             reduce using rule 22 (expr -> STRING .)
+    <               reduce using rule 22 (expr -> STRING .)
+    MDIVIDE         reduce using rule 22 (expr -> STRING .)
+    MTIMES          reduce using rule 22 (expr -> STRING .)
+    MMINUS          reduce using rule 22 (expr -> STRING .)
+    MPLUS           reduce using rule 22 (expr -> STRING .)
+    /               reduce using rule 22 (expr -> STRING .)
+    *               reduce using rule 22 (expr -> STRING .)
+    -               reduce using rule 22 (expr -> STRING .)
+    +               reduce using rule 22 (expr -> STRING .)
+    ;               reduce using rule 22 (expr -> STRING .)
+    {               reduce using rule 22 (expr -> STRING .)
+    FOR             reduce using rule 22 (expr -> STRING .)
+    WHILE           reduce using rule 22 (expr -> STRING .)
+    IF              reduce using rule 22 (expr -> STRING .)
+    PRINT           reduce using rule 22 (expr -> STRING .)
+    ID              reduce using rule 22 (expr -> STRING .)
+    EYE             reduce using rule 22 (expr -> STRING .)
+    ONES            reduce using rule 22 (expr -> STRING .)
+    ZEROS           reduce using rule 22 (expr -> STRING .)
+    [               reduce using rule 22 (expr -> STRING .)
+    STRING          reduce using rule 22 (expr -> STRING .)
+    FLOAT           reduce using rule 22 (expr -> STRING .)
+    INT             reduce using rule 22 (expr -> STRING .)
+    (               reduce using rule 22 (expr -> STRING .)
+    ELSE            reduce using rule 22 (expr -> STRING .)
+    )               reduce using rule 22 (expr -> STRING .)
+
+
+state 16
+
+    (23) expr -> FLOAT .
+    '               reduce using rule 23 (expr -> FLOAT .)
+    NEQ             reduce using rule 23 (expr -> FLOAT .)
+    EQ              reduce using rule 23 (expr -> FLOAT .)
+    GEQ             reduce using rule 23 (expr -> FLOAT .)
+    >               reduce using rule 23 (expr -> FLOAT .)
+    LEQ             reduce using rule 23 (expr -> FLOAT .)
+    <               reduce using rule 23 (expr -> FLOAT .)
+    MDIVIDE         reduce using rule 23 (expr -> FLOAT .)
+    MTIMES          reduce using rule 23 (expr -> FLOAT .)
+    MMINUS          reduce using rule 23 (expr -> FLOAT .)
+    MPLUS           reduce using rule 23 (expr -> FLOAT .)
+    /               reduce using rule 23 (expr -> FLOAT .)
+    *               reduce using rule 23 (expr -> FLOAT .)
+    -               reduce using rule 23 (expr -> FLOAT .)
+    +               reduce using rule 23 (expr -> FLOAT .)
+    ;               reduce using rule 23 (expr -> FLOAT .)
+    {               reduce using rule 23 (expr -> FLOAT .)
+    FOR             reduce using rule 23 (expr -> FLOAT .)
+    WHILE           reduce using rule 23 (expr -> FLOAT .)
+    IF              reduce using rule 23 (expr -> FLOAT .)
+    PRINT           reduce using rule 23 (expr -> FLOAT .)
+    ID              reduce using rule 23 (expr -> FLOAT .)
+    EYE             reduce using rule 23 (expr -> FLOAT .)
+    ONES            reduce using rule 23 (expr -> FLOAT .)
+    ZEROS           reduce using rule 23 (expr -> FLOAT .)
+    [               reduce using rule 23 (expr -> FLOAT .)
+    STRING          reduce using rule 23 (expr -> FLOAT .)
+    FLOAT           reduce using rule 23 (expr -> FLOAT .)
+    INT             reduce using rule 23 (expr -> FLOAT .)
+    (               reduce using rule 23 (expr -> FLOAT .)
+    ELSE            reduce using rule 23 (expr -> FLOAT .)
+    )               reduce using rule 23 (expr -> FLOAT .)
+
+
+state 17
+
+    (24) expr -> INT .
+    '               reduce using rule 24 (expr -> INT .)
+    NEQ             reduce using rule 24 (expr -> INT .)
+    EQ              reduce using rule 24 (expr -> INT .)
+    GEQ             reduce using rule 24 (expr -> INT .)
+    >               reduce using rule 24 (expr -> INT .)
+    LEQ             reduce using rule 24 (expr -> INT .)
+    <               reduce using rule 24 (expr -> INT .)
+    MDIVIDE         reduce using rule 24 (expr -> INT .)
+    MTIMES          reduce using rule 24 (expr -> INT .)
+    MMINUS          reduce using rule 24 (expr -> INT .)
+    MPLUS           reduce using rule 24 (expr -> INT .)
+    /               reduce using rule 24 (expr -> INT .)
+    *               reduce using rule 24 (expr -> INT .)
+    -               reduce using rule 24 (expr -> INT .)
+    +               reduce using rule 24 (expr -> INT .)
+    ;               reduce using rule 24 (expr -> INT .)
+    {               reduce using rule 24 (expr -> INT .)
+    FOR             reduce using rule 24 (expr -> INT .)
+    WHILE           reduce using rule 24 (expr -> INT .)
+    IF              reduce using rule 24 (expr -> INT .)
+    PRINT           reduce using rule 24 (expr -> INT .)
+    ID              reduce using rule 24 (expr -> INT .)
+    EYE             reduce using rule 24 (expr -> INT .)
+    ONES            reduce using rule 24 (expr -> INT .)
+    ZEROS           reduce using rule 24 (expr -> INT .)
+    [               reduce using rule 24 (expr -> INT .)
+    STRING          reduce using rule 24 (expr -> INT .)
+    FLOAT           reduce using rule 24 (expr -> INT .)
+    INT             reduce using rule 24 (expr -> INT .)
+    (               reduce using rule 24 (expr -> INT .)
+    ELSE            reduce using rule 24 (expr -> INT .)
+    )               reduce using rule 24 (expr -> INT .)
+
+
+state 18
+
+    (33) expr -> - . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 51
+
+state 19
 
     (3) start -> statement ; . start
     (2) start -> . empty
     (3) start -> . statement ; start
     (1) empty -> .
-    (4) statement -> . expr
-    (5) statement -> . ID = expr
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
+    (4) statement -> . FOR ID = range block
+    (5) statement -> . WHILE expr block
+    (6) statement -> . IF expr block ELSE block
+    (7) statement -> . IF expr block
+    (8) statement -> . PRINT expr
+    (9) statement -> . expr
+    (10) statement -> . ID DASSIGN expr
+    (11) statement -> . ID TASSIGN expr
+    (12) statement -> . ID MASSIGN expr
+    (13) statement -> . ID PASSIGN expr
+    (14) statement -> . ID = expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
     $end            reduce using rule 1 (empty -> .)
+    }               reduce using rule 1 (empty -> .)
+    FOR             shift and go to state 4
+    WHILE           shift and go to state 6
+    IF              shift and go to state 8
+    PRINT           shift and go to state 9
     ID              shift and go to state 5
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
     statement                      shift and go to state 3
-    start                          shift and go to state 26
+    start                          shift and go to state 52
     empty                          shift and go to state 2
-    expr                           shift and go to state 4
-
-state 14
-
-    (14) expr -> expr / . expr
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
-
-    expr                           shift and go to state 27
-
-state 15
-
-    (15) expr -> expr * . expr
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
-
-    expr                           shift and go to state 28
-
-state 16
-
-    (16) expr -> expr - . expr
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
-
-    expr                           shift and go to state 29
-
-state 17
-
-    (17) expr -> expr MPLUS . expr
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
-
-    expr                           shift and go to state 30
-
-state 18
-
-    (18) expr -> expr + . expr
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
-
-    expr                           shift and go to state 31
-
-state 19
-
-    (5) statement -> ID = . expr
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
-
-    expr                           shift and go to state 32
+    expr                           shift and go to state 7
 
 state 20
 
-    (6) expr -> EYE ( . expr )
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
+    (4) statement -> FOR ID . = range block
+    =               shift and go to state 53
 
-    expr                           shift and go to state 33
 
 state 21
 
-    (12) expr -> ( expr . )
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    )               shift and go to state 34
-    /               shift and go to state 14
-    *               shift and go to state 15
-    -               shift and go to state 16
-    MPLUS           shift and go to state 17
-    +               shift and go to state 18
+    (10) statement -> ID DASSIGN . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 54
 
 state 22
 
-    (9) expr -> ID .
-    )               reduce using rule 9 (expr -> ID .)
-    /               reduce using rule 9 (expr -> ID .)
-    *               reduce using rule 9 (expr -> ID .)
-    -               reduce using rule 9 (expr -> ID .)
-    MPLUS           reduce using rule 9 (expr -> ID .)
-    +               reduce using rule 9 (expr -> ID .)
-    ;               reduce using rule 9 (expr -> ID .)
+    (11) statement -> ID TASSIGN . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 55
 
 state 23
 
-    (7) expr -> ONES ( . expr )
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
+    (12) statement -> ID MASSIGN . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
-    expr                           shift and go to state 35
+    expr                           shift and go to state 56
 
 state 24
 
-    (8) expr -> ZEROS ( . expr )
-    (6) expr -> . EYE ( expr )
-    (7) expr -> . ONES ( expr )
-    (8) expr -> . ZEROS ( expr )
-    (9) expr -> . ID
-    (10) expr -> . FLOAT
-    (11) expr -> . INT
-    (12) expr -> . ( expr )
-    (13) expr -> . - expr
-    (14) expr -> . expr / expr
-    (15) expr -> . expr * expr
-    (16) expr -> . expr - expr
-    (17) expr -> . expr MPLUS expr
-    (18) expr -> . expr + expr
-    EYE             shift and go to state 6
-    ONES            shift and go to state 8
-    ZEROS           shift and go to state 9
-    ID              shift and go to state 22
-    FLOAT           shift and go to state 10
-    INT             shift and go to state 11
-    (               shift and go to state 7
-    -               shift and go to state 12
+    (13) statement -> ID PASSIGN . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
-    expr                           shift and go to state 36
+    expr                           shift and go to state 57
 
 state 25
 
-    (13) expr -> - expr .
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    /               reduce using rule 13 (expr -> - expr .)
-    *               reduce using rule 13 (expr -> - expr .)
-    -               reduce using rule 13 (expr -> - expr .)
-    MPLUS           reduce using rule 13 (expr -> - expr .)
-    +               reduce using rule 13 (expr -> - expr .)
-    ;               reduce using rule 13 (expr -> - expr .)
-    )               reduce using rule 13 (expr -> - expr .)
+    (14) statement -> ID = . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 58
 
 state 26
 
-    (3) start -> statement ; start .
-    $end            reduce using rule 3 (start -> statement ; start .)
+    (5) statement -> WHILE expr . block
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    (15) block -> . { start }
+    (16) block -> . statement
+    (4) statement -> . FOR ID = range block
+    (5) statement -> . WHILE expr block
+    (6) statement -> . IF expr block ELSE block
+    (7) statement -> . IF expr block
+    (8) statement -> . PRINT expr
+    (9) statement -> . expr
+    (10) statement -> . ID DASSIGN expr
+    (11) statement -> . ID TASSIGN expr
+    (12) statement -> . ID MASSIGN expr
+    (13) statement -> . ID PASSIGN expr
+    (14) statement -> . ID = expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 60
+    +               shift and go to state 42
+    {               shift and go to state 61
+    FOR             shift and go to state 4
+    WHILE           shift and go to state 6
+    IF              shift and go to state 8
+    PRINT           shift and go to state 9
+    ID              shift and go to state 5
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
 
+    expr                           shift and go to state 7
+    block                          shift and go to state 59
+    statement                      shift and go to state 62
 
 state 27
 
-    (14) expr -> expr / expr .
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    /               reduce using rule 14 (expr -> expr / expr .)
-    *               reduce using rule 14 (expr -> expr / expr .)
-    -               reduce using rule 14 (expr -> expr / expr .)
-    MPLUS           reduce using rule 14 (expr -> expr / expr .)
-    +               reduce using rule 14 (expr -> expr / expr .)
-    ;               reduce using rule 14 (expr -> expr / expr .)
-    )               reduce using rule 14 (expr -> expr / expr .)
+    (20) expr -> ID .
+    '               reduce using rule 20 (expr -> ID .)
+    NEQ             reduce using rule 20 (expr -> ID .)
+    EQ              reduce using rule 20 (expr -> ID .)
+    GEQ             reduce using rule 20 (expr -> ID .)
+    >               reduce using rule 20 (expr -> ID .)
+    LEQ             reduce using rule 20 (expr -> ID .)
+    <               reduce using rule 20 (expr -> ID .)
+    MDIVIDE         reduce using rule 20 (expr -> ID .)
+    MTIMES          reduce using rule 20 (expr -> ID .)
+    MMINUS          reduce using rule 20 (expr -> ID .)
+    MPLUS           reduce using rule 20 (expr -> ID .)
+    /               reduce using rule 20 (expr -> ID .)
+    *               reduce using rule 20 (expr -> ID .)
+    -               reduce using rule 20 (expr -> ID .)
+    +               reduce using rule 20 (expr -> ID .)
+    {               reduce using rule 20 (expr -> ID .)
+    FOR             reduce using rule 20 (expr -> ID .)
+    WHILE           reduce using rule 20 (expr -> ID .)
+    IF              reduce using rule 20 (expr -> ID .)
+    PRINT           reduce using rule 20 (expr -> ID .)
+    ID              reduce using rule 20 (expr -> ID .)
+    EYE             reduce using rule 20 (expr -> ID .)
+    ONES            reduce using rule 20 (expr -> ID .)
+    ZEROS           reduce using rule 20 (expr -> ID .)
+    [               reduce using rule 20 (expr -> ID .)
+    STRING          reduce using rule 20 (expr -> ID .)
+    FLOAT           reduce using rule 20 (expr -> ID .)
+    INT             reduce using rule 20 (expr -> ID .)
+    (               reduce using rule 20 (expr -> ID .)
+    ;               reduce using rule 20 (expr -> ID .)
+    ELSE            reduce using rule 20 (expr -> ID .)
+    )               reduce using rule 20 (expr -> ID .)
 
 
 state 28
 
-    (15) expr -> expr * expr .
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    /               reduce using rule 15 (expr -> expr * expr .)
-    *               reduce using rule 15 (expr -> expr * expr .)
-    -               reduce using rule 15 (expr -> expr * expr .)
-    MPLUS           reduce using rule 15 (expr -> expr * expr .)
-    +               reduce using rule 15 (expr -> expr * expr .)
-    ;               reduce using rule 15 (expr -> expr * expr .)
-    )               reduce using rule 15 (expr -> expr * expr .)
+    (25) expr -> expr ' .
+    '               reduce using rule 25 (expr -> expr ' .)
+    NEQ             reduce using rule 25 (expr -> expr ' .)
+    EQ              reduce using rule 25 (expr -> expr ' .)
+    GEQ             reduce using rule 25 (expr -> expr ' .)
+    >               reduce using rule 25 (expr -> expr ' .)
+    LEQ             reduce using rule 25 (expr -> expr ' .)
+    <               reduce using rule 25 (expr -> expr ' .)
+    MDIVIDE         reduce using rule 25 (expr -> expr ' .)
+    MTIMES          reduce using rule 25 (expr -> expr ' .)
+    MMINUS          reduce using rule 25 (expr -> expr ' .)
+    MPLUS           reduce using rule 25 (expr -> expr ' .)
+    /               reduce using rule 25 (expr -> expr ' .)
+    *               reduce using rule 25 (expr -> expr ' .)
+    -               reduce using rule 25 (expr -> expr ' .)
+    +               reduce using rule 25 (expr -> expr ' .)
+    ;               reduce using rule 25 (expr -> expr ' .)
+    {               reduce using rule 25 (expr -> expr ' .)
+    FOR             reduce using rule 25 (expr -> expr ' .)
+    WHILE           reduce using rule 25 (expr -> expr ' .)
+    IF              reduce using rule 25 (expr -> expr ' .)
+    PRINT           reduce using rule 25 (expr -> expr ' .)
+    ID              reduce using rule 25 (expr -> expr ' .)
+    EYE             reduce using rule 25 (expr -> expr ' .)
+    ONES            reduce using rule 25 (expr -> expr ' .)
+    ZEROS           reduce using rule 25 (expr -> expr ' .)
+    [               reduce using rule 25 (expr -> expr ' .)
+    STRING          reduce using rule 25 (expr -> expr ' .)
+    FLOAT           reduce using rule 25 (expr -> expr ' .)
+    INT             reduce using rule 25 (expr -> expr ' .)
+    (               reduce using rule 25 (expr -> expr ' .)
+    ELSE            reduce using rule 25 (expr -> expr ' .)
+    )               reduce using rule 25 (expr -> expr ' .)
 
 
 state 29
 
-    (16) expr -> expr - expr .
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    -               reduce using rule 16 (expr -> expr - expr .)
-    MPLUS           reduce using rule 16 (expr -> expr - expr .)
-    +               reduce using rule 16 (expr -> expr - expr .)
-    ;               reduce using rule 16 (expr -> expr - expr .)
-    )               reduce using rule 16 (expr -> expr - expr .)
-    /               shift and go to state 14
-    *               shift and go to state 15
+    (27) expr -> expr NEQ . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 63
 
 state 30
 
-    (17) expr -> expr MPLUS expr .
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    -               reduce using rule 17 (expr -> expr MPLUS expr .)
-    MPLUS           reduce using rule 17 (expr -> expr MPLUS expr .)
-    +               reduce using rule 17 (expr -> expr MPLUS expr .)
-    ;               reduce using rule 17 (expr -> expr MPLUS expr .)
-    )               reduce using rule 17 (expr -> expr MPLUS expr .)
-    /               shift and go to state 14
-    *               shift and go to state 15
+    (28) expr -> expr EQ . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 64
 
 state 31
 
-    (18) expr -> expr + expr .
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    -               reduce using rule 18 (expr -> expr + expr .)
-    MPLUS           reduce using rule 18 (expr -> expr + expr .)
-    +               reduce using rule 18 (expr -> expr + expr .)
-    ;               reduce using rule 18 (expr -> expr + expr .)
-    )               reduce using rule 18 (expr -> expr + expr .)
-    /               shift and go to state 14
-    *               shift and go to state 15
+    (29) expr -> expr GEQ . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 65
 
 state 32
 
-    (5) statement -> ID = expr .
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    ;               reduce using rule 5 (statement -> ID = expr .)
-    /               shift and go to state 14
-    *               shift and go to state 15
-    -               shift and go to state 16
-    MPLUS           shift and go to state 17
-    +               shift and go to state 18
+    (30) expr -> expr > . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 66
 
 state 33
 
-    (6) expr -> EYE ( expr . )
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    )               shift and go to state 37
-    /               shift and go to state 14
-    *               shift and go to state 15
-    -               shift and go to state 16
-    MPLUS           shift and go to state 17
-    +               shift and go to state 18
+    (31) expr -> expr LEQ . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 67
 
 state 34
 
-    (12) expr -> ( expr ) .
-    /               reduce using rule 12 (expr -> ( expr ) .)
-    *               reduce using rule 12 (expr -> ( expr ) .)
-    -               reduce using rule 12 (expr -> ( expr ) .)
-    MPLUS           reduce using rule 12 (expr -> ( expr ) .)
-    +               reduce using rule 12 (expr -> ( expr ) .)
-    ;               reduce using rule 12 (expr -> ( expr ) .)
-    )               reduce using rule 12 (expr -> ( expr ) .)
+    (32) expr -> expr < . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 68
 
 state 35
 
-    (7) expr -> ONES ( expr . )
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    )               shift and go to state 38
-    /               shift and go to state 14
-    *               shift and go to state 15
-    -               shift and go to state 16
-    MPLUS           shift and go to state 17
-    +               shift and go to state 18
+    (34) expr -> expr MDIVIDE . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 69
 
 state 36
 
-    (8) expr -> ZEROS ( expr . )
-    (14) expr -> expr . / expr
-    (15) expr -> expr . * expr
-    (16) expr -> expr . - expr
-    (17) expr -> expr . MPLUS expr
-    (18) expr -> expr . + expr
-    )               shift and go to state 39
-    /               shift and go to state 14
-    *               shift and go to state 15
-    -               shift and go to state 16
-    MPLUS           shift and go to state 17
-    +               shift and go to state 18
+    (35) expr -> expr MTIMES . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 70
 
 state 37
 
-    (6) expr -> EYE ( expr ) .
-    /               reduce using rule 6 (expr -> EYE ( expr ) .)
-    *               reduce using rule 6 (expr -> EYE ( expr ) .)
-    -               reduce using rule 6 (expr -> EYE ( expr ) .)
-    MPLUS           reduce using rule 6 (expr -> EYE ( expr ) .)
-    +               reduce using rule 6 (expr -> EYE ( expr ) .)
-    ;               reduce using rule 6 (expr -> EYE ( expr ) .)
-    )               reduce using rule 6 (expr -> EYE ( expr ) .)
+    (36) expr -> expr MMINUS . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 71
 
 state 38
 
-    (7) expr -> ONES ( expr ) .
-    /               reduce using rule 7 (expr -> ONES ( expr ) .)
-    *               reduce using rule 7 (expr -> ONES ( expr ) .)
-    -               reduce using rule 7 (expr -> ONES ( expr ) .)
-    MPLUS           reduce using rule 7 (expr -> ONES ( expr ) .)
-    +               reduce using rule 7 (expr -> ONES ( expr ) .)
-    ;               reduce using rule 7 (expr -> ONES ( expr ) .)
-    )               reduce using rule 7 (expr -> ONES ( expr ) .)
+    (37) expr -> expr MPLUS . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
 
+    expr                           shift and go to state 72
 
 state 39
 
-    (8) expr -> ZEROS ( expr ) .
-    /               reduce using rule 8 (expr -> ZEROS ( expr ) .)
-    *               reduce using rule 8 (expr -> ZEROS ( expr ) .)
-    -               reduce using rule 8 (expr -> ZEROS ( expr ) .)
-    MPLUS           reduce using rule 8 (expr -> ZEROS ( expr ) .)
-    +               reduce using rule 8 (expr -> ZEROS ( expr ) .)
-    ;               reduce using rule 8 (expr -> ZEROS ( expr ) .)
-    )               reduce using rule 8 (expr -> ZEROS ( expr ) .)
+    (38) expr -> expr / . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 73
+
+state 40
+
+    (39) expr -> expr * . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 74
+
+state 41
+
+    (40) expr -> expr - . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 75
+
+state 42
+
+    (41) expr -> expr + . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 76
+
+state 43
+
+    (6) statement -> IF expr . block ELSE block
+    (7) statement -> IF expr . block
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    (15) block -> . { start }
+    (16) block -> . statement
+    (4) statement -> . FOR ID = range block
+    (5) statement -> . WHILE expr block
+    (6) statement -> . IF expr block ELSE block
+    (7) statement -> . IF expr block
+    (8) statement -> . PRINT expr
+    (9) statement -> . expr
+    (10) statement -> . ID DASSIGN expr
+    (11) statement -> . ID TASSIGN expr
+    (12) statement -> . ID MASSIGN expr
+    (13) statement -> . ID PASSIGN expr
+    (14) statement -> . ID = expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 60
+    +               shift and go to state 42
+    {               shift and go to state 61
+    FOR             shift and go to state 4
+    WHILE           shift and go to state 6
+    IF              shift and go to state 8
+    PRINT           shift and go to state 9
+    ID              shift and go to state 5
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+
+    expr                           shift and go to state 7
+    block                          shift and go to state 77
+    statement                      shift and go to state 62
+
+state 44
+
+    (8) statement -> PRINT expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    ;               reduce using rule 8 (statement -> PRINT expr .)
+    ELSE            reduce using rule 8 (statement -> PRINT expr .)
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 45
+
+    (17) expr -> EYE ( . expr )
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 78
+
+state 46
+
+    (26) expr -> ( expr . )
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    )               shift and go to state 79
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 47
+
+    (18) expr -> ONES ( . expr )
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 80
+
+state 48
+
+    (19) expr -> ZEROS ( . expr )
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 81
+
+state 49
+
+    (43) outerlist -> [ . innerlist ]
+    (45) innerlist -> . elem
+    (46) innerlist -> . innerlist , elem
+    (47) elem -> . STRING
+    (48) elem -> . FLOAT
+    (49) elem -> . INT
+    STRING          shift and go to state 84
+    FLOAT           shift and go to state 85
+    INT             shift and go to state 86
+
+    innerlist                      shift and go to state 82
+    elem                           shift and go to state 83
+
+state 50
+
+    (21) expr -> [ outerlist . ]
+    (44) outerlist -> outerlist . , [ innerlist ]
+    ]               shift and go to state 87
+    ,               shift and go to state 88
+
+
+state 51
+
+    (33) expr -> - expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    '               reduce using rule 33 (expr -> - expr .)
+    NEQ             reduce using rule 33 (expr -> - expr .)
+    EQ              reduce using rule 33 (expr -> - expr .)
+    GEQ             reduce using rule 33 (expr -> - expr .)
+    >               reduce using rule 33 (expr -> - expr .)
+    LEQ             reduce using rule 33 (expr -> - expr .)
+    <               reduce using rule 33 (expr -> - expr .)
+    MDIVIDE         reduce using rule 33 (expr -> - expr .)
+    MTIMES          reduce using rule 33 (expr -> - expr .)
+    MMINUS          reduce using rule 33 (expr -> - expr .)
+    MPLUS           reduce using rule 33 (expr -> - expr .)
+    /               reduce using rule 33 (expr -> - expr .)
+    *               reduce using rule 33 (expr -> - expr .)
+    -               reduce using rule 33 (expr -> - expr .)
+    +               reduce using rule 33 (expr -> - expr .)
+    ;               reduce using rule 33 (expr -> - expr .)
+    {               reduce using rule 33 (expr -> - expr .)
+    FOR             reduce using rule 33 (expr -> - expr .)
+    WHILE           reduce using rule 33 (expr -> - expr .)
+    IF              reduce using rule 33 (expr -> - expr .)
+    PRINT           reduce using rule 33 (expr -> - expr .)
+    ID              reduce using rule 33 (expr -> - expr .)
+    EYE             reduce using rule 33 (expr -> - expr .)
+    ONES            reduce using rule 33 (expr -> - expr .)
+    ZEROS           reduce using rule 33 (expr -> - expr .)
+    [               reduce using rule 33 (expr -> - expr .)
+    STRING          reduce using rule 33 (expr -> - expr .)
+    FLOAT           reduce using rule 33 (expr -> - expr .)
+    INT             reduce using rule 33 (expr -> - expr .)
+    (               reduce using rule 33 (expr -> - expr .)
+    ELSE            reduce using rule 33 (expr -> - expr .)
+    )               reduce using rule 33 (expr -> - expr .)
+
+
+state 52
+
+    (3) start -> statement ; start .
+    $end            reduce using rule 3 (start -> statement ; start .)
+    }               reduce using rule 3 (start -> statement ; start .)
+
+
+state 53
+
+    (4) statement -> FOR ID = . range block
+    (42) range -> . INT : INT
+    INT             shift and go to state 90
+
+    range                          shift and go to state 89
+
+state 54
+
+    (10) statement -> ID DASSIGN expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    ;               reduce using rule 10 (statement -> ID DASSIGN expr .)
+    ELSE            reduce using rule 10 (statement -> ID DASSIGN expr .)
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 55
+
+    (11) statement -> ID TASSIGN expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    ;               reduce using rule 11 (statement -> ID TASSIGN expr .)
+    ELSE            reduce using rule 11 (statement -> ID TASSIGN expr .)
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 56
+
+    (12) statement -> ID MASSIGN expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    ;               reduce using rule 12 (statement -> ID MASSIGN expr .)
+    ELSE            reduce using rule 12 (statement -> ID MASSIGN expr .)
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 57
+
+    (13) statement -> ID PASSIGN expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    ;               reduce using rule 13 (statement -> ID PASSIGN expr .)
+    ELSE            reduce using rule 13 (statement -> ID PASSIGN expr .)
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 58
+
+    (14) statement -> ID = expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    ;               reduce using rule 14 (statement -> ID = expr .)
+    ELSE            reduce using rule 14 (statement -> ID = expr .)
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 59
+
+    (5) statement -> WHILE expr block .
+    ;               reduce using rule 5 (statement -> WHILE expr block .)
+    ELSE            reduce using rule 5 (statement -> WHILE expr block .)
+
+
+state 60
+
+    (40) expr -> expr - . expr
+    (33) expr -> - . expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    ID              shift and go to state 27
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 91
+
+state 61
+
+    (15) block -> { . start }
+    (2) start -> . empty
+    (3) start -> . statement ; start
+    (1) empty -> .
+    (4) statement -> . FOR ID = range block
+    (5) statement -> . WHILE expr block
+    (6) statement -> . IF expr block ELSE block
+    (7) statement -> . IF expr block
+    (8) statement -> . PRINT expr
+    (9) statement -> . expr
+    (10) statement -> . ID DASSIGN expr
+    (11) statement -> . ID TASSIGN expr
+    (12) statement -> . ID MASSIGN expr
+    (13) statement -> . ID PASSIGN expr
+    (14) statement -> . ID = expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    }               reduce using rule 1 (empty -> .)
+    FOR             shift and go to state 4
+    WHILE           shift and go to state 6
+    IF              shift and go to state 8
+    PRINT           shift and go to state 9
+    ID              shift and go to state 5
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    start                          shift and go to state 92
+    empty                          shift and go to state 2
+    statement                      shift and go to state 3
+    expr                           shift and go to state 7
+
+state 62
+
+    (16) block -> statement .
+    ;               reduce using rule 16 (block -> statement .)
+    ELSE            reduce using rule 16 (block -> statement .)
+
+
+state 63
+
+    (27) expr -> expr NEQ expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 27 (expr -> expr NEQ expr .)
+    EQ              reduce using rule 27 (expr -> expr NEQ expr .)
+    GEQ             reduce using rule 27 (expr -> expr NEQ expr .)
+    >               reduce using rule 27 (expr -> expr NEQ expr .)
+    LEQ             reduce using rule 27 (expr -> expr NEQ expr .)
+    <               reduce using rule 27 (expr -> expr NEQ expr .)
+    ;               reduce using rule 27 (expr -> expr NEQ expr .)
+    {               reduce using rule 27 (expr -> expr NEQ expr .)
+    FOR             reduce using rule 27 (expr -> expr NEQ expr .)
+    WHILE           reduce using rule 27 (expr -> expr NEQ expr .)
+    IF              reduce using rule 27 (expr -> expr NEQ expr .)
+    PRINT           reduce using rule 27 (expr -> expr NEQ expr .)
+    ID              reduce using rule 27 (expr -> expr NEQ expr .)
+    EYE             reduce using rule 27 (expr -> expr NEQ expr .)
+    ONES            reduce using rule 27 (expr -> expr NEQ expr .)
+    ZEROS           reduce using rule 27 (expr -> expr NEQ expr .)
+    [               reduce using rule 27 (expr -> expr NEQ expr .)
+    STRING          reduce using rule 27 (expr -> expr NEQ expr .)
+    FLOAT           reduce using rule 27 (expr -> expr NEQ expr .)
+    INT             reduce using rule 27 (expr -> expr NEQ expr .)
+    (               reduce using rule 27 (expr -> expr NEQ expr .)
+    ELSE            reduce using rule 27 (expr -> expr NEQ expr .)
+    )               reduce using rule 27 (expr -> expr NEQ expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 64
+
+    (28) expr -> expr EQ expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 28 (expr -> expr EQ expr .)
+    EQ              reduce using rule 28 (expr -> expr EQ expr .)
+    GEQ             reduce using rule 28 (expr -> expr EQ expr .)
+    >               reduce using rule 28 (expr -> expr EQ expr .)
+    LEQ             reduce using rule 28 (expr -> expr EQ expr .)
+    <               reduce using rule 28 (expr -> expr EQ expr .)
+    ;               reduce using rule 28 (expr -> expr EQ expr .)
+    {               reduce using rule 28 (expr -> expr EQ expr .)
+    FOR             reduce using rule 28 (expr -> expr EQ expr .)
+    WHILE           reduce using rule 28 (expr -> expr EQ expr .)
+    IF              reduce using rule 28 (expr -> expr EQ expr .)
+    PRINT           reduce using rule 28 (expr -> expr EQ expr .)
+    ID              reduce using rule 28 (expr -> expr EQ expr .)
+    EYE             reduce using rule 28 (expr -> expr EQ expr .)
+    ONES            reduce using rule 28 (expr -> expr EQ expr .)
+    ZEROS           reduce using rule 28 (expr -> expr EQ expr .)
+    [               reduce using rule 28 (expr -> expr EQ expr .)
+    STRING          reduce using rule 28 (expr -> expr EQ expr .)
+    FLOAT           reduce using rule 28 (expr -> expr EQ expr .)
+    INT             reduce using rule 28 (expr -> expr EQ expr .)
+    (               reduce using rule 28 (expr -> expr EQ expr .)
+    ELSE            reduce using rule 28 (expr -> expr EQ expr .)
+    )               reduce using rule 28 (expr -> expr EQ expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 65
+
+    (29) expr -> expr GEQ expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 29 (expr -> expr GEQ expr .)
+    EQ              reduce using rule 29 (expr -> expr GEQ expr .)
+    GEQ             reduce using rule 29 (expr -> expr GEQ expr .)
+    >               reduce using rule 29 (expr -> expr GEQ expr .)
+    LEQ             reduce using rule 29 (expr -> expr GEQ expr .)
+    <               reduce using rule 29 (expr -> expr GEQ expr .)
+    ;               reduce using rule 29 (expr -> expr GEQ expr .)
+    {               reduce using rule 29 (expr -> expr GEQ expr .)
+    FOR             reduce using rule 29 (expr -> expr GEQ expr .)
+    WHILE           reduce using rule 29 (expr -> expr GEQ expr .)
+    IF              reduce using rule 29 (expr -> expr GEQ expr .)
+    PRINT           reduce using rule 29 (expr -> expr GEQ expr .)
+    ID              reduce using rule 29 (expr -> expr GEQ expr .)
+    EYE             reduce using rule 29 (expr -> expr GEQ expr .)
+    ONES            reduce using rule 29 (expr -> expr GEQ expr .)
+    ZEROS           reduce using rule 29 (expr -> expr GEQ expr .)
+    [               reduce using rule 29 (expr -> expr GEQ expr .)
+    STRING          reduce using rule 29 (expr -> expr GEQ expr .)
+    FLOAT           reduce using rule 29 (expr -> expr GEQ expr .)
+    INT             reduce using rule 29 (expr -> expr GEQ expr .)
+    (               reduce using rule 29 (expr -> expr GEQ expr .)
+    ELSE            reduce using rule 29 (expr -> expr GEQ expr .)
+    )               reduce using rule 29 (expr -> expr GEQ expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 66
+
+    (30) expr -> expr > expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 30 (expr -> expr > expr .)
+    EQ              reduce using rule 30 (expr -> expr > expr .)
+    GEQ             reduce using rule 30 (expr -> expr > expr .)
+    >               reduce using rule 30 (expr -> expr > expr .)
+    LEQ             reduce using rule 30 (expr -> expr > expr .)
+    <               reduce using rule 30 (expr -> expr > expr .)
+    ;               reduce using rule 30 (expr -> expr > expr .)
+    {               reduce using rule 30 (expr -> expr > expr .)
+    FOR             reduce using rule 30 (expr -> expr > expr .)
+    WHILE           reduce using rule 30 (expr -> expr > expr .)
+    IF              reduce using rule 30 (expr -> expr > expr .)
+    PRINT           reduce using rule 30 (expr -> expr > expr .)
+    ID              reduce using rule 30 (expr -> expr > expr .)
+    EYE             reduce using rule 30 (expr -> expr > expr .)
+    ONES            reduce using rule 30 (expr -> expr > expr .)
+    ZEROS           reduce using rule 30 (expr -> expr > expr .)
+    [               reduce using rule 30 (expr -> expr > expr .)
+    STRING          reduce using rule 30 (expr -> expr > expr .)
+    FLOAT           reduce using rule 30 (expr -> expr > expr .)
+    INT             reduce using rule 30 (expr -> expr > expr .)
+    (               reduce using rule 30 (expr -> expr > expr .)
+    ELSE            reduce using rule 30 (expr -> expr > expr .)
+    )               reduce using rule 30 (expr -> expr > expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 67
+
+    (31) expr -> expr LEQ expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 31 (expr -> expr LEQ expr .)
+    EQ              reduce using rule 31 (expr -> expr LEQ expr .)
+    GEQ             reduce using rule 31 (expr -> expr LEQ expr .)
+    >               reduce using rule 31 (expr -> expr LEQ expr .)
+    LEQ             reduce using rule 31 (expr -> expr LEQ expr .)
+    <               reduce using rule 31 (expr -> expr LEQ expr .)
+    ;               reduce using rule 31 (expr -> expr LEQ expr .)
+    {               reduce using rule 31 (expr -> expr LEQ expr .)
+    FOR             reduce using rule 31 (expr -> expr LEQ expr .)
+    WHILE           reduce using rule 31 (expr -> expr LEQ expr .)
+    IF              reduce using rule 31 (expr -> expr LEQ expr .)
+    PRINT           reduce using rule 31 (expr -> expr LEQ expr .)
+    ID              reduce using rule 31 (expr -> expr LEQ expr .)
+    EYE             reduce using rule 31 (expr -> expr LEQ expr .)
+    ONES            reduce using rule 31 (expr -> expr LEQ expr .)
+    ZEROS           reduce using rule 31 (expr -> expr LEQ expr .)
+    [               reduce using rule 31 (expr -> expr LEQ expr .)
+    STRING          reduce using rule 31 (expr -> expr LEQ expr .)
+    FLOAT           reduce using rule 31 (expr -> expr LEQ expr .)
+    INT             reduce using rule 31 (expr -> expr LEQ expr .)
+    (               reduce using rule 31 (expr -> expr LEQ expr .)
+    ELSE            reduce using rule 31 (expr -> expr LEQ expr .)
+    )               reduce using rule 31 (expr -> expr LEQ expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 68
+
+    (32) expr -> expr < expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 32 (expr -> expr < expr .)
+    EQ              reduce using rule 32 (expr -> expr < expr .)
+    GEQ             reduce using rule 32 (expr -> expr < expr .)
+    >               reduce using rule 32 (expr -> expr < expr .)
+    LEQ             reduce using rule 32 (expr -> expr < expr .)
+    <               reduce using rule 32 (expr -> expr < expr .)
+    ;               reduce using rule 32 (expr -> expr < expr .)
+    {               reduce using rule 32 (expr -> expr < expr .)
+    FOR             reduce using rule 32 (expr -> expr < expr .)
+    WHILE           reduce using rule 32 (expr -> expr < expr .)
+    IF              reduce using rule 32 (expr -> expr < expr .)
+    PRINT           reduce using rule 32 (expr -> expr < expr .)
+    ID              reduce using rule 32 (expr -> expr < expr .)
+    EYE             reduce using rule 32 (expr -> expr < expr .)
+    ONES            reduce using rule 32 (expr -> expr < expr .)
+    ZEROS           reduce using rule 32 (expr -> expr < expr .)
+    [               reduce using rule 32 (expr -> expr < expr .)
+    STRING          reduce using rule 32 (expr -> expr < expr .)
+    FLOAT           reduce using rule 32 (expr -> expr < expr .)
+    INT             reduce using rule 32 (expr -> expr < expr .)
+    (               reduce using rule 32 (expr -> expr < expr .)
+    ELSE            reduce using rule 32 (expr -> expr < expr .)
+    )               reduce using rule 32 (expr -> expr < expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 69
+
+    (34) expr -> expr MDIVIDE expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    EQ              reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    GEQ             reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    >               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    LEQ             reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    <               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    MDIVIDE         reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    MTIMES          reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    MMINUS          reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    MPLUS           reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    /               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    *               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    -               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    +               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    ;               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    {               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    FOR             reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    WHILE           reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    IF              reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    PRINT           reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    ID              reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    EYE             reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    ONES            reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    ZEROS           reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    [               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    STRING          reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    FLOAT           reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    INT             reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    (               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    ELSE            reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    )               reduce using rule 34 (expr -> expr MDIVIDE expr .)
+    '               shift and go to state 28
+
+
+state 70
+
+    (35) expr -> expr MTIMES expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 35 (expr -> expr MTIMES expr .)
+    EQ              reduce using rule 35 (expr -> expr MTIMES expr .)
+    GEQ             reduce using rule 35 (expr -> expr MTIMES expr .)
+    >               reduce using rule 35 (expr -> expr MTIMES expr .)
+    LEQ             reduce using rule 35 (expr -> expr MTIMES expr .)
+    <               reduce using rule 35 (expr -> expr MTIMES expr .)
+    MDIVIDE         reduce using rule 35 (expr -> expr MTIMES expr .)
+    MTIMES          reduce using rule 35 (expr -> expr MTIMES expr .)
+    MMINUS          reduce using rule 35 (expr -> expr MTIMES expr .)
+    MPLUS           reduce using rule 35 (expr -> expr MTIMES expr .)
+    /               reduce using rule 35 (expr -> expr MTIMES expr .)
+    *               reduce using rule 35 (expr -> expr MTIMES expr .)
+    -               reduce using rule 35 (expr -> expr MTIMES expr .)
+    +               reduce using rule 35 (expr -> expr MTIMES expr .)
+    ;               reduce using rule 35 (expr -> expr MTIMES expr .)
+    {               reduce using rule 35 (expr -> expr MTIMES expr .)
+    FOR             reduce using rule 35 (expr -> expr MTIMES expr .)
+    WHILE           reduce using rule 35 (expr -> expr MTIMES expr .)
+    IF              reduce using rule 35 (expr -> expr MTIMES expr .)
+    PRINT           reduce using rule 35 (expr -> expr MTIMES expr .)
+    ID              reduce using rule 35 (expr -> expr MTIMES expr .)
+    EYE             reduce using rule 35 (expr -> expr MTIMES expr .)
+    ONES            reduce using rule 35 (expr -> expr MTIMES expr .)
+    ZEROS           reduce using rule 35 (expr -> expr MTIMES expr .)
+    [               reduce using rule 35 (expr -> expr MTIMES expr .)
+    STRING          reduce using rule 35 (expr -> expr MTIMES expr .)
+    FLOAT           reduce using rule 35 (expr -> expr MTIMES expr .)
+    INT             reduce using rule 35 (expr -> expr MTIMES expr .)
+    (               reduce using rule 35 (expr -> expr MTIMES expr .)
+    ELSE            reduce using rule 35 (expr -> expr MTIMES expr .)
+    )               reduce using rule 35 (expr -> expr MTIMES expr .)
+    '               shift and go to state 28
+
+
+state 71
+
+    (36) expr -> expr MMINUS expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 36 (expr -> expr MMINUS expr .)
+    EQ              reduce using rule 36 (expr -> expr MMINUS expr .)
+    GEQ             reduce using rule 36 (expr -> expr MMINUS expr .)
+    >               reduce using rule 36 (expr -> expr MMINUS expr .)
+    LEQ             reduce using rule 36 (expr -> expr MMINUS expr .)
+    <               reduce using rule 36 (expr -> expr MMINUS expr .)
+    MMINUS          reduce using rule 36 (expr -> expr MMINUS expr .)
+    MPLUS           reduce using rule 36 (expr -> expr MMINUS expr .)
+    -               reduce using rule 36 (expr -> expr MMINUS expr .)
+    +               reduce using rule 36 (expr -> expr MMINUS expr .)
+    ;               reduce using rule 36 (expr -> expr MMINUS expr .)
+    {               reduce using rule 36 (expr -> expr MMINUS expr .)
+    FOR             reduce using rule 36 (expr -> expr MMINUS expr .)
+    WHILE           reduce using rule 36 (expr -> expr MMINUS expr .)
+    IF              reduce using rule 36 (expr -> expr MMINUS expr .)
+    PRINT           reduce using rule 36 (expr -> expr MMINUS expr .)
+    ID              reduce using rule 36 (expr -> expr MMINUS expr .)
+    EYE             reduce using rule 36 (expr -> expr MMINUS expr .)
+    ONES            reduce using rule 36 (expr -> expr MMINUS expr .)
+    ZEROS           reduce using rule 36 (expr -> expr MMINUS expr .)
+    [               reduce using rule 36 (expr -> expr MMINUS expr .)
+    STRING          reduce using rule 36 (expr -> expr MMINUS expr .)
+    FLOAT           reduce using rule 36 (expr -> expr MMINUS expr .)
+    INT             reduce using rule 36 (expr -> expr MMINUS expr .)
+    (               reduce using rule 36 (expr -> expr MMINUS expr .)
+    ELSE            reduce using rule 36 (expr -> expr MMINUS expr .)
+    )               reduce using rule 36 (expr -> expr MMINUS expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    /               shift and go to state 39
+    *               shift and go to state 40
+
+
+state 72
+
+    (37) expr -> expr MPLUS expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 37 (expr -> expr MPLUS expr .)
+    EQ              reduce using rule 37 (expr -> expr MPLUS expr .)
+    GEQ             reduce using rule 37 (expr -> expr MPLUS expr .)
+    >               reduce using rule 37 (expr -> expr MPLUS expr .)
+    LEQ             reduce using rule 37 (expr -> expr MPLUS expr .)
+    <               reduce using rule 37 (expr -> expr MPLUS expr .)
+    MMINUS          reduce using rule 37 (expr -> expr MPLUS expr .)
+    MPLUS           reduce using rule 37 (expr -> expr MPLUS expr .)
+    -               reduce using rule 37 (expr -> expr MPLUS expr .)
+    +               reduce using rule 37 (expr -> expr MPLUS expr .)
+    ;               reduce using rule 37 (expr -> expr MPLUS expr .)
+    {               reduce using rule 37 (expr -> expr MPLUS expr .)
+    FOR             reduce using rule 37 (expr -> expr MPLUS expr .)
+    WHILE           reduce using rule 37 (expr -> expr MPLUS expr .)
+    IF              reduce using rule 37 (expr -> expr MPLUS expr .)
+    PRINT           reduce using rule 37 (expr -> expr MPLUS expr .)
+    ID              reduce using rule 37 (expr -> expr MPLUS expr .)
+    EYE             reduce using rule 37 (expr -> expr MPLUS expr .)
+    ONES            reduce using rule 37 (expr -> expr MPLUS expr .)
+    ZEROS           reduce using rule 37 (expr -> expr MPLUS expr .)
+    [               reduce using rule 37 (expr -> expr MPLUS expr .)
+    STRING          reduce using rule 37 (expr -> expr MPLUS expr .)
+    FLOAT           reduce using rule 37 (expr -> expr MPLUS expr .)
+    INT             reduce using rule 37 (expr -> expr MPLUS expr .)
+    (               reduce using rule 37 (expr -> expr MPLUS expr .)
+    ELSE            reduce using rule 37 (expr -> expr MPLUS expr .)
+    )               reduce using rule 37 (expr -> expr MPLUS expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    /               shift and go to state 39
+    *               shift and go to state 40
+
+
+state 73
+
+    (38) expr -> expr / expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 38 (expr -> expr / expr .)
+    EQ              reduce using rule 38 (expr -> expr / expr .)
+    GEQ             reduce using rule 38 (expr -> expr / expr .)
+    >               reduce using rule 38 (expr -> expr / expr .)
+    LEQ             reduce using rule 38 (expr -> expr / expr .)
+    <               reduce using rule 38 (expr -> expr / expr .)
+    MDIVIDE         reduce using rule 38 (expr -> expr / expr .)
+    MTIMES          reduce using rule 38 (expr -> expr / expr .)
+    MMINUS          reduce using rule 38 (expr -> expr / expr .)
+    MPLUS           reduce using rule 38 (expr -> expr / expr .)
+    /               reduce using rule 38 (expr -> expr / expr .)
+    *               reduce using rule 38 (expr -> expr / expr .)
+    -               reduce using rule 38 (expr -> expr / expr .)
+    +               reduce using rule 38 (expr -> expr / expr .)
+    ;               reduce using rule 38 (expr -> expr / expr .)
+    {               reduce using rule 38 (expr -> expr / expr .)
+    FOR             reduce using rule 38 (expr -> expr / expr .)
+    WHILE           reduce using rule 38 (expr -> expr / expr .)
+    IF              reduce using rule 38 (expr -> expr / expr .)
+    PRINT           reduce using rule 38 (expr -> expr / expr .)
+    ID              reduce using rule 38 (expr -> expr / expr .)
+    EYE             reduce using rule 38 (expr -> expr / expr .)
+    ONES            reduce using rule 38 (expr -> expr / expr .)
+    ZEROS           reduce using rule 38 (expr -> expr / expr .)
+    [               reduce using rule 38 (expr -> expr / expr .)
+    STRING          reduce using rule 38 (expr -> expr / expr .)
+    FLOAT           reduce using rule 38 (expr -> expr / expr .)
+    INT             reduce using rule 38 (expr -> expr / expr .)
+    (               reduce using rule 38 (expr -> expr / expr .)
+    ELSE            reduce using rule 38 (expr -> expr / expr .)
+    )               reduce using rule 38 (expr -> expr / expr .)
+    '               shift and go to state 28
+
+
+state 74
+
+    (39) expr -> expr * expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 39 (expr -> expr * expr .)
+    EQ              reduce using rule 39 (expr -> expr * expr .)
+    GEQ             reduce using rule 39 (expr -> expr * expr .)
+    >               reduce using rule 39 (expr -> expr * expr .)
+    LEQ             reduce using rule 39 (expr -> expr * expr .)
+    <               reduce using rule 39 (expr -> expr * expr .)
+    MDIVIDE         reduce using rule 39 (expr -> expr * expr .)
+    MTIMES          reduce using rule 39 (expr -> expr * expr .)
+    MMINUS          reduce using rule 39 (expr -> expr * expr .)
+    MPLUS           reduce using rule 39 (expr -> expr * expr .)
+    /               reduce using rule 39 (expr -> expr * expr .)
+    *               reduce using rule 39 (expr -> expr * expr .)
+    -               reduce using rule 39 (expr -> expr * expr .)
+    +               reduce using rule 39 (expr -> expr * expr .)
+    ;               reduce using rule 39 (expr -> expr * expr .)
+    {               reduce using rule 39 (expr -> expr * expr .)
+    FOR             reduce using rule 39 (expr -> expr * expr .)
+    WHILE           reduce using rule 39 (expr -> expr * expr .)
+    IF              reduce using rule 39 (expr -> expr * expr .)
+    PRINT           reduce using rule 39 (expr -> expr * expr .)
+    ID              reduce using rule 39 (expr -> expr * expr .)
+    EYE             reduce using rule 39 (expr -> expr * expr .)
+    ONES            reduce using rule 39 (expr -> expr * expr .)
+    ZEROS           reduce using rule 39 (expr -> expr * expr .)
+    [               reduce using rule 39 (expr -> expr * expr .)
+    STRING          reduce using rule 39 (expr -> expr * expr .)
+    FLOAT           reduce using rule 39 (expr -> expr * expr .)
+    INT             reduce using rule 39 (expr -> expr * expr .)
+    (               reduce using rule 39 (expr -> expr * expr .)
+    ELSE            reduce using rule 39 (expr -> expr * expr .)
+    )               reduce using rule 39 (expr -> expr * expr .)
+    '               shift and go to state 28
+
+
+state 75
+
+    (40) expr -> expr - expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 40 (expr -> expr - expr .)
+    EQ              reduce using rule 40 (expr -> expr - expr .)
+    GEQ             reduce using rule 40 (expr -> expr - expr .)
+    >               reduce using rule 40 (expr -> expr - expr .)
+    LEQ             reduce using rule 40 (expr -> expr - expr .)
+    <               reduce using rule 40 (expr -> expr - expr .)
+    MMINUS          reduce using rule 40 (expr -> expr - expr .)
+    MPLUS           reduce using rule 40 (expr -> expr - expr .)
+    -               reduce using rule 40 (expr -> expr - expr .)
+    +               reduce using rule 40 (expr -> expr - expr .)
+    ;               reduce using rule 40 (expr -> expr - expr .)
+    ELSE            reduce using rule 40 (expr -> expr - expr .)
+    )               reduce using rule 40 (expr -> expr - expr .)
+    {               reduce using rule 40 (expr -> expr - expr .)
+    FOR             reduce using rule 40 (expr -> expr - expr .)
+    WHILE           reduce using rule 40 (expr -> expr - expr .)
+    IF              reduce using rule 40 (expr -> expr - expr .)
+    PRINT           reduce using rule 40 (expr -> expr - expr .)
+    ID              reduce using rule 40 (expr -> expr - expr .)
+    EYE             reduce using rule 40 (expr -> expr - expr .)
+    ONES            reduce using rule 40 (expr -> expr - expr .)
+    ZEROS           reduce using rule 40 (expr -> expr - expr .)
+    [               reduce using rule 40 (expr -> expr - expr .)
+    STRING          reduce using rule 40 (expr -> expr - expr .)
+    FLOAT           reduce using rule 40 (expr -> expr - expr .)
+    INT             reduce using rule 40 (expr -> expr - expr .)
+    (               reduce using rule 40 (expr -> expr - expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    /               shift and go to state 39
+    *               shift and go to state 40
+
+
+state 76
+
+    (41) expr -> expr + expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    NEQ             reduce using rule 41 (expr -> expr + expr .)
+    EQ              reduce using rule 41 (expr -> expr + expr .)
+    GEQ             reduce using rule 41 (expr -> expr + expr .)
+    >               reduce using rule 41 (expr -> expr + expr .)
+    LEQ             reduce using rule 41 (expr -> expr + expr .)
+    <               reduce using rule 41 (expr -> expr + expr .)
+    MMINUS          reduce using rule 41 (expr -> expr + expr .)
+    MPLUS           reduce using rule 41 (expr -> expr + expr .)
+    -               reduce using rule 41 (expr -> expr + expr .)
+    +               reduce using rule 41 (expr -> expr + expr .)
+    ;               reduce using rule 41 (expr -> expr + expr .)
+    {               reduce using rule 41 (expr -> expr + expr .)
+    FOR             reduce using rule 41 (expr -> expr + expr .)
+    WHILE           reduce using rule 41 (expr -> expr + expr .)
+    IF              reduce using rule 41 (expr -> expr + expr .)
+    PRINT           reduce using rule 41 (expr -> expr + expr .)
+    ID              reduce using rule 41 (expr -> expr + expr .)
+    EYE             reduce using rule 41 (expr -> expr + expr .)
+    ONES            reduce using rule 41 (expr -> expr + expr .)
+    ZEROS           reduce using rule 41 (expr -> expr + expr .)
+    [               reduce using rule 41 (expr -> expr + expr .)
+    STRING          reduce using rule 41 (expr -> expr + expr .)
+    FLOAT           reduce using rule 41 (expr -> expr + expr .)
+    INT             reduce using rule 41 (expr -> expr + expr .)
+    (               reduce using rule 41 (expr -> expr + expr .)
+    ELSE            reduce using rule 41 (expr -> expr + expr .)
+    )               reduce using rule 41 (expr -> expr + expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    /               shift and go to state 39
+    *               shift and go to state 40
+
+
+state 77
+
+    (6) statement -> IF expr block . ELSE block
+    (7) statement -> IF expr block .
+  ! shift/reduce conflict for ELSE resolved as shift
+    ELSE            shift and go to state 93
+    ;               reduce using rule 7 (statement -> IF expr block .)
+
+
+state 78
+
+    (17) expr -> EYE ( expr . )
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    )               shift and go to state 94
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 79
+
+    (26) expr -> ( expr ) .
+    '               reduce using rule 26 (expr -> ( expr ) .)
+    NEQ             reduce using rule 26 (expr -> ( expr ) .)
+    EQ              reduce using rule 26 (expr -> ( expr ) .)
+    GEQ             reduce using rule 26 (expr -> ( expr ) .)
+    >               reduce using rule 26 (expr -> ( expr ) .)
+    LEQ             reduce using rule 26 (expr -> ( expr ) .)
+    <               reduce using rule 26 (expr -> ( expr ) .)
+    MDIVIDE         reduce using rule 26 (expr -> ( expr ) .)
+    MTIMES          reduce using rule 26 (expr -> ( expr ) .)
+    MMINUS          reduce using rule 26 (expr -> ( expr ) .)
+    MPLUS           reduce using rule 26 (expr -> ( expr ) .)
+    /               reduce using rule 26 (expr -> ( expr ) .)
+    *               reduce using rule 26 (expr -> ( expr ) .)
+    -               reduce using rule 26 (expr -> ( expr ) .)
+    +               reduce using rule 26 (expr -> ( expr ) .)
+    ;               reduce using rule 26 (expr -> ( expr ) .)
+    {               reduce using rule 26 (expr -> ( expr ) .)
+    FOR             reduce using rule 26 (expr -> ( expr ) .)
+    WHILE           reduce using rule 26 (expr -> ( expr ) .)
+    IF              reduce using rule 26 (expr -> ( expr ) .)
+    PRINT           reduce using rule 26 (expr -> ( expr ) .)
+    ID              reduce using rule 26 (expr -> ( expr ) .)
+    EYE             reduce using rule 26 (expr -> ( expr ) .)
+    ONES            reduce using rule 26 (expr -> ( expr ) .)
+    ZEROS           reduce using rule 26 (expr -> ( expr ) .)
+    [               reduce using rule 26 (expr -> ( expr ) .)
+    STRING          reduce using rule 26 (expr -> ( expr ) .)
+    FLOAT           reduce using rule 26 (expr -> ( expr ) .)
+    INT             reduce using rule 26 (expr -> ( expr ) .)
+    (               reduce using rule 26 (expr -> ( expr ) .)
+    ELSE            reduce using rule 26 (expr -> ( expr ) .)
+    )               reduce using rule 26 (expr -> ( expr ) .)
+
+
+state 80
+
+    (18) expr -> ONES ( expr . )
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    )               shift and go to state 95
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 81
+
+    (19) expr -> ZEROS ( expr . )
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+    )               shift and go to state 96
+    '               shift and go to state 28
+    NEQ             shift and go to state 29
+    EQ              shift and go to state 30
+    GEQ             shift and go to state 31
+    >               shift and go to state 32
+    LEQ             shift and go to state 33
+    <               shift and go to state 34
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    MMINUS          shift and go to state 37
+    MPLUS           shift and go to state 38
+    /               shift and go to state 39
+    *               shift and go to state 40
+    -               shift and go to state 41
+    +               shift and go to state 42
+
+
+state 82
+
+    (43) outerlist -> [ innerlist . ]
+    (46) innerlist -> innerlist . , elem
+    ]               shift and go to state 97
+    ,               shift and go to state 98
+
+
+state 83
+
+    (45) innerlist -> elem .
+    ]               reduce using rule 45 (innerlist -> elem .)
+    ,               reduce using rule 45 (innerlist -> elem .)
+
+
+state 84
+
+    (47) elem -> STRING .
+    ]               reduce using rule 47 (elem -> STRING .)
+    ,               reduce using rule 47 (elem -> STRING .)
+
+
+state 85
+
+    (48) elem -> FLOAT .
+    ]               reduce using rule 48 (elem -> FLOAT .)
+    ,               reduce using rule 48 (elem -> FLOAT .)
+
+
+state 86
+
+    (49) elem -> INT .
+    ]               reduce using rule 49 (elem -> INT .)
+    ,               reduce using rule 49 (elem -> INT .)
+
+
+state 87
+
+    (21) expr -> [ outerlist ] .
+    '               reduce using rule 21 (expr -> [ outerlist ] .)
+    NEQ             reduce using rule 21 (expr -> [ outerlist ] .)
+    EQ              reduce using rule 21 (expr -> [ outerlist ] .)
+    GEQ             reduce using rule 21 (expr -> [ outerlist ] .)
+    >               reduce using rule 21 (expr -> [ outerlist ] .)
+    LEQ             reduce using rule 21 (expr -> [ outerlist ] .)
+    <               reduce using rule 21 (expr -> [ outerlist ] .)
+    MDIVIDE         reduce using rule 21 (expr -> [ outerlist ] .)
+    MTIMES          reduce using rule 21 (expr -> [ outerlist ] .)
+    MMINUS          reduce using rule 21 (expr -> [ outerlist ] .)
+    MPLUS           reduce using rule 21 (expr -> [ outerlist ] .)
+    /               reduce using rule 21 (expr -> [ outerlist ] .)
+    *               reduce using rule 21 (expr -> [ outerlist ] .)
+    -               reduce using rule 21 (expr -> [ outerlist ] .)
+    +               reduce using rule 21 (expr -> [ outerlist ] .)
+    ;               reduce using rule 21 (expr -> [ outerlist ] .)
+    {               reduce using rule 21 (expr -> [ outerlist ] .)
+    FOR             reduce using rule 21 (expr -> [ outerlist ] .)
+    WHILE           reduce using rule 21 (expr -> [ outerlist ] .)
+    IF              reduce using rule 21 (expr -> [ outerlist ] .)
+    PRINT           reduce using rule 21 (expr -> [ outerlist ] .)
+    ID              reduce using rule 21 (expr -> [ outerlist ] .)
+    EYE             reduce using rule 21 (expr -> [ outerlist ] .)
+    ONES            reduce using rule 21 (expr -> [ outerlist ] .)
+    ZEROS           reduce using rule 21 (expr -> [ outerlist ] .)
+    [               reduce using rule 21 (expr -> [ outerlist ] .)
+    STRING          reduce using rule 21 (expr -> [ outerlist ] .)
+    FLOAT           reduce using rule 21 (expr -> [ outerlist ] .)
+    INT             reduce using rule 21 (expr -> [ outerlist ] .)
+    (               reduce using rule 21 (expr -> [ outerlist ] .)
+    ELSE            reduce using rule 21 (expr -> [ outerlist ] .)
+    )               reduce using rule 21 (expr -> [ outerlist ] .)
+
+
+state 88
+
+    (44) outerlist -> outerlist , . [ innerlist ]
+    [               shift and go to state 99
+
+
+state 89
+
+    (4) statement -> FOR ID = range . block
+    (15) block -> . { start }
+    (16) block -> . statement
+    (4) statement -> . FOR ID = range block
+    (5) statement -> . WHILE expr block
+    (6) statement -> . IF expr block ELSE block
+    (7) statement -> . IF expr block
+    (8) statement -> . PRINT expr
+    (9) statement -> . expr
+    (10) statement -> . ID DASSIGN expr
+    (11) statement -> . ID TASSIGN expr
+    (12) statement -> . ID MASSIGN expr
+    (13) statement -> . ID PASSIGN expr
+    (14) statement -> . ID = expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    {               shift and go to state 61
+    FOR             shift and go to state 4
+    WHILE           shift and go to state 6
+    IF              shift and go to state 8
+    PRINT           shift and go to state 9
+    ID              shift and go to state 5
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    block                          shift and go to state 100
+    statement                      shift and go to state 62
+    expr                           shift and go to state 7
+
+state 90
+
+    (42) range -> INT . : INT
+    :               shift and go to state 101
+
+
+state 91
+
+    (40) expr -> expr - expr .
+    (33) expr -> - expr .
+    (25) expr -> expr . '
+    (27) expr -> expr . NEQ expr
+    (28) expr -> expr . EQ expr
+    (29) expr -> expr . GEQ expr
+    (30) expr -> expr . > expr
+    (31) expr -> expr . LEQ expr
+    (32) expr -> expr . < expr
+    (34) expr -> expr . MDIVIDE expr
+    (35) expr -> expr . MTIMES expr
+    (36) expr -> expr . MMINUS expr
+    (37) expr -> expr . MPLUS expr
+    (38) expr -> expr . / expr
+    (39) expr -> expr . * expr
+    (40) expr -> expr . - expr
+    (41) expr -> expr . + expr
+  ! reduce/reduce conflict for ' resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for NEQ resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for EQ resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for GEQ resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for > resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for LEQ resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for < resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for MDIVIDE resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for MTIMES resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for MMINUS resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for MPLUS resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for / resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for * resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for - resolved using rule 40 (expr -> expr - expr .)
+  ! reduce/reduce conflict for + resolved using rule 40 (expr -> expr - expr .)
+    NEQ             reduce using rule 40 (expr -> expr - expr .)
+    EQ              reduce using rule 40 (expr -> expr - expr .)
+    GEQ             reduce using rule 40 (expr -> expr - expr .)
+    >               reduce using rule 40 (expr -> expr - expr .)
+    LEQ             reduce using rule 40 (expr -> expr - expr .)
+    <               reduce using rule 40 (expr -> expr - expr .)
+    MMINUS          reduce using rule 40 (expr -> expr - expr .)
+    MPLUS           reduce using rule 40 (expr -> expr - expr .)
+    -               reduce using rule 40 (expr -> expr - expr .)
+    +               reduce using rule 40 (expr -> expr - expr .)
+    {               reduce using rule 40 (expr -> expr - expr .)
+    FOR             reduce using rule 40 (expr -> expr - expr .)
+    WHILE           reduce using rule 40 (expr -> expr - expr .)
+    IF              reduce using rule 40 (expr -> expr - expr .)
+    PRINT           reduce using rule 40 (expr -> expr - expr .)
+    ID              reduce using rule 40 (expr -> expr - expr .)
+    EYE             reduce using rule 40 (expr -> expr - expr .)
+    ONES            reduce using rule 40 (expr -> expr - expr .)
+    ZEROS           reduce using rule 40 (expr -> expr - expr .)
+    [               reduce using rule 40 (expr -> expr - expr .)
+    STRING          reduce using rule 40 (expr -> expr - expr .)
+    FLOAT           reduce using rule 40 (expr -> expr - expr .)
+    INT             reduce using rule 40 (expr -> expr - expr .)
+    (               reduce using rule 40 (expr -> expr - expr .)
+    ;               reduce using rule 33 (expr -> - expr .)
+    ELSE            reduce using rule 33 (expr -> - expr .)
+    '               shift and go to state 28
+    MDIVIDE         shift and go to state 35
+    MTIMES          shift and go to state 36
+    /               shift and go to state 39
+    *               shift and go to state 40
+
+
+state 92
+
+    (15) block -> { start . }
+    }               shift and go to state 102
+
+
+state 93
+
+    (6) statement -> IF expr block ELSE . block
+    (15) block -> . { start }
+    (16) block -> . statement
+    (4) statement -> . FOR ID = range block
+    (5) statement -> . WHILE expr block
+    (6) statement -> . IF expr block ELSE block
+    (7) statement -> . IF expr block
+    (8) statement -> . PRINT expr
+    (9) statement -> . expr
+    (10) statement -> . ID DASSIGN expr
+    (11) statement -> . ID TASSIGN expr
+    (12) statement -> . ID MASSIGN expr
+    (13) statement -> . ID PASSIGN expr
+    (14) statement -> . ID = expr
+    (17) expr -> . EYE ( expr )
+    (18) expr -> . ONES ( expr )
+    (19) expr -> . ZEROS ( expr )
+    (20) expr -> . ID
+    (21) expr -> . [ outerlist ]
+    (22) expr -> . STRING
+    (23) expr -> . FLOAT
+    (24) expr -> . INT
+    (25) expr -> . expr '
+    (26) expr -> . ( expr )
+    (27) expr -> . expr NEQ expr
+    (28) expr -> . expr EQ expr
+    (29) expr -> . expr GEQ expr
+    (30) expr -> . expr > expr
+    (31) expr -> . expr LEQ expr
+    (32) expr -> . expr < expr
+    (33) expr -> . - expr
+    (34) expr -> . expr MDIVIDE expr
+    (35) expr -> . expr MTIMES expr
+    (36) expr -> . expr MMINUS expr
+    (37) expr -> . expr MPLUS expr
+    (38) expr -> . expr / expr
+    (39) expr -> . expr * expr
+    (40) expr -> . expr - expr
+    (41) expr -> . expr + expr
+    {               shift and go to state 61
+    FOR             shift and go to state 4
+    WHILE           shift and go to state 6
+    IF              shift and go to state 8
+    PRINT           shift and go to state 9
+    ID              shift and go to state 5
+    EYE             shift and go to state 10
+    ONES            shift and go to state 12
+    ZEROS           shift and go to state 13
+    [               shift and go to state 14
+    STRING          shift and go to state 15
+    FLOAT           shift and go to state 16
+    INT             shift and go to state 17
+    (               shift and go to state 11
+    -               shift and go to state 18
+
+    expr                           shift and go to state 7
+    block                          shift and go to state 103
+    statement                      shift and go to state 62
+
+state 94
+
+    (17) expr -> EYE ( expr ) .
+    '               reduce using rule 17 (expr -> EYE ( expr ) .)
+    NEQ             reduce using rule 17 (expr -> EYE ( expr ) .)
+    EQ              reduce using rule 17 (expr -> EYE ( expr ) .)
+    GEQ             reduce using rule 17 (expr -> EYE ( expr ) .)
+    >               reduce using rule 17 (expr -> EYE ( expr ) .)
+    LEQ             reduce using rule 17 (expr -> EYE ( expr ) .)
+    <               reduce using rule 17 (expr -> EYE ( expr ) .)
+    MDIVIDE         reduce using rule 17 (expr -> EYE ( expr ) .)
+    MTIMES          reduce using rule 17 (expr -> EYE ( expr ) .)
+    MMINUS          reduce using rule 17 (expr -> EYE ( expr ) .)
+    MPLUS           reduce using rule 17 (expr -> EYE ( expr ) .)
+    /               reduce using rule 17 (expr -> EYE ( expr ) .)
+    *               reduce using rule 17 (expr -> EYE ( expr ) .)
+    -               reduce using rule 17 (expr -> EYE ( expr ) .)
+    +               reduce using rule 17 (expr -> EYE ( expr ) .)
+    ;               reduce using rule 17 (expr -> EYE ( expr ) .)
+    {               reduce using rule 17 (expr -> EYE ( expr ) .)
+    FOR             reduce using rule 17 (expr -> EYE ( expr ) .)
+    WHILE           reduce using rule 17 (expr -> EYE ( expr ) .)
+    IF              reduce using rule 17 (expr -> EYE ( expr ) .)
+    PRINT           reduce using rule 17 (expr -> EYE ( expr ) .)
+    ID              reduce using rule 17 (expr -> EYE ( expr ) .)
+    EYE             reduce using rule 17 (expr -> EYE ( expr ) .)
+    ONES            reduce using rule 17 (expr -> EYE ( expr ) .)
+    ZEROS           reduce using rule 17 (expr -> EYE ( expr ) .)
+    [               reduce using rule 17 (expr -> EYE ( expr ) .)
+    STRING          reduce using rule 17 (expr -> EYE ( expr ) .)
+    FLOAT           reduce using rule 17 (expr -> EYE ( expr ) .)
+    INT             reduce using rule 17 (expr -> EYE ( expr ) .)
+    (               reduce using rule 17 (expr -> EYE ( expr ) .)
+    ELSE            reduce using rule 17 (expr -> EYE ( expr ) .)
+    )               reduce using rule 17 (expr -> EYE ( expr ) .)
+
+
+state 95
+
+    (18) expr -> ONES ( expr ) .
+    '               reduce using rule 18 (expr -> ONES ( expr ) .)
+    NEQ             reduce using rule 18 (expr -> ONES ( expr ) .)
+    EQ              reduce using rule 18 (expr -> ONES ( expr ) .)
+    GEQ             reduce using rule 18 (expr -> ONES ( expr ) .)
+    >               reduce using rule 18 (expr -> ONES ( expr ) .)
+    LEQ             reduce using rule 18 (expr -> ONES ( expr ) .)
+    <               reduce using rule 18 (expr -> ONES ( expr ) .)
+    MDIVIDE         reduce using rule 18 (expr -> ONES ( expr ) .)
+    MTIMES          reduce using rule 18 (expr -> ONES ( expr ) .)
+    MMINUS          reduce using rule 18 (expr -> ONES ( expr ) .)
+    MPLUS           reduce using rule 18 (expr -> ONES ( expr ) .)
+    /               reduce using rule 18 (expr -> ONES ( expr ) .)
+    *               reduce using rule 18 (expr -> ONES ( expr ) .)
+    -               reduce using rule 18 (expr -> ONES ( expr ) .)
+    +               reduce using rule 18 (expr -> ONES ( expr ) .)
+    ;               reduce using rule 18 (expr -> ONES ( expr ) .)
+    {               reduce using rule 18 (expr -> ONES ( expr ) .)
+    FOR             reduce using rule 18 (expr -> ONES ( expr ) .)
+    WHILE           reduce using rule 18 (expr -> ONES ( expr ) .)
+    IF              reduce using rule 18 (expr -> ONES ( expr ) .)
+    PRINT           reduce using rule 18 (expr -> ONES ( expr ) .)
+    ID              reduce using rule 18 (expr -> ONES ( expr ) .)
+    EYE             reduce using rule 18 (expr -> ONES ( expr ) .)
+    ONES            reduce using rule 18 (expr -> ONES ( expr ) .)
+    ZEROS           reduce using rule 18 (expr -> ONES ( expr ) .)
+    [               reduce using rule 18 (expr -> ONES ( expr ) .)
+    STRING          reduce using rule 18 (expr -> ONES ( expr ) .)
+    FLOAT           reduce using rule 18 (expr -> ONES ( expr ) .)
+    INT             reduce using rule 18 (expr -> ONES ( expr ) .)
+    (               reduce using rule 18 (expr -> ONES ( expr ) .)
+    ELSE            reduce using rule 18 (expr -> ONES ( expr ) .)
+    )               reduce using rule 18 (expr -> ONES ( expr ) .)
+
+
+state 96
+
+    (19) expr -> ZEROS ( expr ) .
+    '               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    NEQ             reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    EQ              reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    GEQ             reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    >               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    LEQ             reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    <               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    MDIVIDE         reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    MTIMES          reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    MMINUS          reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    MPLUS           reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    /               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    *               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    -               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    +               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    ;               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    {               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    FOR             reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    WHILE           reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    IF              reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    PRINT           reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    ID              reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    EYE             reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    ONES            reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    ZEROS           reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    [               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    STRING          reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    FLOAT           reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    INT             reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    (               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    ELSE            reduce using rule 19 (expr -> ZEROS ( expr ) .)
+    )               reduce using rule 19 (expr -> ZEROS ( expr ) .)
+
+
+state 97
+
+    (43) outerlist -> [ innerlist ] .
+    ]               reduce using rule 43 (outerlist -> [ innerlist ] .)
+    ,               reduce using rule 43 (outerlist -> [ innerlist ] .)
+
+
+state 98
+
+    (46) innerlist -> innerlist , . elem
+    (47) elem -> . STRING
+    (48) elem -> . FLOAT
+    (49) elem -> . INT
+    STRING          shift and go to state 84
+    FLOAT           shift and go to state 85
+    INT             shift and go to state 86
+
+    elem                           shift and go to state 104
+
+state 99
+
+    (44) outerlist -> outerlist , [ . innerlist ]
+    (45) innerlist -> . elem
+    (46) innerlist -> . innerlist , elem
+    (47) elem -> . STRING
+    (48) elem -> . FLOAT
+    (49) elem -> . INT
+    STRING          shift and go to state 84
+    FLOAT           shift and go to state 85
+    INT             shift and go to state 86
+
+    innerlist                      shift and go to state 105
+    elem                           shift and go to state 83
+
+state 100
+
+    (4) statement -> FOR ID = range block .
+    ;               reduce using rule 4 (statement -> FOR ID = range block .)
+    ELSE            reduce using rule 4 (statement -> FOR ID = range block .)
+
+
+state 101
+
+    (42) range -> INT : . INT
+    INT             shift and go to state 106
+
+
+state 102
+
+    (15) block -> { start } .
+    ;               reduce using rule 15 (block -> { start } .)
+    ELSE            reduce using rule 15 (block -> { start } .)
+
+
+state 103
+
+    (6) statement -> IF expr block ELSE block .
+    ;               reduce using rule 6 (statement -> IF expr block ELSE block .)
+    ELSE            reduce using rule 6 (statement -> IF expr block ELSE block .)
+
+
+state 104
+
+    (46) innerlist -> innerlist , elem .
+    ]               reduce using rule 46 (innerlist -> innerlist , elem .)
+    ,               reduce using rule 46 (innerlist -> innerlist , elem .)
+
+
+state 105
+
+    (44) outerlist -> outerlist , [ innerlist . ]
+    (46) innerlist -> innerlist . , elem
+    ]               shift and go to state 107
+    ,               shift and go to state 98
+
+
+state 106
+
+    (42) range -> INT : INT .
+    {               reduce using rule 42 (range -> INT : INT .)
+    FOR             reduce using rule 42 (range -> INT : INT .)
+    WHILE           reduce using rule 42 (range -> INT : INT .)
+    IF              reduce using rule 42 (range -> INT : INT .)
+    PRINT           reduce using rule 42 (range -> INT : INT .)
+    ID              reduce using rule 42 (range -> INT : INT .)
+    EYE             reduce using rule 42 (range -> INT : INT .)
+    ONES            reduce using rule 42 (range -> INT : INT .)
+    ZEROS           reduce using rule 42 (range -> INT : INT .)
+    [               reduce using rule 42 (range -> INT : INT .)
+    STRING          reduce using rule 42 (range -> INT : INT .)
+    FLOAT           reduce using rule 42 (range -> INT : INT .)
+    INT             reduce using rule 42 (range -> INT : INT .)
+    (               reduce using rule 42 (range -> INT : INT .)
+    -               reduce using rule 42 (range -> INT : INT .)
+
+
+state 107
+
+    (44) outerlist -> outerlist , [ innerlist ] .
+    ]               reduce using rule 44 (outerlist -> outerlist , [ innerlist ] .)
+    ,               reduce using rule 44 (outerlist -> outerlist , [ innerlist ] .)
+
+
+Conflicts:
+
+shift/reduce conflict for ELSE in state 77 resolved as shift
+reduce/reduce conflict in state 91 resolved using rule expr -> expr - expr  [precedence=left, level=2]
+rejected rule (expr -> - expr  [precedence=right, level=5]) in state 91

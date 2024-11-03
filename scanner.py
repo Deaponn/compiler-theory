@@ -5,7 +5,7 @@ class Scanner(Lexer):
     # Set of token names.   This is always required
     tokens = { MPLUS, MMINUS, MTIMES, MDIVIDE,
                PASSIGN, MASSIGN, TASSIGN, DASSIGN,
-               LSS, LEQ, GTR, GEQ, EQ, NEQ,
+               LEQ, GEQ, EQ, NEQ,
                IF, ELSE, FOR, WHILE, BREAK, CONTINUE, RETURN,
                EYE, ZEROS, ONES, PRINT,
                ID, INT, FLOAT, STRING }

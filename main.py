@@ -14,7 +14,7 @@ if __name__ == '__main__':
     lexer = Scanner()
     parser = Parser()
 
-    # for tok in lexer.tokenize(text):
-    #     print(f"{tok.type} {tok.value} line {tok.lineno}")
+    for tok in lexer.tokenize(text):
+        print(f"{tok.type} {tok.value} line {tok.lineno}")
 
     parser.parse(lexer.tokenize(text))
