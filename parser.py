@@ -9,10 +9,11 @@ class Parser(SlyParser):
 
     precedence = (
         ("nonassoc", '<', LEQ, '>', GEQ, EQ, NEQ),
+        ("left", IF, WHILE, FOR),
         ("left", '+', MPLUS, '-', MMINUS),
         ("left", '*', MTIMES, '/', MDIVIDE),
-        ("left", '\''),
-        ('right', UMINUS),   
+        # ('right', ELSE, UMINUS, "\'"),
+        ('right', ELSE, "\'"),
     )
 
     def __init__(self):
@@ -69,10 +70,15 @@ class Parser(SlyParser):
         #     raise
         # return p.expr0 + p.expr1
 
-    @_('"-" expr %prec UMINUS')
+    # @_('"-" expr %prec UMINUS')
+    # def expr(self, p):
+    #     pass
+        # return -p.expr
+
+
+    @_('"\'" expr %prec "\'"')
     def expr(self, p):
         pass
-        # return -p.expr
 
     @_('expr "<" expr', 'expr LEQ expr',
         'expr ">" expr', 'expr GEQ expr',

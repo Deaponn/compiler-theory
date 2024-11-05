@@ -5,9 +5,9 @@ Rule 1     empty -> <empty>
 Rule 2     start -> empty
 Rule 3     start -> statement ; start
 Rule 4     statement -> FOR ID = range block
-Rule 5     statement -> WHILE expr block
-Rule 6     statement -> IF expr block ELSE block
-Rule 7     statement -> IF expr block
+Rule 5     statement -> WHILE expr block  [precedence=left, level=2]
+Rule 6     statement -> IF expr block ELSE block  [precedence=right, level=5]
+Rule 7     statement -> IF expr block  [precedence=left, level=2]
 Rule 8     statement -> PRINT expr
 Rule 9     statement -> expr
 Rule 10    statement -> ID DASSIGN expr
@@ -25,7 +25,7 @@ Rule 21    expr -> [ outerlist ]
 Rule 22    expr -> STRING
 Rule 23    expr -> FLOAT
 Rule 24    expr -> INT
-Rule 25    expr -> expr '  [precedence=left, level=4]
+Rule 25    expr -> expr '  [precedence=right, level=5]
 Rule 26    expr -> ( expr )
 Rule 27    expr -> expr NEQ expr  [precedence=nonassoc, level=1]
 Rule 28    expr -> expr EQ expr  [precedence=nonassoc, level=1]
@@ -33,15 +33,15 @@ Rule 29    expr -> expr GEQ expr  [precedence=nonassoc, level=1]
 Rule 30    expr -> expr > expr  [precedence=nonassoc, level=1]
 Rule 31    expr -> expr LEQ expr  [precedence=nonassoc, level=1]
 Rule 32    expr -> expr < expr  [precedence=nonassoc, level=1]
-Rule 33    expr -> - expr  [precedence=right, level=5]
-Rule 34    expr -> expr MDIVIDE expr  [precedence=left, level=3]
-Rule 35    expr -> expr MTIMES expr  [precedence=left, level=3]
-Rule 36    expr -> expr MMINUS expr  [precedence=left, level=2]
-Rule 37    expr -> expr MPLUS expr  [precedence=left, level=2]
-Rule 38    expr -> expr / expr  [precedence=left, level=3]
-Rule 39    expr -> expr * expr  [precedence=left, level=3]
-Rule 40    expr -> expr - expr  [precedence=left, level=2]
-Rule 41    expr -> expr + expr  [precedence=left, level=2]
+Rule 33    expr -> ' expr  [precedence=right, level=5]
+Rule 34    expr -> expr MDIVIDE expr  [precedence=left, level=4]
+Rule 35    expr -> expr MTIMES expr  [precedence=left, level=4]
+Rule 36    expr -> expr MMINUS expr  [precedence=left, level=3]
+Rule 37    expr -> expr MPLUS expr  [precedence=left, level=3]
+Rule 38    expr -> expr / expr  [precedence=left, level=4]
+Rule 39    expr -> expr * expr  [precedence=left, level=4]
+Rule 40    expr -> expr - expr  [precedence=left, level=3]
+Rule 41    expr -> expr + expr  [precedence=left, level=3]
 Rule 42    range -> INT : INT
 Rule 43    outerlist -> [ innerlist ]
 Rule 44    outerlist -> outerlist , [ innerlist ]
@@ -59,13 +59,13 @@ Unused terminals:
 
 Terminals, with rules where they appear:
 
-'                    : 25
+'                    : 25 33
 (                    : 17 18 19 26
 )                    : 17 18 19 26
 *                    : 39
 +                    : 41
 ,                    : 44 46
--                    : 33 40
+-                    : 40
 /                    : 38
 :                    : 42
 ;                    : 3
@@ -151,7 +151,7 @@ state 0
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -174,7 +174,7 @@ state 0
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     start                          shift and go to state 1
     empty                          shift and go to state 2
@@ -256,7 +256,7 @@ state 6
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -274,7 +274,7 @@ state 6
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 26
 
@@ -335,7 +335,7 @@ state 8
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -353,7 +353,7 @@ state 8
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 43
 
@@ -376,7 +376,7 @@ state 9
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -394,7 +394,7 @@ state 9
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 44
 
@@ -423,7 +423,7 @@ state 11
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -441,7 +441,7 @@ state 11
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 46
 
@@ -579,7 +579,7 @@ state 17
 
 state 18
 
-    (33) expr -> - . expr
+    (33) expr -> ' . expr
     (17) expr -> . EYE ( expr )
     (18) expr -> . ONES ( expr )
     (19) expr -> . ZEROS ( expr )
@@ -596,7 +596,7 @@ state 18
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -614,7 +614,7 @@ state 18
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 51
 
@@ -651,7 +651,7 @@ state 19
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -675,7 +675,7 @@ state 19
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     statement                      shift and go to state 3
     start                          shift and go to state 52
@@ -707,7 +707,7 @@ state 21
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -725,7 +725,7 @@ state 21
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 54
 
@@ -748,7 +748,7 @@ state 22
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -766,7 +766,7 @@ state 22
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 55
 
@@ -789,7 +789,7 @@ state 23
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -807,7 +807,7 @@ state 23
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 56
 
@@ -830,7 +830,7 @@ state 24
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -848,7 +848,7 @@ state 24
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 57
 
@@ -871,7 +871,7 @@ state 25
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -889,7 +889,7 @@ state 25
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 58
 
@@ -940,7 +940,7 @@ state 26
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -949,7 +949,7 @@ state 26
     (39) expr -> . expr * expr
     (40) expr -> . expr - expr
     (41) expr -> . expr + expr
-    '               shift and go to state 28
+    '               shift and go to state 60
     NEQ             shift and go to state 29
     EQ              shift and go to state 30
     GEQ             shift and go to state 31
@@ -962,7 +962,7 @@ state 26
     MPLUS           shift and go to state 38
     /               shift and go to state 39
     *               shift and go to state 40
-    -               shift and go to state 60
+    -               shift and go to state 41
     +               shift and go to state 42
     {               shift and go to state 61
     FOR             shift and go to state 4
@@ -1039,6 +1039,8 @@ state 28
     -               reduce using rule 25 (expr -> expr ' .)
     +               reduce using rule 25 (expr -> expr ' .)
     ;               reduce using rule 25 (expr -> expr ' .)
+    ELSE            reduce using rule 25 (expr -> expr ' .)
+    )               reduce using rule 25 (expr -> expr ' .)
     {               reduce using rule 25 (expr -> expr ' .)
     FOR             reduce using rule 25 (expr -> expr ' .)
     WHILE           reduce using rule 25 (expr -> expr ' .)
@@ -1053,8 +1055,6 @@ state 28
     FLOAT           reduce using rule 25 (expr -> expr ' .)
     INT             reduce using rule 25 (expr -> expr ' .)
     (               reduce using rule 25 (expr -> expr ' .)
-    ELSE            reduce using rule 25 (expr -> expr ' .)
-    )               reduce using rule 25 (expr -> expr ' .)
 
 
 state 29
@@ -1076,7 +1076,7 @@ state 29
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1094,7 +1094,7 @@ state 29
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 63
 
@@ -1117,7 +1117,7 @@ state 30
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1135,7 +1135,7 @@ state 30
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 64
 
@@ -1158,7 +1158,7 @@ state 31
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1176,7 +1176,7 @@ state 31
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 65
 
@@ -1199,7 +1199,7 @@ state 32
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1217,7 +1217,7 @@ state 32
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 66
 
@@ -1240,7 +1240,7 @@ state 33
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1258,7 +1258,7 @@ state 33
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 67
 
@@ -1281,7 +1281,7 @@ state 34
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1299,7 +1299,7 @@ state 34
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 68
 
@@ -1322,7 +1322,7 @@ state 35
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1340,7 +1340,7 @@ state 35
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 69
 
@@ -1363,7 +1363,7 @@ state 36
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1381,7 +1381,7 @@ state 36
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 70
 
@@ -1404,7 +1404,7 @@ state 37
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1422,7 +1422,7 @@ state 37
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 71
 
@@ -1445,7 +1445,7 @@ state 38
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1463,7 +1463,7 @@ state 38
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 72
 
@@ -1486,7 +1486,7 @@ state 39
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1504,7 +1504,7 @@ state 39
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 73
 
@@ -1527,7 +1527,7 @@ state 40
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1545,7 +1545,7 @@ state 40
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 74
 
@@ -1568,7 +1568,7 @@ state 41
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1586,7 +1586,7 @@ state 41
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 75
 
@@ -1609,7 +1609,7 @@ state 42
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1627,7 +1627,7 @@ state 42
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 76
 
@@ -1679,7 +1679,7 @@ state 43
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1688,7 +1688,7 @@ state 43
     (39) expr -> . expr * expr
     (40) expr -> . expr - expr
     (41) expr -> . expr + expr
-    '               shift and go to state 28
+    '               shift and go to state 60
     NEQ             shift and go to state 29
     EQ              shift and go to state 30
     GEQ             shift and go to state 31
@@ -1701,7 +1701,7 @@ state 43
     MPLUS           shift and go to state 38
     /               shift and go to state 39
     *               shift and go to state 40
-    -               shift and go to state 60
+    -               shift and go to state 41
     +               shift and go to state 42
     {               shift and go to state 61
     FOR             shift and go to state 4
@@ -1778,7 +1778,7 @@ state 45
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1796,7 +1796,7 @@ state 45
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 78
 
@@ -1855,7 +1855,7 @@ state 47
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1873,7 +1873,7 @@ state 47
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 80
 
@@ -1896,7 +1896,7 @@ state 48
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -1914,7 +1914,7 @@ state 48
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 81
 
@@ -1943,7 +1943,7 @@ state 50
 
 state 51
 
-    (33) expr -> - expr .
+    (33) expr -> ' expr .
     (25) expr -> expr . '
     (27) expr -> expr . NEQ expr
     (28) expr -> expr . EQ expr
@@ -1959,38 +1959,38 @@ state 51
     (39) expr -> expr . * expr
     (40) expr -> expr . - expr
     (41) expr -> expr . + expr
-    '               reduce using rule 33 (expr -> - expr .)
-    NEQ             reduce using rule 33 (expr -> - expr .)
-    EQ              reduce using rule 33 (expr -> - expr .)
-    GEQ             reduce using rule 33 (expr -> - expr .)
-    >               reduce using rule 33 (expr -> - expr .)
-    LEQ             reduce using rule 33 (expr -> - expr .)
-    <               reduce using rule 33 (expr -> - expr .)
-    MDIVIDE         reduce using rule 33 (expr -> - expr .)
-    MTIMES          reduce using rule 33 (expr -> - expr .)
-    MMINUS          reduce using rule 33 (expr -> - expr .)
-    MPLUS           reduce using rule 33 (expr -> - expr .)
-    /               reduce using rule 33 (expr -> - expr .)
-    *               reduce using rule 33 (expr -> - expr .)
-    -               reduce using rule 33 (expr -> - expr .)
-    +               reduce using rule 33 (expr -> - expr .)
-    ;               reduce using rule 33 (expr -> - expr .)
-    {               reduce using rule 33 (expr -> - expr .)
-    FOR             reduce using rule 33 (expr -> - expr .)
-    WHILE           reduce using rule 33 (expr -> - expr .)
-    IF              reduce using rule 33 (expr -> - expr .)
-    PRINT           reduce using rule 33 (expr -> - expr .)
-    ID              reduce using rule 33 (expr -> - expr .)
-    EYE             reduce using rule 33 (expr -> - expr .)
-    ONES            reduce using rule 33 (expr -> - expr .)
-    ZEROS           reduce using rule 33 (expr -> - expr .)
-    [               reduce using rule 33 (expr -> - expr .)
-    STRING          reduce using rule 33 (expr -> - expr .)
-    FLOAT           reduce using rule 33 (expr -> - expr .)
-    INT             reduce using rule 33 (expr -> - expr .)
-    (               reduce using rule 33 (expr -> - expr .)
-    ELSE            reduce using rule 33 (expr -> - expr .)
-    )               reduce using rule 33 (expr -> - expr .)
+    NEQ             reduce using rule 33 (expr -> ' expr .)
+    EQ              reduce using rule 33 (expr -> ' expr .)
+    GEQ             reduce using rule 33 (expr -> ' expr .)
+    >               reduce using rule 33 (expr -> ' expr .)
+    LEQ             reduce using rule 33 (expr -> ' expr .)
+    <               reduce using rule 33 (expr -> ' expr .)
+    MDIVIDE         reduce using rule 33 (expr -> ' expr .)
+    MTIMES          reduce using rule 33 (expr -> ' expr .)
+    MMINUS          reduce using rule 33 (expr -> ' expr .)
+    MPLUS           reduce using rule 33 (expr -> ' expr .)
+    /               reduce using rule 33 (expr -> ' expr .)
+    *               reduce using rule 33 (expr -> ' expr .)
+    -               reduce using rule 33 (expr -> ' expr .)
+    +               reduce using rule 33 (expr -> ' expr .)
+    ;               reduce using rule 33 (expr -> ' expr .)
+    {               reduce using rule 33 (expr -> ' expr .)
+    FOR             reduce using rule 33 (expr -> ' expr .)
+    WHILE           reduce using rule 33 (expr -> ' expr .)
+    IF              reduce using rule 33 (expr -> ' expr .)
+    PRINT           reduce using rule 33 (expr -> ' expr .)
+    ID              reduce using rule 33 (expr -> ' expr .)
+    EYE             reduce using rule 33 (expr -> ' expr .)
+    ONES            reduce using rule 33 (expr -> ' expr .)
+    ZEROS           reduce using rule 33 (expr -> ' expr .)
+    [               reduce using rule 33 (expr -> ' expr .)
+    STRING          reduce using rule 33 (expr -> ' expr .)
+    FLOAT           reduce using rule 33 (expr -> ' expr .)
+    INT             reduce using rule 33 (expr -> ' expr .)
+    (               reduce using rule 33 (expr -> ' expr .)
+    ELSE            reduce using rule 33 (expr -> ' expr .)
+    )               reduce using rule 33 (expr -> ' expr .)
+    '               shift and go to state 28
 
 
 state 52
@@ -2202,8 +2202,8 @@ state 59
 
 state 60
 
-    (40) expr -> expr - . expr
-    (33) expr -> - . expr
+    (25) expr -> expr ' .
+    (33) expr -> ' . expr
     (17) expr -> . EYE ( expr )
     (18) expr -> . ONES ( expr )
     (19) expr -> . ZEROS ( expr )
@@ -2220,7 +2220,7 @@ state 60
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -2229,18 +2229,37 @@ state 60
     (39) expr -> . expr * expr
     (40) expr -> . expr - expr
     (41) expr -> . expr + expr
-    EYE             shift and go to state 10
-    ONES            shift and go to state 12
-    ZEROS           shift and go to state 13
-    ID              shift and go to state 27
-    [               shift and go to state 14
-    STRING          shift and go to state 15
-    FLOAT           shift and go to state 16
-    INT             shift and go to state 17
-    (               shift and go to state 11
-    -               shift and go to state 18
+    NEQ             reduce using rule 25 (expr -> expr ' .)
+    EQ              reduce using rule 25 (expr -> expr ' .)
+    GEQ             reduce using rule 25 (expr -> expr ' .)
+    >               reduce using rule 25 (expr -> expr ' .)
+    LEQ             reduce using rule 25 (expr -> expr ' .)
+    <               reduce using rule 25 (expr -> expr ' .)
+    MDIVIDE         reduce using rule 25 (expr -> expr ' .)
+    MTIMES          reduce using rule 25 (expr -> expr ' .)
+    MMINUS          reduce using rule 25 (expr -> expr ' .)
+    MPLUS           reduce using rule 25 (expr -> expr ' .)
+    /               reduce using rule 25 (expr -> expr ' .)
+    *               reduce using rule 25 (expr -> expr ' .)
+    -               reduce using rule 25 (expr -> expr ' .)
+    +               reduce using rule 25 (expr -> expr ' .)
+    {               reduce using rule 25 (expr -> expr ' .)
+    FOR             reduce using rule 25 (expr -> expr ' .)
+    WHILE           reduce using rule 25 (expr -> expr ' .)
+    IF              reduce using rule 25 (expr -> expr ' .)
+    PRINT           reduce using rule 25 (expr -> expr ' .)
+    ID              reduce using rule 25 (expr -> expr ' .)
+    EYE             reduce using rule 25 (expr -> expr ' .)
+    ONES            reduce using rule 25 (expr -> expr ' .)
+    ZEROS           reduce using rule 25 (expr -> expr ' .)
+    [               reduce using rule 25 (expr -> expr ' .)
+    STRING          reduce using rule 25 (expr -> expr ' .)
+    FLOAT           reduce using rule 25 (expr -> expr ' .)
+    INT             reduce using rule 25 (expr -> expr ' .)
+    (               reduce using rule 25 (expr -> expr ' .)
+    '               shift and go to state 18
 
-    expr                           shift and go to state 91
+    expr                           shift and go to state 51
 
 state 61
 
@@ -2275,7 +2294,7 @@ state 61
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -2298,9 +2317,9 @@ state 61
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
-    start                          shift and go to state 92
+    start                          shift and go to state 91
     empty                          shift and go to state 2
     statement                      shift and go to state 3
     expr                           shift and go to state 7
@@ -2965,8 +2984,6 @@ state 75
     -               reduce using rule 40 (expr -> expr - expr .)
     +               reduce using rule 40 (expr -> expr - expr .)
     ;               reduce using rule 40 (expr -> expr - expr .)
-    ELSE            reduce using rule 40 (expr -> expr - expr .)
-    )               reduce using rule 40 (expr -> expr - expr .)
     {               reduce using rule 40 (expr -> expr - expr .)
     FOR             reduce using rule 40 (expr -> expr - expr .)
     WHILE           reduce using rule 40 (expr -> expr - expr .)
@@ -2981,6 +2998,8 @@ state 75
     FLOAT           reduce using rule 40 (expr -> expr - expr .)
     INT             reduce using rule 40 (expr -> expr - expr .)
     (               reduce using rule 40 (expr -> expr - expr .)
+    ELSE            reduce using rule 40 (expr -> expr - expr .)
+    )               reduce using rule 40 (expr -> expr - expr .)
     '               shift and go to state 28
     MDIVIDE         shift and go to state 35
     MTIMES          shift and go to state 36
@@ -3044,8 +3063,7 @@ state 77
 
     (6) statement -> IF expr block . ELSE block
     (7) statement -> IF expr block .
-  ! shift/reduce conflict for ELSE resolved as shift
-    ELSE            shift and go to state 93
+    ELSE            shift and go to state 92
     ;               reduce using rule 7 (statement -> IF expr block .)
 
 
@@ -3067,7 +3085,7 @@ state 78
     (39) expr -> expr . * expr
     (40) expr -> expr . - expr
     (41) expr -> expr . + expr
-    )               shift and go to state 94
+    )               shift and go to state 93
     '               shift and go to state 28
     NEQ             shift and go to state 29
     EQ              shift and go to state 30
@@ -3140,7 +3158,7 @@ state 80
     (39) expr -> expr . * expr
     (40) expr -> expr . - expr
     (41) expr -> expr . + expr
-    )               shift and go to state 95
+    )               shift and go to state 94
     '               shift and go to state 28
     NEQ             shift and go to state 29
     EQ              shift and go to state 30
@@ -3176,7 +3194,7 @@ state 81
     (39) expr -> expr . * expr
     (40) expr -> expr . - expr
     (41) expr -> expr . + expr
-    )               shift and go to state 96
+    )               shift and go to state 95
     '               shift and go to state 28
     NEQ             shift and go to state 29
     EQ              shift and go to state 30
@@ -3198,8 +3216,8 @@ state 82
 
     (43) outerlist -> [ innerlist . ]
     (46) innerlist -> innerlist . , elem
-    ]               shift and go to state 97
-    ,               shift and go to state 98
+    ]               shift and go to state 96
+    ,               shift and go to state 97
 
 
 state 83
@@ -3270,7 +3288,7 @@ state 87
 state 88
 
     (44) outerlist -> outerlist , . [ innerlist ]
-    [               shift and go to state 99
+    [               shift and go to state 98
 
 
 state 89
@@ -3305,7 +3323,7 @@ state 89
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -3328,92 +3346,25 @@ state 89
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
-    block                          shift and go to state 100
+    block                          shift and go to state 99
     statement                      shift and go to state 62
     expr                           shift and go to state 7
 
 state 90
 
     (42) range -> INT . : INT
-    :               shift and go to state 101
+    :               shift and go to state 100
 
 
 state 91
 
-    (40) expr -> expr - expr .
-    (33) expr -> - expr .
-    (25) expr -> expr . '
-    (27) expr -> expr . NEQ expr
-    (28) expr -> expr . EQ expr
-    (29) expr -> expr . GEQ expr
-    (30) expr -> expr . > expr
-    (31) expr -> expr . LEQ expr
-    (32) expr -> expr . < expr
-    (34) expr -> expr . MDIVIDE expr
-    (35) expr -> expr . MTIMES expr
-    (36) expr -> expr . MMINUS expr
-    (37) expr -> expr . MPLUS expr
-    (38) expr -> expr . / expr
-    (39) expr -> expr . * expr
-    (40) expr -> expr . - expr
-    (41) expr -> expr . + expr
-  ! reduce/reduce conflict for ' resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for NEQ resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for EQ resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for GEQ resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for > resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for LEQ resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for < resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for MDIVIDE resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for MTIMES resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for MMINUS resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for MPLUS resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for / resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for * resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for - resolved using rule 40 (expr -> expr - expr .)
-  ! reduce/reduce conflict for + resolved using rule 40 (expr -> expr - expr .)
-    NEQ             reduce using rule 40 (expr -> expr - expr .)
-    EQ              reduce using rule 40 (expr -> expr - expr .)
-    GEQ             reduce using rule 40 (expr -> expr - expr .)
-    >               reduce using rule 40 (expr -> expr - expr .)
-    LEQ             reduce using rule 40 (expr -> expr - expr .)
-    <               reduce using rule 40 (expr -> expr - expr .)
-    MMINUS          reduce using rule 40 (expr -> expr - expr .)
-    MPLUS           reduce using rule 40 (expr -> expr - expr .)
-    -               reduce using rule 40 (expr -> expr - expr .)
-    +               reduce using rule 40 (expr -> expr - expr .)
-    {               reduce using rule 40 (expr -> expr - expr .)
-    FOR             reduce using rule 40 (expr -> expr - expr .)
-    WHILE           reduce using rule 40 (expr -> expr - expr .)
-    IF              reduce using rule 40 (expr -> expr - expr .)
-    PRINT           reduce using rule 40 (expr -> expr - expr .)
-    ID              reduce using rule 40 (expr -> expr - expr .)
-    EYE             reduce using rule 40 (expr -> expr - expr .)
-    ONES            reduce using rule 40 (expr -> expr - expr .)
-    ZEROS           reduce using rule 40 (expr -> expr - expr .)
-    [               reduce using rule 40 (expr -> expr - expr .)
-    STRING          reduce using rule 40 (expr -> expr - expr .)
-    FLOAT           reduce using rule 40 (expr -> expr - expr .)
-    INT             reduce using rule 40 (expr -> expr - expr .)
-    (               reduce using rule 40 (expr -> expr - expr .)
-    ;               reduce using rule 33 (expr -> - expr .)
-    ELSE            reduce using rule 33 (expr -> - expr .)
-    '               shift and go to state 28
-    MDIVIDE         shift and go to state 35
-    MTIMES          shift and go to state 36
-    /               shift and go to state 39
-    *               shift and go to state 40
+    (15) block -> { start . }
+    }               shift and go to state 101
 
 
 state 92
-
-    (15) block -> { start . }
-    }               shift and go to state 102
-
-
-state 93
 
     (6) statement -> IF expr block ELSE . block
     (15) block -> . { start }
@@ -3445,7 +3396,7 @@ state 93
     (30) expr -> . expr > expr
     (31) expr -> . expr LEQ expr
     (32) expr -> . expr < expr
-    (33) expr -> . - expr
+    (33) expr -> . ' expr
     (34) expr -> . expr MDIVIDE expr
     (35) expr -> . expr MTIMES expr
     (36) expr -> . expr MMINUS expr
@@ -3468,13 +3419,13 @@ state 93
     FLOAT           shift and go to state 16
     INT             shift and go to state 17
     (               shift and go to state 11
-    -               shift and go to state 18
+    '               shift and go to state 18
 
     expr                           shift and go to state 7
-    block                          shift and go to state 103
+    block                          shift and go to state 102
     statement                      shift and go to state 62
 
-state 94
+state 93
 
     (17) expr -> EYE ( expr ) .
     '               reduce using rule 17 (expr -> EYE ( expr ) .)
@@ -3511,7 +3462,7 @@ state 94
     )               reduce using rule 17 (expr -> EYE ( expr ) .)
 
 
-state 95
+state 94
 
     (18) expr -> ONES ( expr ) .
     '               reduce using rule 18 (expr -> ONES ( expr ) .)
@@ -3548,7 +3499,7 @@ state 95
     )               reduce using rule 18 (expr -> ONES ( expr ) .)
 
 
-state 96
+state 95
 
     (19) expr -> ZEROS ( expr ) .
     '               reduce using rule 19 (expr -> ZEROS ( expr ) .)
@@ -3585,14 +3536,14 @@ state 96
     )               reduce using rule 19 (expr -> ZEROS ( expr ) .)
 
 
-state 97
+state 96
 
     (43) outerlist -> [ innerlist ] .
     ]               reduce using rule 43 (outerlist -> [ innerlist ] .)
     ,               reduce using rule 43 (outerlist -> [ innerlist ] .)
 
 
-state 98
+state 97
 
     (46) innerlist -> innerlist , . elem
     (47) elem -> . STRING
@@ -3602,9 +3553,9 @@ state 98
     FLOAT           shift and go to state 85
     INT             shift and go to state 86
 
-    elem                           shift and go to state 104
+    elem                           shift and go to state 103
 
-state 99
+state 98
 
     (44) outerlist -> outerlist , [ . innerlist ]
     (45) innerlist -> . elem
@@ -3616,52 +3567,52 @@ state 99
     FLOAT           shift and go to state 85
     INT             shift and go to state 86
 
-    innerlist                      shift and go to state 105
+    innerlist                      shift and go to state 104
     elem                           shift and go to state 83
 
-state 100
+state 99
 
     (4) statement -> FOR ID = range block .
     ;               reduce using rule 4 (statement -> FOR ID = range block .)
     ELSE            reduce using rule 4 (statement -> FOR ID = range block .)
 
 
-state 101
+state 100
 
     (42) range -> INT : . INT
-    INT             shift and go to state 106
+    INT             shift and go to state 105
 
 
-state 102
+state 101
 
     (15) block -> { start } .
     ;               reduce using rule 15 (block -> { start } .)
     ELSE            reduce using rule 15 (block -> { start } .)
 
 
-state 103
+state 102
 
     (6) statement -> IF expr block ELSE block .
     ;               reduce using rule 6 (statement -> IF expr block ELSE block .)
     ELSE            reduce using rule 6 (statement -> IF expr block ELSE block .)
 
 
-state 104
+state 103
 
     (46) innerlist -> innerlist , elem .
     ]               reduce using rule 46 (innerlist -> innerlist , elem .)
     ,               reduce using rule 46 (innerlist -> innerlist , elem .)
 
 
-state 105
+state 104
 
     (44) outerlist -> outerlist , [ innerlist . ]
     (46) innerlist -> innerlist . , elem
-    ]               shift and go to state 107
-    ,               shift and go to state 98
+    ]               shift and go to state 106
+    ,               shift and go to state 97
 
 
-state 106
+state 105
 
     (42) range -> INT : INT .
     {               reduce using rule 42 (range -> INT : INT .)
@@ -3678,18 +3629,11 @@ state 106
     FLOAT           reduce using rule 42 (range -> INT : INT .)
     INT             reduce using rule 42 (range -> INT : INT .)
     (               reduce using rule 42 (range -> INT : INT .)
-    -               reduce using rule 42 (range -> INT : INT .)
+    '               reduce using rule 42 (range -> INT : INT .)
 
 
-state 107
+state 106
 
     (44) outerlist -> outerlist , [ innerlist ] .
     ]               reduce using rule 44 (outerlist -> outerlist , [ innerlist ] .)
     ,               reduce using rule 44 (outerlist -> outerlist , [ innerlist ] .)
-
-
-Conflicts:
-
-shift/reduce conflict for ELSE in state 77 resolved as shift
-reduce/reduce conflict in state 91 resolved using rule expr -> expr - expr  [precedence=left, level=2]
-rejected rule (expr -> - expr  [precedence=right, level=5]) in state 91
