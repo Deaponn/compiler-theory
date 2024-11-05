@@ -23,7 +23,7 @@ class Parser(SlyParser):
     def empty(self, p):
         pass
 
-    @_('statement start')
+    @_('statement start', '"{" start "}" start')
     def start(self, p):
         pass
         # return p.statement
@@ -32,37 +32,41 @@ class Parser(SlyParser):
     def start(self, p):
         pass
 
-    @_('ID "=" expr ";"', 'ID PASSIGN expr ";"', 'ID MASSIGN expr ";"',
-        'ID TASSIGN expr ";"', 'ID DASSIGN expr ";"', 'RETURN')
+    @_('left_assign "=" expr ";"', 'left_assign PASSIGN expr ";"', 'left_assign MASSIGN expr ";"',
+        'left_assign TASSIGN expr ";"', 'left_assign DASSIGN expr ";"', 'RETURN expr ";"', 'CONTINUE ";"', 'BREAK ";"')
     def statement(self, p):
         pass
         # print("def statement, id = expr")
         # self.names[p.ID] = p.expr
+
+    @_('ID', 'ID "[" indexes "]"')
+    def left_assign(self, p):
+        pass
+
+    @_('INT "," indexes', 'INT')
+    def indexes(self, p):
+        pass
 
     @_('expr ";"')
     def statement(self, p):
         pass
         # print("def statement, expr", p.expr)
 
-    @_('PRINT expr ";"')
+    @_('PRINT values')
     def statement(self, p):
         pass
 
-    @_('IF expr ifblock', 'IF expr ifblock ELSE ifblock',
-        'WHILE expr loopblock', 'FOR ID "=" range loopblock')
+    @_('expr "," values', 'expr ";"')
+    def values(self, p):
+        pass
+
+    @_('IF expr block', 'IF expr block ELSE block',
+        'WHILE expr block', 'FOR ID "=" range block')
     def statement(self, p):
         pass
 
     @_('statement', '"{" start "}"')
-    def ifblock(self, p):
-        pass
-
-    @_('statement', '"{" loopstart "}"')
-    def loopblock(self, p):
-        pass
-
-    @_('statement loopstart', 'CONTINUE ";"', 'BREAK ";"', 'empty')
-    def loopstart(self, p):
+    def block(self, p):
         pass
 
     @_('expr "+" expr', 'expr "-" expr',
