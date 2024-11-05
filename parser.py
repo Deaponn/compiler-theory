@@ -23,7 +23,7 @@ class Parser(SlyParser):
     def empty(self, p):
         pass
 
-    @_('statement ";" start')
+    @_('statement start')
     def start(self, p):
         pass
         # return p.statement
@@ -32,29 +32,37 @@ class Parser(SlyParser):
     def start(self, p):
         pass
 
-    @_('ID "=" expr', 'ID PASSIGN expr', 'ID MASSIGN expr',
-        'ID TASSIGN expr', 'ID DASSIGN expr')
+    @_('ID "=" expr ";"', 'ID PASSIGN expr ";"', 'ID MASSIGN expr ";"',
+        'ID TASSIGN expr ";"', 'ID DASSIGN expr ";"', 'RETURN')
     def statement(self, p):
         pass
         # print("def statement, id = expr")
         # self.names[p.ID] = p.expr
 
-    @_('expr')
+    @_('expr ";"')
     def statement(self, p):
         pass
         # print("def statement, expr", p.expr)
 
-    @_('PRINT expr')
+    @_('PRINT expr ";"')
     def statement(self, p):
         pass
 
-    @_('IF expr block', 'IF expr block ELSE block',
-        'WHILE expr block', 'FOR ID "=" range block')
+    @_('IF expr ifblock', 'IF expr ifblock ELSE ifblock',
+        'WHILE expr loopblock', 'FOR ID "=" range loopblock')
     def statement(self, p):
         pass
 
     @_('statement', '"{" start "}"')
-    def block(self, p):
+    def ifblock(self, p):
+        pass
+
+    @_('statement', '"{" loopstart "}"')
+    def loopblock(self, p):
+        pass
+
+    @_('statement loopstart', 'CONTINUE ";"', 'BREAK ";"', 'empty')
+    def loopstart(self, p):
         pass
 
     @_('expr "+" expr', 'expr "-" expr',
@@ -99,7 +107,7 @@ class Parser(SlyParser):
         #     raise
         # return p.expr.T
 
-    @_('INT ":" INT')
+    @_('INT ":" INT', 'ID ":" ID', 'ID ":" INT', 'INT ":" ID')
     def range(self, p):
         pass
 
