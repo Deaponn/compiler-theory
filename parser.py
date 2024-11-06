@@ -8,28 +8,28 @@ class Parser(SlyParser):
     debugfile = 'parser.out'
 
     precedence = (
+        ("nonassoc", IFX),
+        ("nonassoc", ELSE),
         ("nonassoc", '<', LEQ, '>', GEQ, EQ, NEQ),
-        ("left", IF, WHILE, FOR),
         ("left", '+', MPLUS, '-', MMINUS),
         ("left", '*', MTIMES, '/', MDIVIDE),
-        # ('right', ELSE, UMINUS, "\'"),
-        ('right', ELSE, "\'"),
+        ('right', UMINUS, "\'"),
     )
 
     def __init__(self):
         self.names = { }
 
-    @_('')
-    def empty(self, p):
-        pass
-
-    @_('statement start', '"{" start "}" start')
+    @_('block start', 'block')
     def start(self, p):
         pass
         # return p.statement
-    
-    @_('empty')
-    def start(self, p):
+
+    @_('statement', '"{" next_statements "}"')
+    def block(self, p):
+        pass
+
+    @_('statement next_statements', 'statement')
+    def next_statements(self, p):
         pass
 
     @_('left_assign "=" expr ";"', 'left_assign PASSIGN expr ";"', 'left_assign MASSIGN expr ";"',
@@ -47,26 +47,17 @@ class Parser(SlyParser):
     def indexes(self, p):
         pass
 
-    @_('expr ";"')
-    def statement(self, p):
-        pass
-        # print("def statement, expr", p.expr)
-
-    @_('PRINT values')
+    @_('PRINT values ";"')
     def statement(self, p):
         pass
 
-    @_('expr "," values', 'expr ";"')
+    @_('expr "," values', 'expr')
     def values(self, p):
         pass
 
-    @_('IF expr block', 'IF expr block ELSE block',
+    @_('IF expr block %prec IFX', 'IF expr block ELSE block',
         'WHILE expr block', 'FOR ID "=" range block')
     def statement(self, p):
-        pass
-
-    @_('statement', '"{" start "}"')
-    def block(self, p):
         pass
 
     @_('expr "+" expr', 'expr "-" expr',
@@ -82,11 +73,10 @@ class Parser(SlyParser):
         #     raise
         # return p.expr0 + p.expr1
 
-    # @_('"-" expr %prec UMINUS')
-    # def expr(self, p):
-    #     pass
+    @_('"-" expr %prec UMINUS')
+    def expr(self, p):
+        pass
         # return -p.expr
-
 
     @_('"\'" expr %prec "\'"')
     def expr(self, p):
@@ -111,7 +101,7 @@ class Parser(SlyParser):
         #     raise
         # return p.expr.T
 
-    @_('INT ":" INT', 'ID ":" ID', 'ID ":" INT', 'INT ":" ID')
+    @_('expr ":" expr')
     def range(self, p):
         pass
 
@@ -124,24 +114,8 @@ class Parser(SlyParser):
     def expr(self, p):
         pass
 
-    @_('outerlist "," "[" innerlist "]"')
+    @_('outerlist "," "[" values "]"', '"[" values "]"')
     def outerlist(self, p):
-        pass
-
-    @_('"[" innerlist "]"')
-    def outerlist(self, p):
-        pass
-
-    @_('innerlist "," elem')
-    def innerlist(self, p):
-        pass
-
-    @_('elem')
-    def innerlist(self, p):
-        pass
-
-    @_('INT', 'FLOAT', 'STRING')
-    def elem(self, p):
         pass
 
     @_('ID')
