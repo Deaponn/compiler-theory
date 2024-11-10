@@ -32,9 +32,13 @@ class Parser(SlyParser):
     def next_statements(self, p):
         pass
 
-    @_('left_assign "=" expr ";"', 'left_assign PASSIGN expr ";"', 'left_assign MASSIGN expr ";"',
-        'left_assign TASSIGN expr ";"', 'left_assign DASSIGN expr ";"', 'RETURN expr ";"', 'CONTINUE ";"', 'BREAK ";"')
+    @_('action_statement ";"', 'flow_control_statement')
     def statement(self, p):
+        pass
+
+    @_('left_assign "=" expr', 'left_assign PASSIGN expr', 'left_assign MASSIGN expr',
+        'left_assign TASSIGN expr', 'left_assign DASSIGN expr', 'RETURN expr', 'CONTINUE', 'BREAK')
+    def action_statement(self, p):
         pass
         # print("def statement, id = expr")
         # self.names[p.ID] = p.expr
@@ -47,8 +51,8 @@ class Parser(SlyParser):
     def indexes(self, p):
         pass
 
-    @_('PRINT values ";"')
-    def statement(self, p):
+    @_('PRINT values')
+    def action_statement(self, p):
         pass
 
     @_('expr "," values', 'expr')
@@ -57,7 +61,7 @@ class Parser(SlyParser):
 
     @_('IF expr block %prec IFX', 'IF expr block ELSE block',
         'WHILE expr block', 'FOR ID "=" range block')
-    def statement(self, p):
+    def flow_control_statement(self, p):
         pass
 
     @_('expr "+" expr', 'expr "-" expr',
