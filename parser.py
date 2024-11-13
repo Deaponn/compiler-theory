@@ -2,6 +2,8 @@ from sly import Parser as SlyParser
 from scanner import Scanner
 from AST import *
 
+# TODO: change if "..." in p._namemap to something better
+
 class Parser(SlyParser):
 
     tokens = Scanner.tokens
@@ -22,22 +24,21 @@ class Parser(SlyParser):
 
     @_('block start', 'block')
     def start(self, p):
-        if "start" in p:
+        if "start" in p._namemap:
             return StartNode(p.block, p.start)
         else:
             return StartNode(p.block)
 
-    @_('statement')
+    @_('statement', '"{" next_statements "}"')
     def block(self, p):
-        return Statement(p.statement)
-
-    @_('"{" next_statements "}"')
-    def block(self, p):
-        return p.next_statements
+        if "statement" in p._namemap:
+            return Statement(p.statement)
+        else:
+            return p.next_statements
 
     @_('statement next_statements', 'statement')
     def next_statements(self, p):
-        if "next_statements" in p:
+        if "next_statements" in p._namemap:
             return Statement(p.statement, p.next_statements)
         else:
             return Statement(p.statement)
@@ -51,10 +52,10 @@ class Parser(SlyParser):
     def action_statement(self, p):
         if len(p) == 3: # must handle "left hand of assign is not an ID" error
             return AssignStatement(p.id_expr, p[1], p.expr)
-        elif "RETURN" in p:
+        elif "RETURN" in p._namemap:
             return ReturnValue(p.expr)
-        elif "PRINT" in p:
-            return PrintValue(p.expr)
+        elif "PRINT" in p._namemap:
+            return PrintValue(p.values)
         else:
             return LoopControlNode(p[0]) # catch both CONTINUE and BREAK
         # print("def statement, id = expr")
@@ -62,28 +63,28 @@ class Parser(SlyParser):
 
     @_('INT "," indexes', 'INT')
     def indexes(self, p):
-        if "indexes" in p:
+        if "indexes" in p._namemap:
             return IndexList(p.INT, p.indexes)
         else:
             return IndexList(p.INT)
 
     @_('expr "," values', 'expr')
     def values(self, p):
-        if "indexes" in p:
-            return ValueList(p.expr, p.indexes)
+        if "values" in p._namemap:
+            return ValueList(p.expr, p.values)
         else:
             return ValueList(p.expr)
 
     @_('IF expr block %prec IFX', 'IF expr block ELSE block',
         'WHILE expr block', 'FOR ID "=" range block')
     def flow_control_statement(self, p):
-        if "IF" in p and "ELSE" in p:
+        if "IF" in p._namemap and "ELSE" in p._namemap:
             return IfStatement(p.expr, p.block0, p.block1)
-        elif "IF" in p:
+        elif "IF" in p._namemap:
             return IfStatement(p.expr, p.block)
-        elif "WHILE" in p:
+        elif "WHILE" in p._namemap:
             return WhileStatement(p.expr, p.block)
-        elif "FOR" in p:
+        elif "FOR" in p._namemap:
             return ForStatement(p.ID, p.range, p.block)
 
     @_('expr "+" expr', 'expr "-" expr',
@@ -130,7 +131,7 @@ class Parser(SlyParser):
 
     @_('INT', 'FLOAT', 'STRING', 'id_expr')
     def expr(self, p):
-        if "id_expr" in p:
+        if "id_expr" in p._namemap:
             return p.id_expr
         else:
             return ValueNode(p[0])
@@ -143,18 +144,18 @@ class Parser(SlyParser):
 
     @_('ID', 'ID "[" indexes "]"')
     def id_expr(self, p):
-        if "indexes" in p:
+        if "indexes" in p._namemap:
             return IndexedVariable(p.ID, p.indexes)
         else:
             return Variable(p.ID)
 
     @_('"[" outerlist "]"')
     def expr(self, p):
-        return p.outerlist
+        return Outerlist(p.outerlist)
 
     @_('"[" values "]" "," outerlist', '"[" values "]"')
     def outerlist(self, p):
-        if "outerlist" in p:
+        if "outerlist" in p._namemap:
             return Outerlist(p.values, p.outerlist)
         else:
             return Outerlist(p.values)

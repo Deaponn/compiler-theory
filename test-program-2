@@ -12,8 +12,10 @@ E1 = [ [ 1, 2, 3],
 
 res1 = 60.500;
 res2 = 60.;
-res3 = .500;
-res4 = 60.52E2;
+{
+    res3 = .500;
+    res4 = 60.52E2;
+}
 str = "Hello world";
 sum = 3 + 4;
 sum_short=3+4;

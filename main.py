@@ -15,8 +15,8 @@ if __name__ == '__main__':
     lexer = Scanner()
     parser = Parser()
 
-    for tok in lexer.tokenize(text):
-        print(f"line {tok.lineno}: {tok.type} {tok.value}")
+    # for tok in lexer.tokenize(text):
+    #     print(f"line {tok.lineno}: {tok.type} {tok.value}")
 
     ast = parser.parse(lexer.tokenize(text))
     ast.printTree()

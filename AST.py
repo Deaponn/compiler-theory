@@ -18,11 +18,6 @@ class Statement(Node):
         self.statement = statement
         self.nextStatements = nextStatements
 
-# used in productions from block
-# class StatementCollection(Node):
-#     def __init__(self, statementCollection):
-#         self.statementCollection = statementCollection
-
 # used in productions from action_statement
 class AssignStatement(Node):
     def __init__(self, variableId, action, newValue):
@@ -97,7 +92,6 @@ class ForStatement(Node):
         self.valueRange = valueRange
         self.action = action
 
-# TODO: when to apply the transposition???
 # used in production from expr
 class ApplyTransposition(Node):
     def __init__(self, value):

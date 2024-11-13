@@ -1,5 +1,10 @@
 import AST
 
+primitives = (bool, str, int, float, type(None))
+
+def isPrimitive(obj):
+    return isinstance(obj, primitives)
+
 def addToClass(cls):
     def decorator(func):
         setattr(cls,func.__name__,func)
@@ -8,7 +13,7 @@ def addToClass(cls):
 
 def printIndented(string, indent):
     if string is None: return
-    print(" " * indent, string)
+    print("| " * indent, string, sep="")
 
 class TreePrinter:
     @addToClass(AST.Node)
@@ -17,13 +22,15 @@ class TreePrinter:
 
     @addToClass(AST.ValueNode)
     def printTree(self, indent=0):
-        printIndented(self.value, indent)
+        if isPrimitive(self.value):
+            printIndented(self.value, indent)
+        else:
+            self.value.printTree(indent)
 
     @addToClass(AST.StartNode)
     def printTree(self, indent=0):
-        printIndented("START", indent)
+        printIndented("START", 0)
         self.block.printTree(indent + 1)
-        print(self.nextStart)
         if self.nextStart is not None:
             self.nextStart.printTree(indent)
 
@@ -62,9 +69,10 @@ class TreePrinter:
 
     @addToClass(AST.ValueList)
     def printTree(self, indent=0):
-        printIndented(f"VAL LST {self.value}", indent)
+        printIndented("VAL LST", indent)
+        self.value.printTree(indent)
         if self.nextItem is not None:
-            self.nextItem.printTree(indent + 1)
+            self.nextItem.printTree(indent)
 
     @addToClass(AST.ArithmeticExpression)
     def printTree(self, indent=0):
@@ -74,7 +82,8 @@ class TreePrinter:
 
     @addToClass(AST.ComparisonExpression)
     def printTree(self, indent=0):
-        printIndented(f"COMP {self.action}", indent)
+        printIndented("COMP", indent)
+        printIndented(self.action, indent)
         self.leftExpr.printTree(indent + 1)
         self.rightExpr.printTree(indent + 1)
 
@@ -121,7 +130,8 @@ class TreePrinter:
 
     @addToClass(AST.IndexedVariable)
     def printTree(self, indent=0):
-        printIndented(f"IDX VARIABLE {self.action} [ {self.indexes} ]", indent)
+        printIndented(f"IDX VARIABLE {self.name}", indent)
+        self.indexes.printTree(indent + 1)
 
     @addToClass(AST.Outerlist)
     def printTree(self, indent=0):
