@@ -116,19 +116,20 @@ class Variable(Node):
 
 # used in productions from expr
 class IndexedVariable(Node):
-    def __init__(self, variable, indexes):
-        self.value = variable[indexes]
+    def __init__(self, name, indexes):
+        self.name = name
+        self.indexes = indexes
 
 # used in productions from expr
 class Outerlist(Node):
-    def __init__(self, values, next_row=None):
+    def __init__(self, values, nextRow=None):
         self.values = values
-        self.next_row = next_row
+        self.nextRow = nextRow
 
 # used in productions from expr
 class MatrixInitiator(Node):
-    def __init__(self, matrix_type, size):
-        self.matrix_type = matrix_type
+    def __init__(self, matrixType, size):
+        self.matrixType = matrixType
         self.size = size
 
 class Error(Node):

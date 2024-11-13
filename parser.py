@@ -27,12 +27,13 @@ class Parser(SlyParser):
         else:
             return StartNode(p.block)
 
-    @_('statement', '"{" next_statements "}"')
+    @_('statement')
     def block(self, p):
-        if "statement" in p:
-            return Statement(p.statement)
-        else:
-            return p.statement
+        return Statement(p.statement)
+
+    @_('"{" next_statements "}"')
+    def block(self, p):
+        return p.next_statements
 
     @_('statement next_statements', 'statement')
     def next_statements(self, p):
@@ -132,7 +133,7 @@ class Parser(SlyParser):
         if "id_expr" in p:
             return p.id_expr
         else:
-            return p[0]
+            return ValueNode(p[0])
         # return p[0]
         # try:
         #     return self.names[p.ID]
@@ -161,14 +162,11 @@ class Parser(SlyParser):
     @_('ZEROS "(" expr ")"')
     def expr(self, p):
         return MatrixInitiator(p.ZEROS, p.expr)
-        # return self.get_zeros(p.expr)
 
     @_('ONES "(" expr ")"') 
     def expr(self, p):
         return MatrixInitiator(p.ONES, p.expr)
-        # return self.get_ones(p.expr)
 
     @_('EYE "(" expr ")"')
     def expr(self, p):
         return MatrixInitiator(p.EYE, p.expr)
-        # return self.get_eye(p.expr)
