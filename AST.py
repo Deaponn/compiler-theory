@@ -18,6 +18,11 @@ class Statement(Node):
         self.statement = statement
         self.nextStatements = nextStatements
 
+# used in productions from block
+class BlockStatement(Node):
+    def __init__(self, nextStatements):
+        self.nextStatements = nextStatements
+
 # used in productions from action_statement
 class AssignStatement(Node):
     def __init__(self, variableId, action, newValue):
@@ -40,12 +45,6 @@ class LoopControlNode(Node):
     def __init__(self, action):
         self.action = action
 
-# used in production from indexes
-class IndexList(Node):
-    def __init__(self, index, nextItem=None):
-        self.index = index
-        self.nextItem = nextItem
-
 # used in production from values
 class ValueList(Node):
     def __init__(self, value, nextItem=None):
@@ -67,10 +66,9 @@ class ComparisonExpression(Node):
         self.rightExpr = rightExpr
 
 # used in production from expr
-class BoundExpression(Node):
-    def __init__(self, expr, action):
+class NegateExpression(Node):
+    def __init__(self, expr):
         self.expr = expr
-        self.action = action
 
 # used in production from flow_control_statement
 class IfStatement(Node):
@@ -93,7 +91,7 @@ class ForStatement(Node):
         self.action = action
 
 # used in production from expr
-class ApplyTransposition(Node):
+class TransposeExpression(Node):
     def __init__(self, value):
         self.value = value
 

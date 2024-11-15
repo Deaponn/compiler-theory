@@ -19,4 +19,4 @@ if __name__ == '__main__':
     #     print(f"line {tok.lineno}: {tok.type} {tok.value}")
 
     ast = parser.parse(lexer.tokenize(text))
-    ast.printTree()
+    if ast is not None: ast.printTree()

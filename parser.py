@@ -11,10 +11,10 @@ class Parser(SlyParser):
     precedence = (
         ("nonassoc", IFX),
         ("nonassoc", ELSE),
-        ("nonassoc", '<', LEQ, '>', GEQ, EQ, NEQ),
-        ("left", '+', MPLUS, '-', MMINUS),
-        ("left", '*', MTIMES, '/', MDIVIDE),
-        ('right', UMINUS, "\'"),
+        ("nonassoc", "<", LEQ, ">", GEQ, EQ, NEQ),
+        ("left", "+", MPLUS, "-", MMINUS),
+        ("left", "*", MTIMES, "/", MDIVIDE),
+        ("right", UMINUS, "'"),
     )
 
     def __init__(self):
@@ -34,7 +34,7 @@ class Parser(SlyParser):
 
     @_('"{" next_statements "}"')
     def block(self, p):
-        return p.next_statements
+        return BlockStatement(p.next_statements)
 
     @_('statement')
     def next_statements(self, p):
@@ -64,14 +64,6 @@ class Parser(SlyParser):
     @_('CONTINUE', 'BREAK')
     def action_statement(self, p):
         return LoopControlNode(p[0])
-
-    @_('INT')
-    def indexes(self, p):
-        return IndexList(p.INT)
-
-    @_('INT "," indexes')
-    def indexes(self, p):
-        return IndexList(p.INT, p.indexes)
 
     @_('expr')
     def values(self, p):
@@ -110,10 +102,18 @@ class Parser(SlyParser):
         #     raise
         # return p.expr0 + p.expr1
 
-    @_('"-" expr %prec UMINUS', '"\'" expr %prec "\'"')
+    @_('"-" expr %prec UMINUS')
     def expr(self, p):
-        return BoundExpression(p.expr, p[0])
+        return NegateExpression(p.expr)
         # return -p.expr
+
+    @_('expr "\'"')
+    def expr(self, p):
+        return TransposeExpression(p.expr)
+        # if not isinstance(p.expr, np.ndarray):
+        #     print("variable is not a matrix and cannot be transposed")
+        #     raise
+        # return p.expr.T
 
     @_('expr "<" expr', 'expr LEQ expr',
         'expr ">" expr', 'expr GEQ expr',
@@ -125,15 +125,6 @@ class Parser(SlyParser):
     def expr(self, p):
         return ValueNode(p.expr)
         # return p.expr
-
-    # TODO: check if this production is necessary
-    @_('expr "\'"')
-    def expr(self, p):
-        return ApplyTransposition(p.expr)
-        # if not isinstance(p.expr, np.ndarray):
-        #     print("variable is not a matrix and cannot be transposed")
-        #     raise
-        # return p.expr.T
 
     @_('expr ":" expr')
     def range(self, p):
@@ -156,9 +147,9 @@ class Parser(SlyParser):
     def id_expr(self, p):
         return Variable(p.ID)
 
-    @_('ID "[" indexes "]"')
+    @_('ID "[" values "]"')
     def id_expr(self, p):
-        return IndexedVariable(p.ID, p.indexes)
+        return IndexedVariable(p.ID, p.values)
 
     @_('"[" outerlist "]"')
     def expr(self, p):

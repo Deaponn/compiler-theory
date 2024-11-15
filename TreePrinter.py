@@ -29,21 +29,28 @@ class TreePrinter:
 
     @addToClass(AST.StartNode)
     def printTree(self, indent=0):
-        printIndented("START", 0)
-        self.block.printTree(indent + 1)
+        self.block.printTree(indent)
         if self.nextStart is not None:
             self.nextStart.printTree(indent)
 
     @addToClass(AST.Statement)
-    def printTree(self, indent=0):
-        printIndented("STATEMENT", indent)
+    def printTree(self, indent=0, special_name="STATEMENT"):
+        printIndented(special_name, indent)
         self.statement.printTree(indent + 1)
         if self.nextStatements is not None:
             self.nextStatements.printTree(indent)
 
+    # ignore is needed for compatibility with AST.Statement printTree
+    # can it be avoided?
+    @addToClass(AST.BlockStatement)
+    def printTree(self, indent=0, _="ignore"):
+        printIndented("{", indent)
+        self.nextStatements.printTree(indent + 1)
+        printIndented("}", indent)
+
     @addToClass(AST.AssignStatement)
     def printTree(self, indent=0):
-        printIndented(f"ASSIGN {self.action}", indent)
+        printIndented(f"{self.action}", indent)
         self.variableId.printTree(indent + 1)
         self.newValue.printTree(indent + 1)
 
@@ -59,79 +66,72 @@ class TreePrinter:
 
     @addToClass(AST.LoopControlNode)
     def printTree(self, indent=0):
-        printIndented(f"LOOP_CTRL {self.action}", indent)
-
-    @addToClass(AST.IndexList)
-    def printTree(self, indent=0):
-        printIndented(f"IDX {self.index}", indent)
-        if self.nextItem is not None:
-            self.nextItem.printTree(indent)
+        printIndented(self.action.upper(), indent)
 
     @addToClass(AST.ValueList)
     def printTree(self, indent=0):
-        printIndented("VAL LST", indent)
         self.value.printTree(indent)
         if self.nextItem is not None:
             self.nextItem.printTree(indent)
 
     @addToClass(AST.ArithmeticExpression)
     def printTree(self, indent=0):
-        printIndented(f"ARITH {self.action}", indent)
+        printIndented(f"{self.action}", indent)
         self.leftExpr.printTree(indent + 1)
         self.rightExpr.printTree(indent + 1)
 
     @addToClass(AST.ComparisonExpression)
     def printTree(self, indent=0):
-        printIndented("COMP", indent)
         printIndented(self.action, indent)
         self.leftExpr.printTree(indent + 1)
         self.rightExpr.printTree(indent + 1)
 
-    @addToClass(AST.BoundExpression)
+    @addToClass(AST.NegateExpression)
     def printTree(self, indent=0):
-        printIndented(f"BND {self.action}", indent)
+        printIndented("NEG", indent)
         self.expr.printTree(indent + 1)
 
     @addToClass(AST.IfStatement)
     def printTree(self, indent=0):
         printIndented("IF", indent)
         self.condition.printTree(indent + 1)
-        self.action.printTree(indent + 1)
+        self.action.printTree(indent + 1, "DO")
         if self.elseAction is not None:
-            self.elseAction.printTree(indent + 1)
+            self.elseAction.printTree(indent + 1, "ELSE DO")
 
     @addToClass(AST.WhileStatement)
     def printTree(self, indent=0):
-        printIndented("WHL", indent)
+        printIndented("WHILE", indent)
         self.condition.printTree(indent + 1)
         self.action.printTree(indent + 1)
 
     @addToClass(AST.ForStatement)
     def printTree(self, indent=0):
-        printIndented(f"FOR, ID={self.loopVariable}", indent)
+        printIndented(f"FOR {self.loopVariable}", indent)
         self.valueRange.printTree(indent + 1)
-        self.action.printTree(indent + 1)
+        self.action.printTree(indent + 1, "DO")
 
-    @addToClass(AST.ApplyTransposition)
+    @addToClass(AST.TransposeExpression)
     def printTree(self, indent=0):
-        printIndented("TRANS", indent)
+        printIndented("TRANSPOSE", indent)
         self.value.printTree(indent + 1)
 
     @addToClass(AST.RangeNode)
     def printTree(self, indent=0):
         printIndented("RANGE", indent)
         self.rangeStart.printTree(indent + 1)
-        printIndented(":", indent)
+        printIndented(":", indent + 1)
         self.rangeEnd.printTree(indent + 1)
 
     @addToClass(AST.Variable)
     def printTree(self, indent=0):
-        printIndented(f"VARIABLE {self.name}", indent)
+        printIndented(f"{self.name}", indent)
 
     @addToClass(AST.IndexedVariable)
     def printTree(self, indent=0):
-        printIndented(f"IDX VARIABLE {self.name}", indent)
+        printIndented(f"{self.name} [", indent)
         self.indexes.printTree(indent + 1)
+        printIndented("]", indent)
 
     @addToClass(AST.Outerlist)
     def printTree(self, indent=0):
