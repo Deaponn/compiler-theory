@@ -95,25 +95,14 @@ class Parser(SlyParser):
         'expr MTIMES expr', 'expr MDIVIDE expr')
     def expr(self, p):
         return ArithmeticExpression(p.expr0, p[1], p.expr1)
-        # return p.expr0 + p.expr1
-
-        # if p.expr0.shape != p.expr1.shape:
-        #     print("incompatible matrix dimensions")
-        #     raise
-        # return p.expr0 + p.expr1
 
     @_('"-" expr %prec UMINUS')
     def expr(self, p):
         return NegateExpression(p.expr)
-        # return -p.expr
 
     @_('expr "\'"')
     def expr(self, p):
         return TransposeExpression(p.expr)
-        # if not isinstance(p.expr, np.ndarray):
-        #     print("variable is not a matrix and cannot be transposed")
-        #     raise
-        # return p.expr.T
 
     @_('expr "<" expr', 'expr LEQ expr',
         'expr ">" expr', 'expr GEQ expr',
@@ -124,7 +113,6 @@ class Parser(SlyParser):
     @_('"(" expr ")"')
     def expr(self, p):
         return ValueNode(p.expr)
-        # return p.expr
 
     @_('expr ":" expr')
     def range(self, p):
@@ -137,11 +125,6 @@ class Parser(SlyParser):
     @_('id_expr')
     def expr(self, p):
         return p.id_expr
-        # try:
-        #     return self.names[p.ID]
-        # except LookupError:
-        #     print("Undefined ID '%s'" % p.ID)
-        #     return 0
 
     @_('ID')
     def id_expr(self, p):

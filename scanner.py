@@ -37,7 +37,6 @@ class Scanner(Lexer):
                  '(', ')', '[', ']', '{', '}', ':', ';', ',' }
 
     # Regular expression rules for tokens
-    # FLOAT           = r'[+-]?([0-9]*([.][0-9]*))'
     FLOAT           = r'(([0-9]+[.][0-9]*)|([.][0-9]+))([eE][-+]?\d+)?'
     INT             = r'[0-9]+'
     STRING          = r'["][^"]+["]'

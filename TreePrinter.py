@@ -34,17 +34,15 @@ class TreePrinter:
             self.nextStart.printTree(indent)
 
     @addToClass(AST.Statement)
-    def printTree(self, indent=0, special_name="STATEMENT"):
-        printIndented(special_name, indent)
-        self.statement.printTree(indent + 1)
+    def printTree(self, indent=0, special_name=""):
+        if special_name != "": printIndented(special_name, indent)
+        self.statement.printTree(indent)
         if self.nextStatements is not None:
             self.nextStatements.printTree(indent)
 
-    # ignore is needed for compatibility with AST.Statement printTree
-    # can it be avoided?
     @addToClass(AST.BlockStatement)
-    def printTree(self, indent=0, _="ignore"):
-        printIndented("{", indent)
+    def printTree(self, indent=0, special_name=""):
+        printIndented(special_name + " {" if special_name != "" else "{", indent)
         self.nextStatements.printTree(indent + 1)
         printIndented("}", indent)
 
@@ -103,7 +101,7 @@ class TreePrinter:
     def printTree(self, indent=0):
         printIndented("WHILE", indent)
         self.condition.printTree(indent + 1)
-        self.action.printTree(indent + 1)
+        self.action.printTree(indent + 1, "DO")
 
     @addToClass(AST.ForStatement)
     def printTree(self, indent=0):
@@ -142,7 +140,7 @@ class TreePrinter:
 
     @addToClass(AST.MatrixInitiator)
     def printTree(self, indent=0):
-        printIndented(f"MTRX {self.matrixType}", indent)
+        printIndented(f"MATRIX {self.matrixType}", indent)
         self.size.printTree(indent + 1)
 
     @addToClass(AST.Error)
