@@ -46,6 +46,11 @@ class LoopControlNode(Node):
         self.action = action
 
 # used in production from values
+class Vector(Node):
+    def __init__(self, value, nextItem=None):
+        self.value = value
+        self.nextItem = nextItem
+
 class ValueList(Node):
     def __init__(self, value, nextItem=None):
         self.value = value
@@ -113,7 +118,7 @@ class IndexedVariable(Node):
         self.indexes = indexes
 
 # used in productions from expr
-class Outerlist(Node):
+class Matrix(Node):
     def __init__(self, values, nextRow=None):
         self.values = values
         self.nextRow = nextRow

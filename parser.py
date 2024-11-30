@@ -73,6 +73,22 @@ class Parser(SlyParser):
     def values(self, p):
         return ValueList(p.expr, p.values)
 
+    @_('"[" values "]"')
+    def expr(self, p):
+        return Vector(p.values)
+
+    @_('"[" matrix "]"')
+    def expr(self, p):
+        return Matrix(p.matrix)
+
+    @_('"[" values "]"')
+    def matrix(self, p):
+        return Vector(p.values)
+
+    @_('"[" values "]" , matrix')
+    def matrix(self, p):
+        return Vector(p.values, p.matrix)
+
     @_('IF expr block %prec IFX')
     def flow_control_statement(self, p):
         return IfStatement(p.expr, p.block)
@@ -133,18 +149,6 @@ class Parser(SlyParser):
     @_('ID "[" values "]"')
     def id_expr(self, p):
         return IndexedVariable(p.ID, p.values)
-
-    @_('"[" outerlist "]"')
-    def expr(self, p):
-        return Outerlist(p.outerlist)
-
-    @_('"[" values "]"')
-    def outerlist(self, p):
-        return Outerlist(p.values)
-
-    @_('"[" values "]" "," outerlist')
-    def outerlist(self, p):
-        return Outerlist(p.values, p.outerlist)
 
     @_('ZEROS "(" expr ")"')
     def expr(self, p):

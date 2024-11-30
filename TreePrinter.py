@@ -72,6 +72,13 @@ class TreePrinter:
         if self.nextItem is not None:
             self.nextItem.printTree(indent)
 
+    @addToClass(AST.Vector)
+    def printTree(self, indent=0):
+        printIndented("VECTOR", indent)
+        self.value.printTree(indent + 1)
+        if self.nextItem is not None:
+            self.nextItem.printTree(indent)
+
     @addToClass(AST.ArithmeticExpression)
     def printTree(self, indent=0):
         printIndented(f"{self.action}", indent)
@@ -131,9 +138,9 @@ class TreePrinter:
         self.indexes.printTree(indent + 1)
         printIndented("]", indent)
 
-    @addToClass(AST.Outerlist)
+    @addToClass(AST.Matrix)
     def printTree(self, indent=0):
-        printIndented("OUTERLST", indent)
+        printIndented("MATRIX", indent)
         self.values.printTree(indent + 1)
         if self.nextRow is not None:
             self.nextRow.printTree(indent)

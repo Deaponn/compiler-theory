@@ -61,6 +61,8 @@ for i = 1:N {
   A[1, M] = B[N, 1];
   C = A' .+ -B';
   print A[N, M];
+  matrix = [[A, b, c], [a, 70]];
+  vector = [a, b, 100, D];
 }
 
 
