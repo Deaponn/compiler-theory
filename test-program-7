@@ -62,6 +62,7 @@ for i = 1:N {
   C = A' .+ -B';
   print A[N, M];
   matrix = [[A, b, c], [a, 70]];
+  simple_matrix = [[1, 2, 3]];
   vector = [a, b, 100, D];
 }
 

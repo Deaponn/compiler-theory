@@ -9,6 +9,7 @@ class Parser(SlyParser):
     debugfile = 'parser.out'
 
     precedence = (
+        ("right", ",", "]"),
         ("nonassoc", IFX),
         ("nonassoc", ELSE),
         ("nonassoc", "<", LEQ, ">", GEQ, EQ, NEQ),
@@ -77,17 +78,21 @@ class Parser(SlyParser):
     def expr(self, p):
         return Vector(p.values)
 
-    @_('"[" matrix "]"')
+    @_('"[" "[" values "]" "]"')
     def expr(self, p):
-        return Matrix(p.matrix)
+        return Matrix(Vector(p.values))
+
+    @_('"[" "[" values "]" , next_values "]"')
+    def expr(self, p):
+        return Matrix(Vector(p.values), p.next_values)
 
     @_('"[" values "]"')
-    def matrix(self, p):
+    def next_values(self, p):
         return Vector(p.values)
 
-    @_('"[" values "]" , matrix')
-    def matrix(self, p):
-        return Vector(p.values, p.matrix)
+    @_('"[" values "]" , next_values')
+    def next_values(self, p):
+        return Vector(p.values, p.next_values)
 
     @_('IF expr block %prec IFX')
     def flow_control_statement(self, p):
