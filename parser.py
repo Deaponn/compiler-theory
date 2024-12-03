@@ -25,27 +25,27 @@ class Parser(SlyParser):
 
     @_('block')
     def start(self, p):
-        return StartNode(p.block)
+        return StartNode(p.block, lineno=p.lineno)
 
     @_('block start')
     def start(self, p):
-        return StartNode(p.block, p.start)
+        return StartNode(p.block, p.start, lineno=p.lineno)
 
     @_('statement')
     def block(self, p):
-        return Statement(p.statement)
+        return Statement(p.statement, lineno=p.lineno)
 
     @_('"{" next_statements "}"')
     def block(self, p):
-        return BlockStatement(p.next_statements)
+        return BlockStatement(p.next_statements, lineno=p.lineno)
 
     @_('statement')
     def next_statements(self, p):
-        return Statement(p.statement)
+        return Statement(p.statement, lineno=p.lineno)
 
     @_('statement next_statements')
     def next_statements(self, p):
-        return Statement(p.statement, p.next_statements)
+        return Statement(p.statement, p.next_statements, lineno=p.lineno)
 
     @_('action_statement ";"', 'flow_control_statement')
     def statement(self, p):
@@ -54,108 +54,108 @@ class Parser(SlyParser):
     @_('id_expr "=" expr', 'id_expr PASSIGN expr', 'id_expr MASSIGN expr',
         'id_expr TASSIGN expr', 'id_expr DASSIGN expr')
     def action_statement(self, p):
-        return AssignStatement(p.id_expr, p[1], p.expr)
+        return AssignStatement(p.id_expr, p[1], p.expr, lineno=p.lineno)
 
     @_('PRINT values')
     def action_statement(self, p):
-        return PrintValue(p.values)
+        return PrintValue(p.values, lineno=p.lineno)
 
     @_('RETURN expr')
     def action_statement(self, p):
-        return ReturnValue(p.expr)
+        return ReturnValue(p.expr, lineno=p.lineno)
 
     @_('CONTINUE', 'BREAK')
     def action_statement(self, p):
-        return LoopControlNode(p[0])
+        return LoopControlNode(p[0], lineno=p.lineno)
 
     @_('expr')
     def values(self, p):
-        return ValueList(p.expr)
+        return ValueList(p.expr, lineno=p.lineno)
 
     @_('expr "," values')
     def values(self, p):
-        return ValueList(p.expr, p.values)
+        return ValueList(p.expr, p.values, lineno=p.lineno)
 
     @_('"[" values "]"')
     def expr(self, p):
-        return Vector(p.values)
+        return Vector(p.values, lineno=p.lineno)
 
     @_('"[" "[" values "]" "]"')
     def expr(self, p):
-        return Matrix(Vector(p.values))
+        return Matrix(Vector(p.values), lineno=p.lineno)
 
     @_('"[" "[" values "]" , next_values "]"')
     def expr(self, p):
-        return Matrix(Vector(p.values), p.next_values)
+        return Matrix(Vector(p.values), p.next_values, lineno=p.lineno)
 
     @_('"[" values "]"')
     def next_values(self, p):
-        return Vector(p.values)
+        return Vector(p.values, lineno=p.lineno)
 
     @_('"[" values "]" , next_values')
     def next_values(self, p):
-        return Vector(p.values, p.next_values)
+        return Vector(p.values, p.next_values, lineno=p.lineno)
 
     @_('IF "(" expr ")" block %prec IFX')
     def flow_control_statement(self, p):
-        return IfStatement(p.expr, p.block)
+        return IfStatement(p.expr, p.block, lineno=p.lineno)
 
     @_('IF "(" expr ")" block ELSE block')
     def flow_control_statement(self, p):
-        return IfStatement(p.expr, p.block0, p.block1)
+        return IfStatement(p.expr, p.block0, p.block1, lineno=p.lineno)
 
     @_('WHILE "(" expr ")" block')
     def flow_control_statement(self, p):
-        return WhileStatement(p.expr, p.block)
+        return WhileStatement(p.expr, p.block, lineno=p.lineno)
 
     @_('FOR ID "=" range block')
     def flow_control_statement(self, p):
-        return ForStatement(p.ID, p.range, p.block)
+        return ForStatement(p.ID, p.range, p.block, lineno=p.lineno)
 
     @_('expr "+" expr', 'expr "-" expr',
         'expr "*" expr', 'expr "/" expr',
         'expr MPLUS expr', 'expr MMINUS expr',
         'expr MTIMES expr', 'expr MDIVIDE expr')
     def expr(self, p):
-        return ArithmeticExpression(p.expr0, p[1], p.expr1)
+        return ArithmeticExpression(p.expr0, p[1], p.expr1, lineno=p.lineno)
 
     @_('"-" expr %prec UMINUS')
     def expr(self, p):
-        return NegateExpression(p.expr)
+        return NegateExpression(p.expr, lineno=p.lineno)
 
     @_('expr "\'"')
     def expr(self, p):
-        return TransposeExpression(p.expr)
+        return TransposeExpression(p.expr, lineno=p.lineno)
 
     @_('expr "<" expr', 'expr LEQ expr',
         'expr ">" expr', 'expr GEQ expr',
         'expr EQ expr', 'expr NEQ expr', )
     def expr(self, p):
-        return ComparisonExpression(p.expr0, p[1], p.expr1)
+        return ComparisonExpression(p.expr0, p[1], p.expr1, lineno=p.lineno)
 
     @_('expr ":" expr')
     def range(self, p):
-        return RangeNode(p.expr0, p.expr1)
+        return RangeNode(p.expr0, p.expr1, lineno=p.lineno)
 
     @_('STRING')
     def expr(self, p):
-        return ValueNode(p[0], "string")
+        return ValueNode(p[0], "string", lineno=p.lineno)
 
     @_('FLOAT')
     def expr(self, p):
-        return ValueNode(p[0], "float")
+        return ValueNode(p[0], "float", lineno=p.lineno)
 
     @_('INT')
     def expr(self, p):
-        return ValueNode(p[0], "integer")
+        return ValueNode(p[0], "integer", lineno=p.lineno)
 
     @_('":"', 'expr')
     def idx_values(self, p):
-        return ValueList(p[0])
+        return ValueList(p[0], lineno=p.lineno)
 
     @_('":" "," idx_values', 'expr "," idx_values')
     def idx_values(self, p):
-        return ValueList(p[0], p.idx_values)
+        return ValueList(p[0], p.idx_values, lineno=p.lineno)
 
     @_('id_expr')
     def expr(self, p):
@@ -163,20 +163,20 @@ class Parser(SlyParser):
 
     @_('ID')
     def id_expr(self, p):
-        return Variable(p.ID)
+        return Variable(p.ID, lineno=p.lineno)
 
     @_('ID "[" idx_values "]"')
     def id_expr(self, p):
-        return IndexedVariable(p.ID, p.idx_values)
+        return IndexedVariable(p.ID, p.idx_values, lineno=p.lineno)
 
     @_('ZEROS "(" expr ")"')
     def expr(self, p):
-        return MatrixInitiator(p.ZEROS, p.expr)
+        return MatrixInitiator(p.ZEROS, p.expr, lineno=p.lineno)
 
     @_('ONES "(" expr ")"') 
     def expr(self, p):
-        return MatrixInitiator(p.ONES, p.expr)
+        return MatrixInitiator(p.ONES, p.expr, lineno=p.lineno)
 
     @_('EYE "(" expr ")"')
     def expr(self, p):
-        return MatrixInitiator(p.EYE, p.expr)
+        return MatrixInitiator(p.EYE, p.expr, lineno=p.lineno)

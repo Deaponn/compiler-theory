@@ -111,10 +111,10 @@ class TypeTable(object):
         self.typeTable["<"]["float"]["float"] = "boolean"
 
         self.typeTable[">"] = self.typeTable["<"]
-        self.typeTable["LEQ"] = self.typeTable["<"]
-        self.typeTable["GEQ"] = self.typeTable["<"]
-        self.typeTable["EQ"] = self.typeTable["<"]
-        self.typeTable["NEQ"] = self.typeTable["<"]
+        self.typeTable["<="] = self.typeTable["<"]
+        self.typeTable[">="] = self.typeTable["<"]
+        self.typeTable["=="] = self.typeTable["<"]
+        self.typeTable["!="] = self.typeTable["<"]
 
     def getType(self, leftType, action, rightType):
         if action not in self.typeTable:
