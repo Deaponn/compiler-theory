@@ -1,9 +1,10 @@
 from SymbolTable import VariableSymbol, SymbolTable, TypeTable
 
 # TODO: handle vector return type when accessing ex. M[:, 3]
-# TODO: implement matrix size analysis
 # TODO: fix indexing like M[:, :], in ValueList
 # TODO: artihmetic expression for matrix, fix so it would work for vector too
+# TODO: add initializing zeros, ones, and eye by passing value list by dimension ex ones(3, 4)
+# TODO: add checking of matrix index out of bounds when idx is hardcoded
 
 logs = False
 
@@ -13,41 +14,44 @@ class TypeInfo(object):
         self.classOfValue = classOfValue
         self.shapeOfValue = shapeOfValue
 
-class Undefined(object):
+class GenericType(object):
+    def __init__(self, objectType):
+        self.objectType = objectType
+
+class Undefined(GenericType):
     def __init__(self, name):
-        self.objectType = "undefined"
+        super().__init__("undefined")
         self.name = name
 
-class ValueType(object):
+class ValueType(GenericType):
     def __init__(self, typeOfValue, name=None, value=None):
-        self.objectType = "scalar"
+        super().__init__("scalar")
         self.typeOfValue = typeOfValue
         self.name = name
         self.value = value
 
-class VectorType(object):
+class VectorType(GenericType):
     def __init__(self, typeOfValue, length, name=None):
-        self.objectType = "vector"
+        super().__init__("vector")
         self.typeOfValue = typeOfValue
         self.length = length
         self.name = name
 
-class MatrixType(object):
+class MatrixType(GenericType):
     def __init__(self, typeOfValue, rows, columns, name=None):
-        self.objectType = "matrix"
+        super().__init__("matrix")
         self.typeOfValue = typeOfValue
         self.rows = rows
         self.columns = columns
         self.name = name
 
-class ErrorType(object):
+class ErrorType(GenericType):
     def __init__(self):
-        self.objectType = "err"
+        super().__init__("err")
 
-class SuccessType(object):
-    def __init__(self, where=None):
-        self.objectType = "ok"
-        self.where = where
+class SuccessType(GenericType):
+    def __init__(self):
+        super().__init__("ok")
 
 class NodeVisitor(object):
     def visit(self, node):
@@ -122,7 +126,7 @@ class TypeChecker(NodeVisitor):
                 self.scopes.put(variable.name, TypeInfo(newType, leftType.classOfValue, leftType.length))
             else:
                 self.scopes.put(variable.name, TypeInfo(newType, leftType.classOfValue, (leftType.rows, leftType.columns)))
-        return SuccessType("assign")
+        return SuccessType()
 
     def visit_ReturnValue(self, node):
         if logs: print(f"ReturnValue {node.value}")
@@ -130,7 +134,7 @@ class TypeChecker(NodeVisitor):
         if output.objectType == "err" or output.objectType == "undefined":
             print(f"Line {node.lineno}: error in return")
             return output
-        return SuccessType("return")
+        return SuccessType()
 
     def visit_PrintValue(self, node):
         if logs: print(f"PrintValue {node.value}")
@@ -138,14 +142,14 @@ class TypeChecker(NodeVisitor):
         if output.objectType == "err" or output.objectType == "undefined":
             print(f"Line {node.lineno}: error in print")
             return output
-        return SuccessType("print")
+        return SuccessType()
 
     def visit_LoopControlNode(self, node):
         if logs: print(f"LoopControlNode {node.action}")
         if self.scopes.isOuterScope():
             print(f"Line {node.lineno}: break or continue in illegal place")
             return ErrorType()
-        return SuccessType("loop control")
+        return SuccessType()
 
     def visit_Vector(self, node):
         if logs: print("Vector")
@@ -245,7 +249,7 @@ class TypeChecker(NodeVisitor):
         if newType is None:
             print(f"Line {node.lineno}: cant compare {leftType.typeOfValue} {node.action} {rightType.typeOfValue}")
             return ErrorType()
-        return SuccessType("comparison")
+        return SuccessType()
 
     def visit_NegateExpression(self, node):
         if logs: print("NegateExpression")
@@ -265,7 +269,7 @@ class TypeChecker(NodeVisitor):
         self.visit(node.action)
         if node.elseAction is not None:
             self.visit(node.elseAction)
-        return SuccessType("if stmt")
+        return SuccessType()
 
     def visit_WhileStatement(self, node):
         if logs: print("WhileStatement")
@@ -273,7 +277,7 @@ class TypeChecker(NodeVisitor):
         if conditionOutput.objectType == "err" or conditionOutput.objectType == "undefined":
             print(f"Line {node.lineno}: invalid condition")
         self.visit(node.action)
-        return SuccessType("while stmt")
+        return SuccessType()
 
     def visit_ForStatement(self, node):
         if logs: print(f"ForStatement on bound {node.loopVariable}")
@@ -282,7 +286,7 @@ class TypeChecker(NodeVisitor):
         if rangeOutput.objectType == "err" or rangeOutput.objectType == "undefined":
             print(f"Line {node.lineno}: invalid loop range")
         self.visit(node.action)
-        return SuccessType("for stmt")
+        return SuccessType()
 
     def visit_TransposeExpression(self, node):
         if logs: print("TransposeExpression")
@@ -305,7 +309,7 @@ class TypeChecker(NodeVisitor):
         if typeStart.typeOfValue != "integer" or typeEnd.typeOfValue != "integer":
             print(f"Line {node.lineno}: invalid range {typeStart} : {typeEnd}")
             return ErrorType()
-        return SuccessType("range node")
+        return SuccessType()
 
     def visit_Variable(self, node):
         if logs: print(f"Variable {node.name}")
