@@ -2,6 +2,8 @@ from sly import Parser as SlyParser
 from scanner import Scanner
 from AST import *
 
+# TODO: there are no rules for using parenthesis, ex. 3 * (1 + 2)
+
 class Parser(SlyParser):
 
     tokens = Scanner.tokens
@@ -94,15 +96,15 @@ class Parser(SlyParser):
     def next_values(self, p):
         return Vector(p.values, p.next_values)
 
-    @_('IF expr block %prec IFX')
+    @_('IF "(" expr ")" block %prec IFX')
     def flow_control_statement(self, p):
         return IfStatement(p.expr, p.block)
 
-    @_('IF expr block ELSE block')
+    @_('IF "(" expr ")" block ELSE block')
     def flow_control_statement(self, p):
         return IfStatement(p.expr, p.block0, p.block1)
 
-    @_('WHILE expr block')
+    @_('WHILE "(" expr ")" block')
     def flow_control_statement(self, p):
         return WhileStatement(p.expr, p.block)
 
@@ -131,17 +133,29 @@ class Parser(SlyParser):
     def expr(self, p):
         return ComparisonExpression(p.expr0, p[1], p.expr1)
 
-    @_('"(" expr ")"')
-    def expr(self, p):
-        return ValueNode(p.expr)
-
     @_('expr ":" expr')
     def range(self, p):
         return RangeNode(p.expr0, p.expr1)
 
-    @_('INT', 'FLOAT', 'STRING')
+    @_('STRING')
     def expr(self, p):
-        return ValueNode(p[0])
+        return ValueNode(p[0], "string")
+
+    @_('FLOAT')
+    def expr(self, p):
+        return ValueNode(p[0], "float")
+
+    @_('INT')
+    def expr(self, p):
+        return ValueNode(p[0], "integer")
+
+    @_('":"', 'expr')
+    def idx_values(self, p):
+        return ValueList(p[0])
+
+    @_('":" "," idx_values', 'expr "," idx_values')
+    def idx_values(self, p):
+        return ValueList(p[0], p.idx_values)
 
     @_('id_expr')
     def expr(self, p):
@@ -151,9 +165,9 @@ class Parser(SlyParser):
     def id_expr(self, p):
         return Variable(p.ID)
 
-    @_('ID "[" values "]"')
+    @_('ID "[" idx_values "]"')
     def id_expr(self, p):
-        return IndexedVariable(p.ID, p.values)
+        return IndexedVariable(p.ID, p.idx_values)
 
     @_('ZEROS "(" expr ")"')
     def expr(self, p):

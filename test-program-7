@@ -60,7 +60,7 @@ for i = 1:N {
   M = 200;  
   A[1, M] = B[N, 1];
   C = A' .+ -B';
-  print A[N, M];
+  print A[:, M];
   matrix = [[A, b, c], [a, 70]];
   simple_matrix = [[1, 2, 3]];
   vector = [a, b, 100, D];

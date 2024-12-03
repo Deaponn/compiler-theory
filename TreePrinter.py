@@ -1,10 +1,5 @@
 import AST
 
-primitives = (bool, str, int, float, type(None))
-
-def isPrimitive(obj):
-    return isinstance(obj, primitives)
-
 def addToClass(cls):
     def decorator(func):
         setattr(cls,func.__name__,func)
@@ -22,10 +17,7 @@ class TreePrinter:
 
     @addToClass(AST.ValueNode)
     def printTree(self, indent=0):
-        if isPrimitive(self.value):
-            printIndented(self.value, indent)
-        else:
-            self.value.printTree(indent)
+        printIndented(self.value, indent)
 
     @addToClass(AST.StartNode)
     def printTree(self, indent=0):

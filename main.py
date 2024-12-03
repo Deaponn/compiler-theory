@@ -2,6 +2,7 @@ import sys
 from scanner import Scanner
 from parser import Parser
 from TreePrinter import TreePrinter
+from TypeChecker import TypeChecker
 
 if __name__ == '__main__':
     try:
@@ -16,4 +17,9 @@ if __name__ == '__main__':
     parser = Parser()
 
     ast = parser.parse(lexer.tokenize(text))
-    if ast is not None: ast.printTree()
+
+    if ast is None:
+        sys.exit("Bledne wejscie! Nie mozna utworzyc AST")
+
+    typeChecker = TypeChecker()   
+    typeChecker.visit(ast)

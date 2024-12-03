@@ -1,10 +1,16 @@
 class Node(object):
-    pass
+    def visit(self, visitor):
+        # try:
+        func = getattr(visitor, f"visit_{self.__class__.__name__}")
+        return func(self)
+        # except AttributeError:
+        #     print(f"Visitor {visitor.__class__.__name__} does not have visit_{self.__class__.__name__} implemented")
 
 # used in productions from expr
 class ValueNode(Node):
-    def __init__(self, value):
+    def __init__(self, value, typeOfValue):
         self.value = value
+        self.typeOfValue = typeOfValue
 
 # used in productions from start
 class StartNode(Node):
