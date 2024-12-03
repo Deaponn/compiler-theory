@@ -196,6 +196,14 @@ class TypeChecker(NodeVisitor):
         if rightObject.objectType == "err" or rightObject.objectType == "undefined":
             return rightObject
 
+        if leftObject.objectType != rightObject.objectType:
+            print(f"Line {node.lineno}: cant do arithmetics between {leftObject.objectType} and {rightObject.objectType}")
+            return ErrorType()
+
+        if leftObject.objectType == "matrix" and "." not in node.action:
+            print(f"Line {node.lineno}: cant do arithmetics using unary operators with {leftObject.objectType} and {rightObject.objectType}")
+            return ErrorType()
+
         newType = self.typeTable.getType(
             leftObject.typeOfValue,
             node.action,
