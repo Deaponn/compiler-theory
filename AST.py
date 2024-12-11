@@ -74,6 +74,12 @@ class ValueList(Node):
         self.value = value
         self.nextItem = nextItem
 
+class IndexList(Node):
+    def __init__(self, index, nextItem=None, lineno=-1):
+        super().__init__(lineno)
+        self.index = index
+        self.nextItem = nextItem
+
 # used in production from expr
 class ArithmeticExpression(Node):
     def __init__(self, leftExpr, action, rightExpr, lineno=-1):

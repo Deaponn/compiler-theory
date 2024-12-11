@@ -64,6 +64,15 @@ class TreePrinter:
         if self.nextItem is not None:
             self.nextItem.printTree(indent)
 
+    @addToClass(AST.IndexList)
+    def printTree(self, indent=0):
+        if self.index == ":":
+            printIndented(self.index, indent)
+        else:
+            self.index.printTree(indent)
+        if self.nextItem is not None:
+            self.nextItem.printTree(indent)
+
     @addToClass(AST.Vector)
     def printTree(self, indent=0):
         printIndented("VECTOR", indent)

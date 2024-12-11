@@ -190,6 +190,27 @@ class TypeChecker(NodeVisitor):
             typeOfValue = "inconsistent"
         return VectorType(typeOfValue, output.length + 1)
 
+    def visit_IndexList(self, node):
+        if logs: print("ValueList")
+        typeOfValue = ":"
+        if node.index != ":": # if its not full row/column indicator
+            output = self.visit(node.index)
+            if output.objectType == "err" or output.objectType == "undefined":
+                print(f"Line {node.lineno}: undefined variable")
+                return output
+            typeOfValue = output.typeOfValue
+
+        if node.nextItem is None:
+            return VectorType(typeOfValue, 1)
+        
+        output = self.visit(node.nextItem)
+        if output.objectType == "err" or output.objectType == "undefined":
+            print(f"Line {node.lineno}: undefined variable")
+            return output
+        if output.typeOfValue != typeOfValue:
+            typeOfValue = "inconsistent"
+        return VectorType(typeOfValue, output.length + 1)
+
     def visit_ArithmeticExpression(self, node):
         if logs: print(f"ArithmeticExpression {node.action}")
         leftObject = self.visit(node.leftExpr)
