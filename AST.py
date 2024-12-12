@@ -152,13 +152,6 @@ class IndexedVariable(Node):
         self.indexes = indexes
 
 # used in productions from expr
-class Matrix(Node):
-    def __init__(self, values, nextRow=None, lineno=-1):
-        super().__init__(lineno)
-        self.values = values
-        self.nextRow = nextRow
-
-# used in productions from expr
 class MatrixInitiator(Node):
     def __init__(self, matrixType, size, lineno=-1):
         super().__init__(lineno)

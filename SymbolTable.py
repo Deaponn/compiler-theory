@@ -63,40 +63,6 @@ class TypeTable(object):
         self.typeTable["/"]["float"]["integer"] = "float"
         self.typeTable["/"]["float"]["float"] = "float"
 
-        self.typeTable[".+"] = {}
-        self.typeTable[".+"]["integer matrix"] = {}
-        self.typeTable[".+"]["integer matrix"]["integer matrix"] = "integer matrix"
-        self.typeTable[".+"]["integer matrix"]["float matrix"] = "float matrix"
-        self.typeTable[".+"]["float matrix"] = {}
-        self.typeTable[".+"]["float matrix"]["integer matrix"] = "float matrix"
-        self.typeTable[".+"]["float matrix"]["float matrix"] = "float matrix"
-        self.typeTable[".+"]["string matrix"] = {}
-        self.typeTable[".+"]["string matrix"]["string matrix"] = "string matrix"
-
-        self.typeTable[".-"] = {}
-        self.typeTable[".-"]["integer matrix"] = {}
-        self.typeTable[".-"]["integer matrix"]["integer matrix"] = "integer matrix"
-        self.typeTable[".-"]["integer matrix"]["float matrix"] = "float matrix"
-        self.typeTable[".-"]["float matrix"] = {}
-        self.typeTable[".-"]["float matrix"]["integer matrix"] = "float matrix"
-        self.typeTable[".-"]["float matrix"]["float matrix"] = "float matrix"
-
-        self.typeTable[".*"] = {}
-        self.typeTable[".*"]["integer matrix"] = {}
-        self.typeTable[".*"]["integer matrix"]["integer matrix"] = "integer matrix"
-        self.typeTable[".*"]["integer matrix"]["float matrix"] = "float matrix"
-        self.typeTable[".*"]["float matrix"] = {}
-        self.typeTable[".*"]["float matrix"]["integer matrix"] = "float matrix"
-        self.typeTable[".*"]["float matrix"]["float matrix"] = "float matrix"
-
-        self.typeTable["./"] = {}
-        self.typeTable["./"]["integer matrix"] = {}
-        self.typeTable["./"]["integer matrix"]["integer matrix"] = "float matrix"
-        self.typeTable["./"]["integer matrix"]["float matrix"] = "float matrix"
-        self.typeTable["./"]["float matrix"] = {}
-        self.typeTable["./"]["float matrix"]["integer matrix"] = "float matrix"
-        self.typeTable["./"]["float matrix"]["float matrix"] = "float matrix"
-
         self.typeTable[".+"] = self.typeTable["+"]
         self.typeTable[".-"] = self.typeTable["-"]
         self.typeTable[".*"] = self.typeTable["*"]

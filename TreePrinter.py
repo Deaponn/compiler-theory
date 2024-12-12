@@ -139,13 +139,6 @@ class TreePrinter:
         self.indexes.printTree(indent + 1)
         printIndented("]", indent)
 
-    @addToClass(AST.Matrix)
-    def printTree(self, indent=0):
-        printIndented("MATRIX", indent)
-        self.values.printTree(indent + 1)
-        if self.nextRow is not None:
-            self.nextRow.printTree(indent + 1)
-
     @addToClass(AST.MatrixInitiator)
     def printTree(self, indent=0):
         printIndented(f"MATRIX {self.matrixType}", indent)
