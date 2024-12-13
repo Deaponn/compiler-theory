@@ -33,14 +33,24 @@ class ScalarType(TypeInfo):
     def __init__(self, typeOfValue, value=None):
         super().__init__("scalar", typeOfValue, (), value)
 
+    def columns(self): return 1
+
 class VectorType(TypeInfo):
     def __init__(self, typeOfValue, length, value=None, isProperVector=True):
         super().__init__("vector", typeOfValue, (length,), value)
         self.isProperVector = isProperVector
 
+    def rows(self): return 1
+
+    def columns(self): return self.shapeOfValue[0]
+
 class MatrixType(TypeInfo):
     def __init__(self, typeOfValue, rows, columns, value=None):
         super().__init__("matrix", typeOfValue, (rows, columns), value)
+
+    def rows(self): return self.shapeOfValue[0]
+
+    def columns(self): return self.shapeOfValue[1]
 
 class RangeType(TypeInfo):
     def __init__(self):
@@ -143,59 +153,55 @@ class TypeChecker(NodeVisitor):
         return SuccessType()
 
     def visit_Vector(self, node):
-        if logs: print("Vector")
-        valueList = self.visit(node.value)
-        if isinstance(valueList, ErrorType) or isinstance(valueList, UndefinedType):
-            return valueList
-
-        if node.nextItem is None:
-            if valueList.isProperVector: # matrix that looks like [ [1, 2, 3] ]
-                return MatrixType(valueList.typeOfValue, 1, valueList.shapeOfValue[0])
-            else:
-                return valueList
-
-        typeOfValue = valueList.typeOfValue
-        shapeOfValue = valueList.shapeOfValue
-        length = 1
-
-        while node.nextItem is not None:
-            nextValues = self.visit(node.nextItem)
-            if typeOfValue != nextValues.typeOfValue or shapeOfValue != nextValues.shapeOfValue:
-                error = f"Line {node.lineno}: inconsistent vector types {typeOfValue} and {nextValues.typeOfValue} or shape {shapeOfValue} and {nextValues.shapeOfValue}"
-                print(error)
-                return ErrorType(error)
-            length += 1
-            node = node.nextItem
-
-        if isinstance(valueList, Vector): # vector consisting of vectors is a matrix
-            return MatrixType(typeOfValue, length, valueList.shapeOfValue[0])
-        return VectorType(typeOfValue, length)
-
-    def visit_ValueList(self, node):
-        if logs: print("ValueList")
-        
         valueInfo = self.visit(node.value)
 
         if isinstance(valueInfo, ErrorType) or isinstance(valueInfo, UndefinedType):
-            print(f"Line {node.lineno}: undefined variable")
+            return valueInfo
+
+        if node.isMatrixHead:
+            if isinstance(valueInfo, MatrixType):
+                return valueInfo
+            else:
+                return MatrixType(valueInfo.typeOfValue, 1, valueInfo.columns(), (valueInfo.content))
+
+        if node.nextItem is None:
+            if isinstance(valueInfo, VectorType):
+                return VectorType(valueInfo.typeOfValue, valueInfo.columns(), valueInfo.content)
+            else:
+                return VectorType(valueInfo.typeOfValue, 1, valueInfo.content)
+
+        nextValueInfo = self.visit(node.nextItem)
+
+        if isinstance(nextValueInfo, ErrorType) or isinstance(nextValueInfo, UndefinedType):
+            return nextValueInfo
+
+        if valueInfo.typeOfValue != nextValueInfo.typeOfValue or valueInfo.columns() != nextValueInfo.columns():
+            error = f"Line {node.lineno}: inconsistent types {valueInfo.typeOfValue} and {nextValueInfo.typeOfValue} or shapes {valueInfo.shapeOfValue} and {(nextValueInfo.shapeOfValue[-1],)}"
+            print(error)
+            return ErrorType(error)
+
+        return MatrixType(valueInfo.typeOfValue, nextValueInfo.rows() + 1, nextValueInfo.columns())
+
+    def visit_ValueList(self, node):
+        valueInfo = self.visit(node.value)
+
+        if isinstance(valueInfo, ErrorType) or isinstance(valueInfo, UndefinedType):
             return valueInfo
 
         if node.nextItem is None:
             return valueInfo
-
-        typeOfValue = valueInfo.typeOfValue
-        length = 1
         
-        while node.nextItem is not None:
-            nextValueInfo = self.visit(node.nextItem)
-            if isinstance(nextValueInfo, ErrorType) or isinstance(nextValueInfo, UndefinedType):
-                print(f"Line {node.lineno}: undefined variable")
-                return nextValueInfo
-            if nextValueInfo.typeOfValue != typeOfValue:
-                return ErrorType(f"Line {node.lineno}: value list types {typeOfValue} and {nextValueInfo.typeOfValue} are inconsistent")
-            length += 1
-            node = node.nextItem
-        return VectorType(typeOfValue, length, isProperVector=False)
+        nextValueInfo = self.visit(node.nextItem)
+
+        if isinstance(nextValueInfo, ErrorType) or isinstance(nextValueInfo, UndefinedType):
+            return nextValueInfo
+
+        if valueInfo.typeOfValue != nextValueInfo.typeOfValue:
+            error = f"Line {node.lineno}: types {valueInfo.typeOfValue} and {nextValueInfo.typeOfValue} are inconsistent"
+            print(error)
+            return ErrorType(error)
+
+        return VectorType(valueInfo.typeOfValue, valueInfo.columns() + 1, isProperVector=False)
 
     def visit_IndexList(self, node):
         if logs: print("IndexList")
@@ -377,24 +383,24 @@ class TypeChecker(NodeVisitor):
             print(f"Line {node.lineno}: an error occured transpose expr")
             return indexes
 
-        print("indexed variable bt indexes", indexes.content)
-
         if not isinstance(indexes, ScalarType) and not isinstance(indexes, VectorType):
             error = f"Line {node.lineno}: illegal indexes {indexes.entityType}"
             print(error)
             return ErrorType(error)
 
-        numIndexes, typeOfValue = len(indexes.shapeOfValue), indexes.typeOfValue
+        numIndexes, typeOfValue = len(indexes.shapeOfValue) + 1, indexes.typeOfValue
         valueType = self.scopes.get(node.name)
+
+        # print(numIndexes, indexes.shapeOfValue)
 
         if valueType is None:
             error = f"Line {node.lineno}: undefined variable {node.name}"
             print(error)
             return ErrorType(error)
 
-        dimensionality = len(valueType.shapeOfValue)
+        dimensionality = len(valueType.shapeOfValue) - numIndexes
 
-        if dimensionality < numIndexes:
+        if dimensionality < 0:
             error = f"Line {node.lineno}: too many indexes {indexes.content} for {dimensionality}d variable"
             print(error)
             return ErrorType(error)

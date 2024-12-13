@@ -63,10 +63,11 @@ class LoopControlNode(Node):
 
 # used in production from values
 class Vector(Node):
-    def __init__(self, value, nextItem=None, lineno=-1):
+    def __init__(self, value, nextItem=None, isMatrixHead=False, lineno=-1):
         super().__init__(lineno)
         self.value = value
         self.nextItem = nextItem
+        self.isMatrixHead = isMatrixHead
 
 class ValueList(Node):
     def __init__(self, value, nextItem=None, lineno=-1):

@@ -82,11 +82,11 @@ class Parser(SlyParser):
 
     @_('"[" "[" values "]" "]"')
     def expr(self, p):
-        return Vector(Vector(p.values), lineno=p.lineno)
+        return Vector(Vector(p.values, lineno=p.lineno), isMatrixHead=True, lineno=p.lineno)
 
     @_('"[" "[" values "]" , next_values "]"')
     def expr(self, p):
-        return Vector(Vector(p.values, p.next_values), lineno=p.lineno)
+        return Vector(Vector(p.values, p.next_values, lineno=p.lineno), isMatrixHead=True, lineno=p.lineno)
 
     @_('"[" values "]"')
     def next_values(self, p):
