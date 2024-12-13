@@ -149,13 +149,21 @@ class Parser(SlyParser):
     def expr(self, p):
         return ValueNode(p[0], "integer", lineno=p.lineno)
 
-    @_('":"', 'expr')
+    @_('expr')
     def idx_values(self, p):
-        return IndexList(p[0], lineno=p.lineno)
+        return IndexList(p.expr, lineno=p.lineno)
 
-    @_('":" "," idx_values', 'expr "," idx_values')
+    @_('":"')
     def idx_values(self, p):
-        return IndexList(p[0], p.idx_values, lineno=p.lineno)
+        return IndexList(ValueNode(p[0], "integer"), lineno=p.lineno)
+
+    @_('expr "," idx_values')
+    def idx_values(self, p):
+        return IndexList(p.expr, p.idx_values, lineno=p.lineno)
+
+    @_('":" "," idx_values')
+    def idx_values(self, p):
+        return IndexList(ValueNode(p[0], "integer"), p.idx_values, lineno=p.lineno)
 
     @_('id_expr')
     def expr(self, p):
