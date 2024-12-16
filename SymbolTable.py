@@ -16,6 +16,13 @@ class SymbolTable(object):
                 return self.scopes[scope_idx][name]
         return None
 
+    def erase(self, name):
+        if name is None:
+            return
+        for scope_idx in range(len(self.scopes) - 1, -1, -1):
+            if name in self.scopes[scope_idx]:
+                del self.scopes[scope_idx][name]
+
     def pushScope(self):
         self.scopes.append({})
 

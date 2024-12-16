@@ -111,9 +111,11 @@ class TypeChecker(NodeVisitor):
         variableInfo = self.visit(node.variableId)
         if isinstance(variableInfo, ErrorType):
             return variableInfo
+
         valueInfo = self.visit(node.newValue)
         if isinstance(valueInfo, ErrorType) or isinstance(valueInfo, UndefinedType):
             return valueInfo
+
         if node.action == "=":
             self.scopes.put(node.variableId.name, valueInfo)
         else: # assign based on previous value
@@ -357,7 +359,7 @@ class TypeChecker(NodeVisitor):
             return variable
 
         if isinstance(indexes, ScalarType):
-            if indexes.content >= variable.columns():
+            if indexes.content is not None and indexes.content >= variable.columns():
                 return ErrorType(f"Line {node.lineno}: index {indexes.content} out of range for {variable.columns()}")
             if isinstance(variable, VectorType):
                 return ScalarType(variable.typeOfValue, value=variable.valueAt(indexes.content), name=node.name)
@@ -367,11 +369,13 @@ class TypeChecker(NodeVisitor):
         if isinstance(variable, VectorType):
             ErrorType(f"Line {node.lineno}: too many indexes")
 
-        if (indexes.content[0] != ":" and indexes.content[0] > variable.rows()) or (indexes.content[1] != ":" and indexes.content[1] > variable.columns()):
-            return ErrorType(f"Line {node.lineno}: row or column index out of bounds {indexes.content} for matrix of shape {variable.shapeOfValue}")
+        if indexes.content[0] is not None and indexes.content[0] != ":" and indexes.content[0] > variable.rows():
+            return ErrorType(f"Line {node.lineno}: row index out of bounds {indexes.content[0]} for matrix of shape {variable.shapeOfValue}")
+        if indexes.content[1] is not None and indexes.content[1] != ":" and indexes.content[1] > variable.columns():
+            return ErrorType(f"Line {node.lineno}: column index out of bounds {indexes.content[1]} for matrix of shape {variable.shapeOfValue}")
 
         if indexes.content[0] == ":":
-            return VectorType(variable.typeOfValue, length=variable.rows(), value=variable.valueAt(*indexes.content), name=node.name)
+            return VectorType(variable.typeOfValue, length=variable.rows(), value=variable.valueAt(None, indexes.content[1]), name=node.name)
         if indexes.content[1] == ":":
             return VectorType(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content[0]), name=node.name)
 
