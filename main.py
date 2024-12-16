@@ -2,7 +2,7 @@ import sys
 from scanner import Scanner
 from parser import Parser
 from TreePrinter import TreePrinter
-from TypeChecker import TypeChecker
+from TypeChecker import TypeChecker, ErrorType
 
 if __name__ == '__main__':
     try:
@@ -15,13 +15,16 @@ if __name__ == '__main__':
     text = file.read()
     lexer = Scanner()
     parser = Parser()
+    typeChecker = TypeChecker()
 
     ast = parser.parse(lexer.tokenize(text))
 
     if ast is None:
         sys.exit("Bledne wejscie! Nie mozna utworzyc AST")
 
-    # ast.printTree()
+    ast.printTree()
 
-    typeChecker = TypeChecker()   
-    typeChecker.visit(ast)
+    output = typeChecker.visit(ast)
+
+    if isinstance(output, ErrorType):
+        sys.exit("Wykryto blad podczas analizy programu. Popraw go i wroc tu za moment :)")

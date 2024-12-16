@@ -2,8 +2,6 @@ from sly import Parser as SlyParser
 from scanner import Scanner
 from AST import *
 
-# TODO: there are no rules for using parenthesis, ex. 3 * (1 + 2)
-
 class Parser(SlyParser):
 
     tokens = Scanner.tokens
@@ -168,6 +166,10 @@ class Parser(SlyParser):
     @_('id_expr')
     def expr(self, p):
         return p.id_expr
+
+    @_('"(" expr ")"')
+    def expr(self, p):
+        return p.expr
 
     @_('ID')
     def id_expr(self, p):
