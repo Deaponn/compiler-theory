@@ -1,7 +1,8 @@
 from SymbolTable import VariableSymbol, SymbolTable, TypeTable
 from AST import Vector
 
-# TODO: add initializing zeros, ones, and eye by passing value list by dimension ex ones(3, 4)
+# TODO: add initializing zeros, ones and eye matrices by sizes of dynamic value, ex ones(n, m)
+# TODO: add correct "value" to MatrixType in zeros, ones and eye type productions
 
 class TypeInfo(object):
     def __init__(self, entityType, typeOfValue=None, shapeOfValue=None, content=None, name=None):
@@ -383,6 +384,10 @@ class TypeChecker(NodeVisitor):
 
     def visit_MatrixInitiator(self, node):
         matrixSize = self.visit(node.size)
-        if not isinstance(matrixSize, ScalarType) or matrixSize.typeOfValue != "integer":
-            return ErrorType(f"Line {node.lineno}: matrix initiator dimensions are non-scalar {matrixSize.entityType} or non-int {matrixSize.typeOfValue}")
-        return MatrixType("integer", rows=matrixSize.content, columns=matrixSize.content, value=((0,1,0),(0,2,0),(0,3,0)))
+        if isinstance(matrixSize, MatrixType) or matrixSize.typeOfValue != "integer":
+            return ErrorType(f"Line {node.lineno}: matrix initiator dimensions are non-scalar or non-vector but {matrixSize.entityType}, or non-int {matrixSize.typeOfValue}")
+        if isinstance(matrixSize, ScalarType):
+            return MatrixType("integer", rows=matrixSize.content, columns=matrixSize.content, value=((0,1,0),(0,2,0),(0,3,0)))
+        if matrixSize.columns() > 2:
+            return ErrorType(f"Line {node.lineno}: too many values while initiating the matrix")
+        return MatrixType("integer", rows=matrixSize.content[0], columns=matrixSize.content[1], value=None)

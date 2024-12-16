@@ -179,14 +179,14 @@ class Parser(SlyParser):
     def id_expr(self, p):
         return IndexedVariable(p.ID, p.idx_values, lineno=p.lineno)
 
-    @_('ZEROS "(" expr ")"')
+    @_('ZEROS "(" values ")"')
     def expr(self, p):
-        return MatrixInitiator(p.ZEROS, p.expr, lineno=p.lineno)
+        return MatrixInitiator(p.ZEROS, p.values, lineno=p.lineno)
 
-    @_('ONES "(" expr ")"') 
+    @_('ONES "(" values ")"') 
     def expr(self, p):
-        return MatrixInitiator(p.ONES, p.expr, lineno=p.lineno)
+        return MatrixInitiator(p.ONES, p.values, lineno=p.lineno)
 
-    @_('EYE "(" expr ")"')
+    @_('EYE "(" values ")"')
     def expr(self, p):
-        return MatrixInitiator(p.EYE, p.expr, lineno=p.lineno)
+        return MatrixInitiator(p.EYE, p.values, lineno=p.lineno)
