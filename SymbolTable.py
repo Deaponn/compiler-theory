@@ -6,6 +6,7 @@ class VariableSymbol(object):
 class SymbolTable(object):
     def __init__(self): # parent scope and symbol table name
         self.scopes = [{}]
+        self.loopDepth = 0
 
     def put(self, name, typeOfValue): # put variable symbol or fundef under <name> entry
         self.scopes[-1][name] = typeOfValue
@@ -29,8 +30,11 @@ class SymbolTable(object):
     def popScope(self):
         self.scopes.pop()
 
-    def isOuterScope(self):
-        return len(self.scopes) == 1
+    def modifyLoopCount(self, delta):
+        self.loopDepth += delta
+
+    def isInsideLoop(self):
+        return self.loopDepth > 0
 
 class TypeTable(object):
     def __init__(self):

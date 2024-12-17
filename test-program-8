@@ -104,6 +104,18 @@ continue;
 
 return x;
 
+for var = x:a {
+    print var;
+    continue;
+    break;
+}
+
+for x = 3:10
+    print x;
+
+for x = 1:4
+    continue;
+
 break;
 
 return x+1;

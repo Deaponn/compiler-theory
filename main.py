@@ -22,7 +22,7 @@ if __name__ == '__main__':
     if ast is None:
         sys.exit("Bledne wejscie! Nie mozna utworzyc AST")
 
-    ast.printTree()
+    # ast.printTree()
 
     output = typeChecker.visit(ast)
 

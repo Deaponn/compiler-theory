@@ -1,9 +1,6 @@
 from SymbolTable import VariableSymbol, SymbolTable, TypeTable
 from AST import Vector
 
-# TODO: add initializing zeros, ones and eye matrices by sizes of dynamic value, ex ones(n, m)
-# TODO: add correct "value" to MatrixType in zeros, ones and eye type productions
-
 class TypeInfo(object):
     def __init__(self, entityType, typeOfValue=None, shapeOfValue=None, content=None, name=None):
         # entity type is "undefined", "scalar", "vector", "matrix", "boolean" for variables
@@ -146,7 +143,7 @@ class TypeChecker(NodeVisitor):
         return SuccessType()
 
     def visit_LoopControlNode(self, node):
-        if self.scopes.isOuterScope():
+        if not self.scopes.isInsideLoop():
             return ErrorType(f"Line {node.lineno}: break or continue in illegal place")
         return SuccessType()
 
@@ -304,21 +301,32 @@ class TypeChecker(NodeVisitor):
         if conditionOutput.typeOfValue != "boolean":
             errorMessage = f"Line {node.lineno}: invalid condition"
 
+        self.scopes.modifyLoopCount(1)
+
         actionOutput = self.visit(node.action)
         if errorMessage != "":
             return ErrorType(errorMessage)
         if isinstance(actionOutput, ErrorType):
             return actionOutput
+
+        self.scopes.modifyLoopCount(-1)
+        
         return SuccessType()
 
     def visit_ForStatement(self, node):
         rangeOutput = self.visit(node.valueRange)
         self.scopes.put(node.loopVariable, ScalarType("integer", value=rangeOutput.start))
+
+        self.scopes.modifyLoopCount(1)
+
         actionOutput = self.visit(node.action)
         if isinstance(rangeOutput, ErrorType):
             return rangeOutput
         if isinstance(actionOutput, ErrorType):
             return actionOutput
+
+        self.scopes.modifyLoopCount(-1)
+
         return SuccessType()
 
     def visit_TransposeExpression(self, node):
@@ -387,7 +395,15 @@ class TypeChecker(NodeVisitor):
         if isinstance(matrixSize, MatrixType) or matrixSize.typeOfValue != "integer":
             return ErrorType(f"Line {node.lineno}: matrix initiator dimensions are non-scalar or non-vector but {matrixSize.entityType}, or non-int {matrixSize.typeOfValue}")
         if isinstance(matrixSize, ScalarType):
-            return MatrixType("integer", rows=matrixSize.content, columns=matrixSize.content, value=((0,1,0),(0,2,0),(0,3,0)))
+            return MatrixType("integer", rows=matrixSize.content, columns=matrixSize.content, value=getMatrixValues(node.matrixType, matrixSize.content, matrixSize.content))
         if matrixSize.columns() > 2:
             return ErrorType(f"Line {node.lineno}: too many values while initiating the matrix")
-        return MatrixType("integer", rows=matrixSize.content[0], columns=matrixSize.content[1], value=None)
+        return MatrixType("integer", rows=matrixSize.content[0], columns=matrixSize.content[1], value=getMatrixValues(node.matrixType, matrixSize.content[0], matrixSize.content[1]))
+
+def getMatrixValues(valueType, rows, columns):
+    value = 1 if valueType == "ones" else 0
+    values = [[value] * columns for _ in range(rows)]
+    if valueType == "eye":
+        for idx in range(min(rows, columns)):
+            values[idx][idx] = 1
+    return values
