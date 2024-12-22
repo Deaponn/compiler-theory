@@ -38,54 +38,70 @@ class SymbolTable(object):
 
 class TypeTable(object):
     def __init__(self):
-        self.typeTable = {}
-
-        self.typeTable["+"] = {}
-        self.typeTable["+"]["integer"] = {}
-        self.typeTable["+"]["integer"]["integer"] = "integer"
-        self.typeTable["+"]["integer"]["float"] = "float"
-        self.typeTable["+"]["float"] = {}
-        self.typeTable["+"]["float"]["integer"] = "float"
-        self.typeTable["+"]["float"]["float"] = "float"
-        self.typeTable["+"]["string"] = {}
-        self.typeTable["+"]["string"]["string"] = "string"
-
-        self.typeTable["-"] = {}
-        self.typeTable["-"]["integer"] = {}
-        self.typeTable["-"]["integer"]["integer"] = "integer"
-        self.typeTable["-"]["integer"]["float"] = "float"
-        self.typeTable["-"]["float"] = {}
-        self.typeTable["-"]["float"]["integer"] = "float"
-        self.typeTable["-"]["float"]["float"] = "float"
-
-        self.typeTable["*"] = {}
-        self.typeTable["*"]["integer"] = {}
-        self.typeTable["*"]["integer"]["integer"] = "integer"
-        self.typeTable["*"]["integer"]["float"] = "float"
-        self.typeTable["*"]["float"] = {}
-        self.typeTable["*"]["float"]["integer"] = "float"
-        self.typeTable["*"]["float"]["float"] = "float"
-
-        self.typeTable["/"] = {}
-        self.typeTable["/"]["integer"] = {}
-        self.typeTable["/"]["integer"]["integer"] = "float"
-        self.typeTable["/"]["integer"]["float"] = "float"
-        self.typeTable["/"]["float"] = {}
-        self.typeTable["/"]["float"]["integer"] = "float"
-        self.typeTable["/"]["float"]["float"] = "float"
+        self.typeTable = {
+            "+": {
+                "integer": {
+                    "integer": "integer",
+                    "float": "float"
+                },
+                "float": {
+                    "integer": "float",
+                    "float": "float"
+                },
+                "string": {
+                    "string": "string"
+                }
+            },
+            "-": {
+                "integer": {
+                    "integer": "integer",
+                    "float": "float"
+                },
+                "float": {
+                    "integer": "float",
+                    "float": "float"
+                }
+            },
+            "*": {
+                "integer": {
+                    "integer": "integer",
+                    "float": "float",
+                    "string": "string"
+                },
+                "float": {
+                    "integer": "float",
+                    "float": "float"
+                },
+                "string": {
+                    "integer": "string"
+                }
+            },
+            "/": {
+                "integer": {
+                    "integer": "float",
+                    "float": "float"
+                },
+                "float": {
+                    "integer": "float",
+                    "float": "float"
+                }
+            },
+            "<": {
+                "integer": {
+                    "integer": "boolean",
+                    "float": "boolean"
+                },
+                "float": {
+                    "integer": "boolean",
+                    "float": "boolean"
+                }
+            }
+        }
 
         self.typeTable[".+"] = self.typeTable["+"]
         self.typeTable[".-"] = self.typeTable["-"]
         self.typeTable[".*"] = self.typeTable["*"]
         self.typeTable["./"] = self.typeTable["/"]
-
-        self.typeTable["<"] = {}
-        self.typeTable["<"]["integer"] = {}
-        self.typeTable["<"]["integer"]["integer"] = "boolean"
-        self.typeTable["<"]["integer"]["float"] = "boolean"
-        self.typeTable["<"]["float"] = {}
-        self.typeTable["<"]["float"]["integer"] = "boolean"
-        self.typeTable["<"]["float"]["float"] = "boolean"
 
         self.typeTable[">"] = self.typeTable["<"]
         self.typeTable["<="] = self.typeTable["<"]

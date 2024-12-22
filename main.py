@@ -3,6 +3,7 @@ from scanner import Scanner
 from parser import Parser
 from TreePrinter import TreePrinter
 from TypeChecker import TypeChecker, ErrorType
+from Interpreter import Interpreter
 
 if __name__ == '__main__':
     try:
@@ -16,6 +17,7 @@ if __name__ == '__main__':
     lexer = Scanner()
     parser = Parser()
     typeChecker = TypeChecker()
+    interpreter = Interpreter()
 
     ast = parser.parse(lexer.tokenize(text))
 
@@ -24,7 +26,9 @@ if __name__ == '__main__':
 
     # ast.printTree()
 
-    output = typeChecker.visit(ast)
+    typeCheckOutput = typeChecker.visit(ast)
 
-    if isinstance(output, ErrorType):
+    if isinstance(typeCheckOutput, ErrorType):
         sys.exit("Wykryto blad podczas analizy programu. Popraw go i wroc tu za moment :)")
+
+    interpreter.visit(ast)
