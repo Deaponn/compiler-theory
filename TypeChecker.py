@@ -122,7 +122,7 @@ class TypeChecker(NodeVisitor):
             if isinstance(variableInfo, UndefinedType):
                 return ErrorType(f"Line {node.lineno}: operation-assignment to undefined variable {node.variableId.name}")
 
-            newType = self.typeTable.getType(variableInfo.typeOfValue, node.action, node.newValue.typeOfValue)
+            newType = self.typeTable.getType(variableInfo.typeOfValue, node.action, valueInfo.typeOfValue)
             
             if newType is None:
                 return ErrorType(f"Line {node.lineno}: incompatible types {variableInfo.typeOfValue} {node.action} {valueInfo.typeOfValue}")
@@ -265,7 +265,7 @@ class TypeChecker(NodeVisitor):
         if newType is None:
             return ErrorType(f"Line {node.lineno}: cant compare {leftType.typeOfValue} {node.action} {rightType.typeOfValue}")
 
-        return ScalarType(newType)
+        return ScalarType(newType, None)
 
     def visit_NegateExpression(self, node):
         output = self.visit(node.expr)
@@ -345,7 +345,7 @@ class TypeChecker(NodeVisitor):
         if not isinstance(typeStart, ScalarType) or not isinstance(typeEnd, ScalarType):
             return ErrorType(f"Line {node.lineno}: range start or end are not scalars but {typeStart.entityType} and {typeEnd.entityType}")
         if typeStart.typeOfValue != "integer" or typeEnd.typeOfValue != "integer":
-            return ErrorType(f"Line {node.lineno}: invalid range {typeStart} : {typeEnd}")
+            return ErrorType(f"Line {node.lineno}: invalid range types {typeStart.typeOfValue} : {typeEnd.typeOfValue}")
         return RangeType(start=typeStart.content, end=typeEnd.content)
 
     def visit_Variable(self, node):
@@ -354,7 +354,6 @@ class TypeChecker(NodeVisitor):
             return UndefinedType()
         return variableInfo
 
-    # when indexing n-dimensional matrix with k-long indexes, the output is (n-k)-dimensional
     def visit_IndexedVariable(self, node):
         indexes = self.visit(node.indexes)
         if isinstance(indexes, ErrorType) or isinstance(indexes, UndefinedType):
@@ -376,7 +375,7 @@ class TypeChecker(NodeVisitor):
                 return VectorType(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content), name=node.name)
 
         if isinstance(variable, VectorType):
-            ErrorType(f"Line {node.lineno}: too many indexes")
+            return ErrorType(f"Line {node.lineno}: too many indexes")
 
         if indexes.content[0] is not None and indexes.content[0] != ":" and indexes.content[0] > variable.rows():
             return ErrorType(f"Line {node.lineno}: row index out of bounds {indexes.content[0]} for matrix of shape {variable.shapeOfValue}")
