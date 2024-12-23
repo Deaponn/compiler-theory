@@ -137,7 +137,7 @@ class Parser(SlyParser):
 
     @_('STRING')
     def expr(self, p):
-        return ValueNode(p[0], "string", lineno=p.lineno)
+        return ValueNode(p[0][1:-1], "string", lineno=p.lineno)
 
     @_('FLOAT')
     def expr(self, p):

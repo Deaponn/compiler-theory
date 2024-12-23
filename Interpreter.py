@@ -93,7 +93,7 @@ class Interpreter(object):
 
     @on('node')
     def visit(self, node):
-        print("visit here")
+        print("unknown node", node)
 
     @when(AST.ValueNode)
     def visit(self, node):
@@ -135,6 +135,7 @@ class Interpreter(object):
             return valueInfo
 
         if node.action == "=":
+            valueInfo.name = node.variableId.name
             self.scopes.put(node.variableId.name, valueInfo)
         else: # assign based on previous value
             if variableInfo.entityType != valueInfo.entityType:
@@ -143,10 +144,11 @@ class Interpreter(object):
                 return ErrorValue(f"Line {node.lineno}: operation-assignment to undefined variable {node.variableId.name}")
 
             newValue = self.calculator.calculate(node.action, [variableInfo, valueInfo])
-            
+
             if newValue is None:
                 return ErrorValue(f"Line {node.lineno}: incompatible types {variableInfo.typeOfValue} {node.action} {valueInfo.typeOfValue}")
 
+            newValue.name = variableInfo.name
             self.scopes.put(variableInfo.name, newValue)
         return SuccessValue()
 
