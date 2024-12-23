@@ -85,6 +85,17 @@ class SuccessValue(ValueInfo):
     def __init__(self):
         super().__init__("ok")
 
+class ContinueException(Exception):
+    pass
+
+class BreakException(Exception):
+    pass
+
+class ReturnException(Exception):
+    def __init__(self, value):
+        super().__init__()
+        self.value = value
+
 class Interpreter(object):
     def __init__(self):
         self.typeTable = TypeTable()
@@ -101,12 +112,15 @@ class Interpreter(object):
 
     @when(AST.StartNode)
     def visit(self, node):
-        output = self.visit(node.block)
-        if node.nextStart is not None:
-            newOutput = self.visit(node.nextStart)
-            if isinstance(newOutput, ErrorValue):
-                output = newOutput
-        return output
+        try:
+            output = self.visit(node.block)
+            if node.nextStart is not None:
+                newOutput = self.visit(node.nextStart)
+                if isinstance(newOutput, ErrorValue):
+                    output = newOutput
+            return output
+        except ReturnException as ret:
+            print(f"Program returned with {ret.value}")
 
     @when(AST.Statement)
     def visit(self, node):
@@ -152,13 +166,12 @@ class Interpreter(object):
             self.scopes.put(variableInfo.name, newValue)
         return SuccessValue()
 
-    # TODO: handle with exception
     @when(AST.ReturnValue)
     def visit(self, node):
         output = self.visit(node.value)
         if isinstance(output, ErrorValue) or isinstance(output, UndefinedValue):
             return output
-        return SuccessValue()
+        raise ReturnException(output.content)
 
     @when(AST.PrintValue)
     def visit(self, node):
@@ -174,12 +187,11 @@ class Interpreter(object):
             print(output.content)
         return SuccessValue()
 
-    # TODO: handle with exception
     @when(AST.LoopControlNode)
     def visit(self, node):
-        if not self.scopes.isInsideLoop():
-            return ErrorValue(f"Line {node.lineno}: break or continue in illegal place")
-        return SuccessValue()
+        if node.action == "continue":
+            raise ContinueException
+        raise BreakException
 
     @when(AST.Vector)
     def visit(self, node):
@@ -310,13 +322,19 @@ class Interpreter(object):
         if conditionOutput.typeOfValue != "boolean":
             return ErrorValue(f"Line {node.lineno}: invalid condition")
 
-        while conditionOutput.content:
-            actionOutput = self.visit(node.action)
-            if isinstance(actionOutput, ErrorValue):
-                return actionOutput
-            conditionOutput = self.visit(node.condition)
-            if conditionOutput.typeOfValue != "boolean":
-                return ErrorValue(f"Line {node.lineno}: invalid condition")
+        try:
+            while conditionOutput.content:
+                try:
+                    actionOutput = self.visit(node.action)
+                    if isinstance(actionOutput, ErrorValue):
+                        return actionOutput
+                    conditionOutput = self.visit(node.condition)
+                    if conditionOutput.typeOfValue != "boolean":
+                        return ErrorValue(f"Line {node.lineno}: invalid condition")
+                except ContinueException:
+                    pass
+        except BreakException:
+            pass
 
         return SuccessValue()
 
@@ -328,14 +346,20 @@ class Interpreter(object):
 
         loopVariableValue = rangeOutput.getNext()
 
-        while loopVariableValue is not None:
-            self.scopes.put(node.loopVariable, ScalarValue("integer", value=loopVariableValue))
+        try:
+            while loopVariableValue is not None:
+                try:
+                    self.scopes.put(node.loopVariable, ScalarValue("integer", value=loopVariableValue))
 
-            actionOutput = self.visit(node.action)
-            if isinstance(actionOutput, ErrorValue):
-                return actionOutput
+                    actionOutput = self.visit(node.action)
+                    if isinstance(actionOutput, ErrorValue):
+                        return actionOutput
 
-            loopVariableValue = rangeOutput.getNext()
+                    loopVariableValue = rangeOutput.getNext()
+                except ContinueException:
+                    pass
+        except BreakException:
+            pass
 
         return SuccessValue()
 
@@ -363,6 +387,7 @@ class Interpreter(object):
             return UndefinedValue()
         return variableInfo
 
+    # TODO: support assigning to indexed vector/matrix ex. M[1, 2] = 3 now overrides the whole matrix variable
     @when(AST.IndexedVariable)
     def visit(self, node):
         indexes = self.visit(node.indexes)
@@ -447,8 +472,6 @@ def applyElementwiseTwoArg(fun):
 class Calculator():
     def __init__(self):
         self.typeTable = TypeTable()
-        # TODO: do I really need this deep nesting?
-        # why checking types when it is supposed to be done earlier in the process?
         self.operationTable = {
             "+": lambda x, y: x + y,
             "-": lambda x, y: x - y,

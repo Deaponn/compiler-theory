@@ -275,11 +275,12 @@ class TypeChecker(NodeVisitor):
             return ErrorType(f"Line {node.lineno}: cant negate string")
         return output
 
+    # TODO: fix invalid condition, type is None for test-program-2
     def visit_IfStatement(self, node):
         errorMessage = ""
         conditionOutput = self.visit(node.condition)
         if conditionOutput.typeOfValue != "boolean":
-            errorMessage = f"Line {node.lineno}: invalid condition"
+            errorMessage = f"Line {node.lineno}: invalid condition, type is {conditionOutput.typeOfValue}"
         
         actionOutput = self.visit(node.action)
 

@@ -3,8 +3,6 @@ class VariableSymbol(object):
         self.name = name
         self.typeOfVariable = typeOfVariable
 
-# TODO: add string comparison to TypeTable
-
 class SymbolTable(object):
     def __init__(self): # parent scope and symbol table name
         self.scopes = [{}]
@@ -57,30 +55,6 @@ class TypeTable(object):
                     "float": "float"
                 }
             },
-            "*": {
-                "integer": {
-                    "integer": "integer",
-                    "float": "float",
-                    "string": "string"
-                },
-                "float": {
-                    "integer": "float",
-                    "float": "float"
-                },
-                "string": {
-                    "integer": "string"
-                }
-            },
-            "/": {
-                "integer": {
-                    "integer": "float",
-                    "float": "float"
-                },
-                "float": {
-                    "integer": "float",
-                    "float": "float"
-                }
-            },
             "<": {
                 "integer": {
                     "integer": "boolean",
@@ -92,6 +66,9 @@ class TypeTable(object):
                 }
             }
         }
+
+        self.typeTable["*"] = self.typeTable["+"]
+        self.typeTable["/"] = self.typeTable["-"]
 
         self.typeTable[".+"] = self.typeTable["+"]
         self.typeTable[".-"] = self.typeTable["-"]
