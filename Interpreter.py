@@ -56,9 +56,9 @@ class MatrixValue(ValueInfo):
         if column is None:
             return self.content[row]
         if row == ":":
-            values = ()
+            values = []
             for vector in self.content:
-                values = (*values, vector[column])
+                values = [*values, vector[column]]
             return values
         return self.content[row][column]
 
@@ -165,7 +165,13 @@ class Interpreter(object):
         output = self.visit(node.value)
         if isinstance(output, ErrorValue) or isinstance(output, UndefinedValue):
             return output
-        print(output.content)
+        if isinstance(output, MatrixValue):
+            print("[")
+            for x in output.content:
+                print(f"  {x},")
+            print("]")
+        else:
+            print(output.content)
         return SuccessValue()
 
     # TODO: handle with exception
@@ -185,13 +191,13 @@ class Interpreter(object):
             if isinstance(valueInfo, MatrixValue):
                 return valueInfo
             else:
-                return MatrixValue(valueInfo.typeOfValue, rows=1, columns=valueInfo.columns(), value=(valueInfo.content,))
+                return MatrixValue(valueInfo.typeOfValue, rows=1, columns=valueInfo.columns(), value=[valueInfo.content,])
 
         if node.nextItem is None:
             if isinstance(valueInfo, VectorValue):
                 return VectorValue(valueInfo.typeOfValue, length=valueInfo.columns(), value=valueInfo.content)
             else:
-                return VectorValue(valueInfo.typeOfValue, length=1, value=(valueInfo.content,))
+                return VectorValue(valueInfo.typeOfValue, length=1, value=[valueInfo.content])
 
         nextValueInfo = self.visit(node.nextItem)
         if isinstance(nextValueInfo, ErrorValue) or isinstance(nextValueInfo, UndefinedValue):
@@ -200,7 +206,7 @@ class Interpreter(object):
         if valueInfo.typeOfValue != nextValueInfo.typeOfValue or valueInfo.columns() != nextValueInfo.columns():
             return ErrorValue(f"Line {node.lineno}: inconsistent types {valueInfo.typeOfValue} and {nextValueInfo.typeOfValue} or shapes {valueInfo.shapeOfValue} and {(nextValueInfo.shapeOfValue[-1],)}")
 
-        nextValue = (valueInfo.content, *nextValueInfo.content) if not isinstance(nextValueInfo, VectorValue) else (valueInfo.content, nextValueInfo.content)
+        nextValue = [valueInfo.content, *nextValueInfo.content] if not isinstance(nextValueInfo, VectorValue) else [valueInfo.content, nextValueInfo.content]
 
         return MatrixValue(valueInfo.typeOfValue, rows=nextValueInfo.rows() + 1, columns=nextValueInfo.columns(), value=nextValue)
 
@@ -220,7 +226,7 @@ class Interpreter(object):
         if valueInfo.typeOfValue != nextValueInfo.typeOfValue:
             return ErrorValue(f"Line {node.lineno}: types {valueInfo.typeOfValue} and {nextValueInfo.typeOfValue} are inconsistent")
 
-        nextValue = (valueInfo.content, *nextValueInfo.content) if not isinstance(nextValueInfo, ScalarValue) else (valueInfo.content, nextValueInfo.content)
+        nextValue = [valueInfo.content, *nextValueInfo.content] if not isinstance(nextValueInfo, ScalarValue) else [valueInfo.content, nextValueInfo.content]
 
         return VectorValue(valueInfo.typeOfValue, length=nextValueInfo.columns() + 1, value=nextValue, isProperVector=False)
 
@@ -242,7 +248,7 @@ class Interpreter(object):
         if not isinstance(nextValueInfo, ScalarValue) or nextValueInfo.typeOfValue != "integer":
             return ErrorValue(f"Line {node.lineno}: indexes are not integer or too many indexes")
 
-        return VectorValue("integer", length=2, value=(valueInfo.content, nextValueInfo.content))
+        return VectorValue("integer", length=2, value=[valueInfo.content, nextValueInfo.content])
 
     @when(AST.ArithmeticExpression)
     def visit(self, node):
@@ -285,7 +291,7 @@ class Interpreter(object):
         output = self.visit(node.expr)
         if isinstance(output, ErrorValue) or isinstance(output, UndefinedValue):
             return output
-        return self.calculator.calculate("-", output)
+        return self.calculator.calculate("-", [output])
 
     @when(AST.IfStatement)
     def visit(self, node):
@@ -338,7 +344,7 @@ class Interpreter(object):
         output = self.visit(node.value)
         if isinstance(output, ErrorValue) or isinstance(output, UndefinedValue):
             return output
-        return self.calculator.calculate("'", output)
+        return self.calculator.calculate("'", [output])
 
     @when(AST.RangeNode)
     def visit(self, node):
@@ -404,119 +410,39 @@ class Interpreter(object):
             return ErrorValue(f"Line {node.lineno}: too many values while initiating the matrix")
         return MatrixValue("integer", rows=matrixSize.content[0], columns=matrixSize.content[1], value=self.calculator.getMatrixValues(node.matrixType, matrixSize.content[0], matrixSize.content[1]))
 
-def negate(value):
-    if not isinstance(value, tuple):
-        return -value
-
-    newContent = ()
-    if not isinstance(value[0], tuple):
-        for number in value:
-            newContent = (*newContent, -number)
-        return newContent
-
-    for vector in value:
-        newContent = (*newContent, negate(vector))
-    return newContent
-
 def transpose(matrix):
     rows, cols = len(matrix), len(matrix[0])
-    output = [[0] * cols for _ in range(rows)]
+    output = [[0] * rows for _ in range(cols)]
 
     for row in range(rows):
         for col in range(cols):
             output[col][row] = matrix[row][col]
-        output[col] = tuple(output[col])
 
-    return tuple(output)
+    return output
 
-# TODO: refactor to "applyArgFunctionElemByElemPairwise"
-def addVectors(x, y):
-    output = [0] * len(x)
-    for idx in range(len(x)):
-        output[idx] = x[idx] + y[idx]
-    return tuple(output)
+def applyElementwiseOneArg(fun):
+    def f(x):
+        output = [None] * len(x)
+        if not isinstance(x[0], list): # vector
+            for idx in range(len(x)):
+                output[idx] = fun(x[idx])
+        else: # matrix
+            for idx in range(len(x)):
+                output[idx] = f(x[idx])
+        return output
+    return f
 
-def subtractVectors(x, y):
-    output = [0] * len(x)
-    for idx in range(len(x)):
-        output[idx] = x[idx] - y[idx]
-    return tuple(output)
-
-def multiplyVectors(x, y):
-    output = [0] * len(x)
-    for idx in range(len(x)):
-        output[idx] = x[idx] * y[idx]
-    return tuple(output)
-
-def divideVectors(x, y):
-    output = [0] * len(x)
-    for idx in range(len(x)):
-        output[idx] = x[idx] / y[idx]
-    return tuple(output)
-
-def addMatrixes(x, y):
-    rows, cols = len(matrix), len(matrix[0])
-    output = [[0] * cols for _ in range(rows)]
-
-    for row in range(rows):
-        for col in range(cols):
-            output[row][col] = x[row][col] + y[row][col]
-        output[row] = tuple(output[row])
-
-    return tuple(output)
-
-def subtractMatrixes(x, y):
-    rows, cols = len(matrix), len(matrix[0])
-    output = [[0] * cols for _ in range(rows)]
-
-    for row in range(rows):
-        for col in range(cols):
-            output[row][col] = x[row][col] - y[row][col]
-        output[row] = tuple(output[row])
-
-    return tuple(output)
-
-def multiplyMatrixes(x, y):
-    rows, cols = len(matrix), len(matrix[0])
-    output = [[0] * cols for _ in range(rows)]
-
-    for row in range(rows):
-        for col in range(cols):
-            output[row][col] = x[row][col] * y[row][col]
-        output[row] = tuple(output[row])
-
-    return tuple(output)
-
-def divideMatrixes(x, y):
-    rows, cols = len(matrix), len(matrix[0])
-    output = [[0] * cols for _ in range(rows)]
-
-    for row in range(rows):
-        for col in range(cols):
-            output[row][col] = x[row][col] / y[row][col]
-        output[row] = tuple(output[row])
-
-    return tuple(output)
-
-def addIterable(x, y):
-    if isinstance(x[0], tuple):
-        return addMatrixes(x, y)
-    return addVectors(x, y)
-
-def subtractIterable(x, y):
-    if isinstance(x[0], tuple):
-        return subtractMatrixes(x, y)
-    return subtractVectors(x, y)
-    
-def multiplyIterable(x, y):
-    if isinstance(x[0], tuple):
-        return multiplyMatrixes(x, y)
-    return multiplyVectors(x, y)
-
-def divideIterable(x, y):
-    if isinstance(x[0], tuple):
-        return divideMatrixes(x, y)
-    return divideVectors(x, y)
+def applyElementwiseTwoArg(fun):
+    def f(x, y):
+        output = [None] * len(x)
+        if not isinstance(x[0], list): # vector
+            for idx in range(len(x)):
+                output[idx] = fun(x[idx], y[idx])
+        else: # matrix
+            for idx in range(len(x)):
+                output[idx] = f(x[idx], y[idx])
+        return output
+    return f
 
 class Calculator():
     def __init__(self):
@@ -524,190 +450,52 @@ class Calculator():
         # TODO: do I really need this deep nesting?
         # why checking types when it is supposed to be done earlier in the process?
         self.operationTable = {
-            "+": {
-                "integer": {
-                    "integer": lambda x, y: x + y,
-                    "float": lambda x, y: x + y
-                },
-                "float": {
-                    "integer": lambda x, y: x + y,
-                    "float": lambda x, y: x + y
-                },
-                "string": {
-                    "string": lambda x, y: x + y
-                }
-            },
-            "-": {
-                "integer": {
-                    "integer": lambda x, y: x - y,
-                    "float": lambda x, y: x - y
-                },
-                "float": {
-                    "integer": lambda x, y: x - y,
-                    "float": lambda x, y: x - y
-                },
-                "self": negate
-            },
-            "*": {
-                "integer": {
-                    "integer": lambda x, y: x * y,
-                    "float": lambda x, y: x * y,
-                    "string": lambda x, y: x * y
-                },
-                "float": {
-                    "integer": lambda x, y: x * y,
-                    "float": lambda x, y: x * y
-                },
-                "string": {
-                    "integer": lambda x, y: x * y
-                }
-            },
-            "/": {
-                "integer": {
-                    "integer": lambda x, y: x / y,
-                    "float": lambda x, y: x / y
-                },
-                "float": {
-                    "integer": lambda x, y: x / y,
-                    "float": lambda x, y: x / y
-                }
-            },
-            ".+": {
-                "integer": {
-                    "integer": addIterable,
-                    "float": addIterable
-                },
-                "float": {
-                    "integer": addIterable,
-                    "float": addIterable
-                },
-                "string": {
-                    "string": addIterable
-                }
-            },
-            ".-": {
-                "integer": {
-                    "integer": subtractIterable,
-                    "float": subtractIterable
-                },
-                "float": {
-                    "integer": subtractIterable,
-                    "float": subtractIterable
-                },
-                "self": negate
-            },
-            ".*": {
-                "integer": {
-                    "integer": multiplyIterable,
-                    "float": multiplyIterable,
-                    "string": multiplyIterable
-                },
-                "float": {
-                    "integer": multiplyIterable,
-                    "float": multiplyIterable
-                },
-                "string": {
-                    "integer": multiplyIterable
-                }
-            },
-            "./": {
-                "integer": {
-                    "integer": divideIterable,
-                    "float": divideIterable
-                },
-                "float": {
-                    "integer": divideIterable,
-                    "float": divideIterable
-                }
-            },
-            "'": {
-                "self": transpose
-            },
-            "<": {
-                "integer": {
-                    "integer": lambda x, y: x < y,
-                    "float": lambda x, y: x < y
-                },
-                "float": {
-                    "integer": lambda x, y: x < y,
-                    "float": lambda x, y: x < y
-                }
-            },
-            ">": {
-                "integer": {
-                    "integer": lambda x, y: x > y,
-                    "float": lambda x, y: x > y
-                },
-                "float": {
-                    "integer": lambda x, y: x > y,
-                    "float": lambda x, y: x > y
-                }
-            },
-            "<=": {
-                "integer": {
-                    "integer": lambda x, y: x <= y,
-                    "float": lambda x, y: x <= y
-                },
-                "float": {
-                    "integer": lambda x, y: x <= y,
-                    "float": lambda x, y: x <= y
-                }
-            },
-            ">=": {
-                "integer": {
-                    "integer": lambda x, y: x >= y,
-                    "float": lambda x, y: x >= y
-                },
-                "float": {
-                    "integer": lambda x, y: x >= y,
-                    "float": lambda x, y: x >= y
-                }
-            },
-            "==": {
-                "integer": {
-                    "integer": lambda x, y: x == y,
-                    "float": lambda x, y: x == y
-                },
-                "float": {
-                    "integer": lambda x, y: x == y,
-                    "float": lambda x, y: x == y
-                }
-            },
-            "!=": {
-                "integer": {
-                    "integer": lambda x, y: x != y,
-                    "float": lambda x, y: x != y
-                },
-                "float": {
-                    "integer": lambda x, y: x != y,
-                    "float": lambda x, y: x != y
-                }
-            },
+            "+": lambda x, y: x + y,
+            "-": lambda x, y: x - y,
+            "neg": lambda x: -x,
+            "*": lambda x, y: x * y,
+            "/": lambda x, y: x / y,
+            ".+": applyElementwiseTwoArg(lambda x, y: x + y),
+            ".-": applyElementwiseTwoArg(lambda x, y: x - y),
+            ".neg": applyElementwiseOneArg(lambda x: -x),
+            ".*": applyElementwiseTwoArg(lambda x, y: x * y),
+            "./": applyElementwiseTwoArg(lambda x, y: x / y),
+            "'": transpose,
+            "<": lambda x, y: x < y,
+            ">": lambda x, y: x > y,
+            "<=": lambda x, y: x <= y,
+            ">=": lambda x, y: x >= y,
+            "==": lambda x, y: x == y,
+            "!=": lambda x, y: x != y,
         }
 
     def calculate(self, operation, args):
         operation = operation.replace("=", "") if operation[0] in "+-*/" else operation
         if len(args) == 1:
-            return self._calculateSingle(operation, args[0])
+            return self._calculateSingle(args[0], operation)
         return self._calculateDouble(args[0], operation, args[1])
 
     def _calculateSingle(self, objectOfInterest, operation):
+        if operation == "-":
+            if isinstance(objectOfInterest, ScalarValue):
+                operation = "neg"
+            else:
+                operation = ".neg"
         if operation == "'" and not isinstance(objectOfInterest, MatrixValue):
             return objectOfInterest
-        if isinstance(output, VectorValue):
-            return VectorValue(objectOfInterest.typeOfValue, objectOfInterest.length, self.operationTable[operation]["self"](objectOfInterest.content))
-        if isinstance(output, MatrixValue):
-            return MatrixValue(objectOfInterest.typeOfValue, objectOfInterest.shapeOfValue[1], objectOfInterest.shapeOfValue[0], self.operationTable[operation]["self"](objectOfInterest.content))
-        return ErrorValue(f"Line {node.lineno}: cant apply {operation} to {objectOfInterest.entityType} {objectOfInterest.typeOfValue}")
+
+        newValue = self.operationTable[operation](objectOfInterest.content)
+
+        if isinstance(objectOfInterest, ScalarValue):
+            return ScalarValue(objectOfInterest.typeOfValue, newValue)
+        if isinstance(objectOfInterest, VectorValue):
+            return VectorValue(objectOfInterest.typeOfValue, objectOfInterest.length, newValue)
+        if isinstance(objectOfInterest, MatrixValue):
+            return MatrixValue(objectOfInterest.typeOfValue, objectOfInterest.shapeOfValue[1], objectOfInterest.shapeOfValue[0], newValue)
 
     def _calculateDouble(self, leftObject, operation, rightObject):
-        if leftObject.entityType != rightObject.entityType:
-            return ErrorValue(f"Line {node.lineno}: incompatible object types {leftObject.entityType} and {rightObject.entityType}")
-        if leftObject.shapeOfValue != rightObject.shapeOfValue:
-            return ErrorValue(f"Line {node.lineno}: incompatible shapes {leftObject.shapeOfValue} and {rightObject.shapeOfValue}")
-
         newType = self.typeTable.getType(leftObject.typeOfValue, operation, rightObject.typeOfValue)
-        newValue = self.operationTable[operation][leftObject.typeOfValue][rightObject.typeOfValue](leftObject.content, rightObject.content)
+        newValue = self.operationTable[operation](leftObject.content, rightObject.content)
 
         if isinstance(leftObject, ScalarValue):
             return ScalarValue(newType, newValue)
