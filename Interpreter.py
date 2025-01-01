@@ -18,13 +18,18 @@ class ValueInfo(object):
         self.content = content
         self.name = name
 
+    def isType(self, other): return isinstance(self, other)
+
 class UndefinedValue(ValueInfo):
     def __init__(self):
         super().__init__("undefined")
 
 class ScalarValue(ValueInfo):
-    def __init__(self, typeOfValue, value, name=None):
+    def __init__(self, typeOfValue, value, name=None, indexIterator=None):
         super().__init__("scalar", typeOfValue=typeOfValue, shapeOfValue=(), content=value, name=name)
+        self.indexIterator = indexIterator
+
+    def rows(self): return 1
 
     def columns(self): return 1
 
@@ -32,31 +37,29 @@ class ScalarValue(ValueInfo):
         return self.content
 
 class VectorValue(ValueInfo):
-    def __init__(self, typeOfValue, length, value, isProperVector=True, name=None):
+    def __init__(self, typeOfValue, length, value, isProperVector=True, name=None, indexIterator=None):
         super().__init__("vector", typeOfValue=typeOfValue, shapeOfValue=(length,), content=value, name=name)
         self.isProperVector = isProperVector
+        self.indexIterator = indexIterator
 
     def rows(self): return 1
 
     def columns(self): return self.shapeOfValue[0]
 
     def valueAt(self, _ignore, index):
-        if self.content is None or index is None:
-            return None
         return self.content[index]
 
 class MatrixValue(ValueInfo):
-    def __init__(self, typeOfValue, rows, columns, value, name=None):
+    def __init__(self, typeOfValue, rows, columns, value, name=None, indexIterator=None):
         super().__init__("matrix", typeOfValue=typeOfValue, shapeOfValue=(rows, columns), content=value, name=name)
+        self.indexIterator = indexIterator
 
     def rows(self): return self.shapeOfValue[0]
 
     def columns(self): return self.shapeOfValue[1]
 
     def valueAt(self, row, column):
-        if self.content is None or row is None:
-            return None
-        if column is None:
+        if column is None or column == ":":
             return self.content[row]
         if row == ":":
             values = []
@@ -98,6 +101,23 @@ class ReturnException(Exception):
     def __init__(self, value):
         super().__init__()
         self.value = value
+
+def createIndexGenerator(varRowStart, varRowEnd, varColStart, varColEnd):
+    i = 0
+    if varColStart == varColEnd: # alternative version when we need to iterate over a vector top-down
+        for row in range(varRowStart, varRowEnd + 1):
+            j = 0
+            for col in range(varColStart, varColEnd + 1):
+                yield row, col, j, i
+                j += 1
+            i += 1
+    else:
+        for row in range(varRowStart, varRowEnd + 1):
+            j = 0
+            for col in range(varColStart, varColEnd + 1):
+                yield row, col, i, j
+                j += 1
+            i += 1
 
 class Interpreter(object):
     def __init__(self):
@@ -152,8 +172,13 @@ class Interpreter(object):
             return valueInfo
 
         if node.action == "=":
-            valueInfo.name = node.variableId.name
-            self.scopes.put(node.variableId.name, valueInfo)
+            if variableInfo.isType(UndefinedValue) or not isinstance(node.variableId, AST.IndexedVariable):
+                valueInfo.name = node.variableId.name
+                self.scopes.put(node.variableId.name, valueInfo)
+            else:
+                variable = self.scopes.get(node.variableId.name)
+                for varRowIdx, varColIdx, valRowIdx, valColIdx in variableInfo.indexIterator:
+                    variable.content[varRowIdx][varColIdx] = valueInfo.valueAt(valRowIdx, valColIdx)
         else: # assign based on previous value
             if variableInfo.entityType != valueInfo.entityType:
                 return ErrorValue(f"Line {node.lineno}: conflicting constructs {variableInfo.entityType} {node.action} {valueInfo.entityType}")
@@ -165,8 +190,12 @@ class Interpreter(object):
             if newValue is None:
                 return ErrorValue(f"Line {node.lineno}: incompatible types {variableInfo.typeOfValue} {node.action} {valueInfo.typeOfValue}")
 
-            newValue.name = variableInfo.name
-            self.scopes.put(variableInfo.name, newValue)
+            variable = self.scopes.get(node.variableId.name)
+            if variableInfo.indexIterator is not None:
+                for varRowIdx, varColIdx, valRowIdx, valColIdx in variableInfo.indexIterator:
+                    variable.content[varRowIdx][varColIdx] = newValue.valueAt(valRowIdx, valColIdx)
+            else:
+                variable.content = newValue.content
         return SuccessValue()
 
     @when(AST.ReturnValue)
@@ -402,15 +431,18 @@ class Interpreter(object):
             return ErrorValue(f"Line {node.lineno}: indexed variable is undefined")
 
         if indexes.content == ":" or indexes.content == (":", ":"):
+            variable.indexIterator = createIndexGenerator(0, variable.rows() - 1, 0, variable.columns() - 1)
             return variable
 
         if isinstance(indexes, ScalarValue):
             if indexes.content >= variable.columns():
                 return ErrorValue(f"Line {node.lineno}: index {indexes.content} out of range for {variable.columns()}")
             if isinstance(variable, VectorValue):
-                return ScalarValue(variable.typeOfValue, value=variable.valueAt(None, indexes.content), name=node.name)
+                indexIterator = createIndexGenerator(0, 0, indexes.content, indexes.content)
+                return ScalarValue(variable.typeOfValue, value=variable.valueAt(None, indexes.content), name=node.name, indexIterator=indexIterator)
             if isinstance(variable, MatrixValue):
-                return VectorValue(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content, None), name=node.name)
+                indexIterator = createIndexGenerator(indexes.content, indexes.content, 0, variable.columns() - 1)
+                return VectorValue(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content, None), name=node.name, indexIterator=indexIterator)
 
         if isinstance(variable, VectorValue):
             return ErrorValue(f"Line {node.lineno}: too many indexes")
@@ -421,11 +453,14 @@ class Interpreter(object):
             return ErrorValue(f"Line {node.lineno}: column index out of bounds {indexes.content[1]} for matrix of shape {variable.shapeOfValue}")
 
         if indexes.content[0] == ":":
-            return VectorValue(variable.typeOfValue, length=variable.rows(), value=variable.valueAt(None, indexes.content[1]), name=node.name)
+            indexIterator = createIndexGenerator(0, variable.rows() - 1, indexes.content[1], indexes.content[1])
+            return VectorValue(variable.typeOfValue, length=variable.rows(), value=variable.valueAt(":", indexes.content[1]), name=node.name, indexIterator=indexIterator)
         if indexes.content[1] == ":":
-            return VectorValue(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content[0], None), name=node.name)
+            indexIterator = createIndexGenerator(indexes.content[0], indexes.content[0], 0, variable.columns() - 1)
+            return VectorValue(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content[0], ":"), name=node.name, indexIterator=indexIterator)
 
-        return ScalarValue(variable.typeOfValue, value=variable.valueAt(*indexes.content), name=node.name)
+        indexIterator = createIndexGenerator(indexes.content[0], indexes.content[0], indexes.content[1], indexes.content[1])
+        return ScalarValue(variable.typeOfValue, value=variable.valueAt(*indexes.content), name=node.name, indexIterator=indexIterator)
 
     @when(AST.MatrixInitiator)
     def visit(self, node):
@@ -496,7 +531,11 @@ class Calculator():
         }
 
     def calculate(self, operation, args):
-        operation = operation.replace("=", "") if operation[0] in "+-*/" else operation
+        # operation = operation.replace("=", "") if operation[0] in "+-*/" else operation
+        if operation != operation.replace("=", "") and operation[0] in "+-*/":
+            operation = operation.replace("=", "")
+            if args[0].isType(VectorValue) or args[0].isType(MatrixValue):
+                operation = "." + operation
         if len(args) == 1:
             return self._calculateSingle(args[0], operation)
         return self._calculateDouble(args[0], operation, args[1])
@@ -517,7 +556,7 @@ class Calculator():
         if isinstance(objectOfInterest, VectorValue):
             return VectorValue(objectOfInterest.typeOfValue, objectOfInterest.length, newValue)
         if isinstance(objectOfInterest, MatrixValue):
-            return MatrixValue(objectOfInterest.typeOfValue, objectOfInterest.shapeOfValue[1], objectOfInterest.shapeOfValue[0], newValue)
+            return MatrixValue(objectOfInterest.typeOfValue, len(newValue), len(newValue[0]), newValue)
 
     def _calculateDouble(self, leftObject, operation, rightObject):
         newType = self.typeTable.getType(leftObject.typeOfValue, operation, rightObject.typeOfValue)

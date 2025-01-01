@@ -1,5 +1,5 @@
 from SymbolTable import VariableSymbol, SymbolTable, TypeTable
-from AST import Vector
+from AST import Vector, IndexedVariable
 
 class TypeInfo(object):
     def __init__(self, entityType, typeOfValue=None, shapeOfValue=None, content=None, name=None):
@@ -105,6 +105,9 @@ class TypeChecker(NodeVisitor):
         self.scopes.popScope()
         return output
 
+    # TODO: add type checking when index-assigning, ex
+    # A = [1, 2, 3];
+    # A[0] = 42.0; should throw an error
     def visit_AssignStatement(self, node):
         variableInfo = self.visit(node.variableId)
         if isinstance(variableInfo, ErrorType):
@@ -115,6 +118,8 @@ class TypeChecker(NodeVisitor):
             return valueInfo
 
         if node.action == "=":
+            if isinstance(node.variableId, IndexedVariable):
+                return SuccessType()
             self.scopes.put(node.variableId.name, valueInfo)
         else: # assign based on previous value
             if variableInfo.entityType != valueInfo.entityType:
@@ -127,6 +132,8 @@ class TypeChecker(NodeVisitor):
             if newType is None:
                 return ErrorType(f"Line {node.lineno}: incompatible types {variableInfo.typeOfValue} {node.action} {valueInfo.typeOfValue}")
 
+            if isinstance(node.variableId, IndexedVariable):
+                return SuccessType()
             self.scopes.put(variableInfo.name, valueInfo)
         return SuccessType()
 
