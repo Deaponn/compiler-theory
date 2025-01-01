@@ -55,6 +55,20 @@ class TypeTable(object):
                     "float": "float"
                 }
             },
+            "*": {
+                "integer": {
+                    "integer": "integer",
+                    "float": "float",
+                    "string": "string"
+                },
+                "float": {
+                    "integer": "float",
+                    "float": "float"
+                },
+                "string": {
+                    "integer": "string"
+                }
+            },
             "<": {
                 "integer": {
                     "integer": "boolean",
@@ -67,7 +81,6 @@ class TypeTable(object):
             }
         }
 
-        self.typeTable["*"] = self.typeTable["+"]
         self.typeTable["/"] = self.typeTable["-"]
 
         self.typeTable[".+"] = self.typeTable["+"]

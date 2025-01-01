@@ -28,6 +28,9 @@ class ScalarValue(ValueInfo):
 
     def columns(self): return 1
 
+    def valueAt(self, _ignore, __ignore):
+        return self.content
+
 class VectorValue(ValueInfo):
     def __init__(self, typeOfValue, length, value, isProperVector=True, name=None):
         super().__init__("vector", typeOfValue=typeOfValue, shapeOfValue=(length,), content=value, name=name)
@@ -37,7 +40,7 @@ class VectorValue(ValueInfo):
 
     def columns(self): return self.shapeOfValue[0]
 
-    def valueAt(self, index):
+    def valueAt(self, _ignore, index):
         if self.content is None or index is None:
             return None
         return self.content[index]
@@ -50,7 +53,7 @@ class MatrixValue(ValueInfo):
 
     def columns(self): return self.shapeOfValue[1]
 
-    def valueAt(self, row, column=None):
+    def valueAt(self, row, column):
         if self.content is None or row is None:
             return None
         if column is None:
@@ -405,9 +408,9 @@ class Interpreter(object):
             if indexes.content >= variable.columns():
                 return ErrorValue(f"Line {node.lineno}: index {indexes.content} out of range for {variable.columns()}")
             if isinstance(variable, VectorValue):
-                return ScalarValue(variable.typeOfValue, value=variable.valueAt(indexes.content))
+                return ScalarValue(variable.typeOfValue, value=variable.valueAt(None, indexes.content), name=node.name)
             if isinstance(variable, MatrixValue):
-                return VectorValue(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content))
+                return VectorValue(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content, None), name=node.name)
 
         if isinstance(variable, VectorValue):
             return ErrorValue(f"Line {node.lineno}: too many indexes")
@@ -420,7 +423,7 @@ class Interpreter(object):
         if indexes.content[0] == ":":
             return VectorValue(variable.typeOfValue, length=variable.rows(), value=variable.valueAt(None, indexes.content[1]), name=node.name)
         if indexes.content[1] == ":":
-            return VectorValue(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content[0]), name=node.name)
+            return VectorValue(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content[0], None), name=node.name)
 
         return ScalarValue(variable.typeOfValue, value=variable.valueAt(*indexes.content), name=node.name)
 

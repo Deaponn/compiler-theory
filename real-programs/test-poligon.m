@@ -13,6 +13,9 @@ print M;
 print -M;
 print M'; #' this comment is here to fix syntax highlighting as ' is treated like string #'
 
+print M[1];
+print M[0, 2];
+
 return M;
 
 print a;
