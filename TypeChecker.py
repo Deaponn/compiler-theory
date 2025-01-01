@@ -21,6 +21,8 @@ class ScalarType(TypeInfo):
 
     def columns(self): return 1
 
+    def correctShapes(self, other): return True
+
 class VectorType(TypeInfo):
     def __init__(self, typeOfValue, length, value, isProperVector=True, name=None):
         super().__init__("vector", typeOfValue=typeOfValue, shapeOfValue=(length,), content=value, name=name)
@@ -34,6 +36,11 @@ class VectorType(TypeInfo):
         if self.content is None or index is None:
             return None
         return self.content[index]
+
+    def correctShapes(self, other):
+        if self.shapeOfValue[0] is None or other.shapeOfValue[0] is None:
+            return True
+        return self.shapeOfValue[0] == other.shapeOfValue[0]
 
 class MatrixType(TypeInfo):
     def __init__(self, typeOfValue, rows, columns, value, name=None):
@@ -54,6 +61,17 @@ class MatrixType(TypeInfo):
                 values = (*values, vector[column])
             return values
         return self.content[row][column]
+
+    def correctShapes(self, other):
+        if self.shapeOfValue[0] is None or other.shapeOfValue[0] is None:
+            if self.shapeOfValue[1] is None or other.shapeOfValue[1] is None:
+                return True
+            return self.shapeOfValue[1] == other.shapeOfValue[1]
+
+        if self.shapeOfValue[1] is None or other.shapeOfValue[1] is None:
+            return self.shapeOfValue[0] == other.shapeOfValue[0]
+
+        return self.shapeOfValue[0] == other.shapeOfValue[0] and self.shapeOfValue[1] == other.shapeOfValue[1]
 
 class RangeType(TypeInfo):
     def __init__(self, start=None, end=None):
@@ -244,7 +262,7 @@ class TypeChecker(NodeVisitor):
             return ErrorType(f"Line {node.lineno}: cant do arithmetic {leftObject.typeOfValue} {node.action} {rightObject.typeOfValue}")
 
         if "." in node.action:
-            if leftObject.shapeOfValue != rightObject.shapeOfValue:
+            if not leftObject.correctShapes(rightObject):
                 return ErrorType(f"Line {node.lineno}: incompatible shapes {leftObject.shapeOfValue} and {rightObject.shapeOfValue}")
 
         if isinstance(leftObject, ScalarType):
@@ -369,6 +387,8 @@ class TypeChecker(NodeVisitor):
         variable = self.scopes.get(node.name)
         if variable is None:
             return ErrorType(f"Line {node.lineno}: indexed variable is undefined")
+        if isinstance(variable, ScalarType):
+            return ErrorType(f"Line {node.lineno}: cant index a scalar variable")
 
         if indexes.content == ":" or indexes.content == (":", ":"):
             return variable
@@ -407,6 +427,8 @@ class TypeChecker(NodeVisitor):
         return MatrixType("integer", rows=matrixSize.content[0], columns=matrixSize.content[1], value=getMatrixValues(node.matrixType, matrixSize.content[0], matrixSize.content[1]))
 
 def getMatrixValues(valueType, rows, columns):
+    if rows is None or columns is None:
+        return None
     value = 1 if valueType == "ones" else 0
     values = [[value] * columns for _ in range(rows)]
     if valueType == "eye":

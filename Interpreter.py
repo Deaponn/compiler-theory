@@ -1,7 +1,5 @@
 import AST
-import SymbolTable
-from Memory import *
-from Exceptions import  *
+from Memory import Memory
 from visit import *
 import sys
 from TypeChecker import TypeTable
@@ -36,6 +34,11 @@ class ScalarValue(ValueInfo):
     def valueAt(self, _ignore, __ignore):
         return self.content
 
+    def setValue(self, _ignore, __ignore, value):
+        self.content = value
+
+    def correctShapes(self, other): return True
+
 class VectorValue(ValueInfo):
     def __init__(self, typeOfValue, length, value, isProperVector=True, name=None, indexIterator=None):
         super().__init__("vector", typeOfValue=typeOfValue, shapeOfValue=(length,), content=value, name=name)
@@ -48,6 +51,14 @@ class VectorValue(ValueInfo):
 
     def valueAt(self, _ignore, index):
         return self.content[index]
+
+    def setValue(self, _ignore, column, value):
+        self.content[column] = value
+
+    def correctShapes(self, other):
+        if self.shapeOfValue[0] is None or other.shapeOfValue[0] is None:
+            return True
+        return self.shapeOfValue[0] == other.shapeOfValue[0]
 
 class MatrixValue(ValueInfo):
     def __init__(self, typeOfValue, rows, columns, value, name=None, indexIterator=None):
@@ -67,6 +78,20 @@ class MatrixValue(ValueInfo):
                 values = [*values, vector[column]]
             return values
         return self.content[row][column]
+
+    def setValue(self, row, column, value):
+        self.content[row][column] = value
+
+    def correctShapes(self, other):
+        if self.shapeOfValue[0] is None or other.shapeOfValue[0] is None:
+            if self.shapeOfValue[1] is None or other.shapeOfValue[1] is None:
+                return True
+            return self.shapeOfValue[1] == other.shapeOfValue[1]
+
+        if self.shapeOfValue[1] is None or other.shapeOfValue[1] is None:
+            return self.shapeOfValue[0] == other.shapeOfValue[0]
+
+        return self.shapeOfValue[0] == other.shapeOfValue[0] and self.shapeOfValue[1] == other.shapeOfValue[1]
 
 class RangeValue(ValueInfo):
     def __init__(self, start=None, end=None):
@@ -96,6 +121,11 @@ class ContinueException(Exception):
 
 class BreakException(Exception):
     pass
+
+class RuntimeException(Exception):
+    def __init__(self, value):
+        super().__init__()
+        print(value)
 
 class ReturnException(Exception):
     def __init__(self, value):
@@ -127,7 +157,7 @@ class Interpreter(object):
 
     @on('node')
     def visit(self, node):
-        print("unknown node", node)
+        pass
 
     @when(AST.ValueNode)
     def visit(self, node):
@@ -139,18 +169,21 @@ class Interpreter(object):
             output = self.visit(node.block)
             if node.nextStart is not None:
                 newOutput = self.visit(node.nextStart)
-                if isinstance(newOutput, ErrorValue):
+                if newOutput.isType(ErrorValue):
                     output = newOutput
             return output
         except ReturnException as ret:
             print(f"Program returned with {ret.value}")
+        except RuntimeException:
+            print("Terminating further execution")
+            sys.exit(0)
 
     @when(AST.Statement)
     def visit(self, node):
         output = self.visit(node.statement)
         if node.nextStatements is not None:
             newOutput = self.visit(node.nextStatements)
-            if isinstance(newOutput, ErrorValue):
+            if newOutput.isType(ErrorValue):
                 output = newOutput
         return output
 
@@ -164,11 +197,11 @@ class Interpreter(object):
     @when(AST.AssignStatement)
     def visit(self, node):
         variableInfo = self.visit(node.variableId)
-        if isinstance(variableInfo, ErrorValue):
+        if variableInfo.isType(ErrorValue):
             return variableInfo
 
         valueInfo = self.visit(node.newValue)
-        if isinstance(valueInfo, ErrorValue) or isinstance(valueInfo, UndefinedValue):
+        if valueInfo.isType(ErrorValue) or valueInfo.isType(UndefinedValue):
             return valueInfo
 
         if node.action == "=":
@@ -178,22 +211,19 @@ class Interpreter(object):
             else:
                 variable = self.scopes.get(node.variableId.name)
                 for varRowIdx, varColIdx, valRowIdx, valColIdx in variableInfo.indexIterator:
-                    variable.content[varRowIdx][varColIdx] = valueInfo.valueAt(valRowIdx, valColIdx)
+                    variable.setValue(varRowIdx, varColIdx, valueInfo.valueAt(valRowIdx, valColIdx))
         else: # assign based on previous value
-            if variableInfo.entityType != valueInfo.entityType:
-                return ErrorValue(f"Line {node.lineno}: conflicting constructs {variableInfo.entityType} {node.action} {valueInfo.entityType}")
-            if isinstance(variableInfo, UndefinedValue):
-                return ErrorValue(f"Line {node.lineno}: operation-assignment to undefined variable {node.variableId.name}")
-
             newValue = self.calculator.calculate(node.action, [variableInfo, valueInfo])
 
             if newValue is None:
-                return ErrorValue(f"Line {node.lineno}: incompatible types {variableInfo.typeOfValue} {node.action} {valueInfo.typeOfValue}")
-
+                raise RuntimeException(f"Line {node.lineno}: incompatible types {variableInfo.typeOfValue} {node.action} {valueInfo.typeOfValue}")
+                
             if variableInfo.indexIterator is not None:
                 variable = self.scopes.get(node.variableId.name)
+                if variable.typeOfValue != newValue.typeOfValue:
+                    raise RuntimeException(f"Line {node.lineno}: new value of type {valueInfo.typeOfValue} is incorrect for type {variable.typeOfValue}")
                 for varRowIdx, varColIdx, valRowIdx, valColIdx in variableInfo.indexIterator:
-                    variable.content[varRowIdx][varColIdx] = newValue.valueAt(valRowIdx, valColIdx)
+                    variable.setValue(varRowIdx, varColIdx, newValue.valueAt(valRowIdx, valColIdx))
             else:
                 newValue.name = variableInfo.name
                 self.scopes.put(variableInfo.name, newValue)
@@ -202,16 +232,16 @@ class Interpreter(object):
     @when(AST.ReturnValue)
     def visit(self, node):
         output = self.visit(node.value)
-        if isinstance(output, ErrorValue) or isinstance(output, UndefinedValue):
+        if output.isType(ErrorValue) or output.isType(UndefinedValue):
             return output
         raise ReturnException(output.content)
 
     @when(AST.PrintValue)
     def visit(self, node):
         output = self.visit(node.value)
-        if isinstance(output, ErrorValue) or isinstance(output, UndefinedValue):
+        if output.isType(ErrorValue) or output.isType(UndefinedValue):
             return output
-        if isinstance(output, MatrixValue):
+        if output.isType(MatrixValue):
             print("[")
             for x in output.content:
                 print(f"  {x},")
@@ -229,87 +259,78 @@ class Interpreter(object):
     @when(AST.Vector)
     def visit(self, node):
         valueInfo = self.visit(node.value)
-        if isinstance(valueInfo, ErrorValue) or isinstance(valueInfo, UndefinedValue):
+        if valueInfo.isType(ErrorValue) or valueInfo.isType(UndefinedValue):
             return valueInfo
 
         if node.isMatrixHead:
-            if isinstance(valueInfo, MatrixValue):
+            if valueInfo.isType(MatrixValue):
                 return valueInfo
             else:
                 return MatrixValue(valueInfo.typeOfValue, rows=1, columns=valueInfo.columns(), value=[valueInfo.content,])
 
         if node.nextItem is None:
-            if isinstance(valueInfo, VectorValue):
+            if valueInfo.isType(VectorValue):
                 return VectorValue(valueInfo.typeOfValue, length=valueInfo.columns(), value=valueInfo.content)
             else:
                 return VectorValue(valueInfo.typeOfValue, length=1, value=[valueInfo.content])
 
         nextValueInfo = self.visit(node.nextItem)
-        if isinstance(nextValueInfo, ErrorValue) or isinstance(nextValueInfo, UndefinedValue):
+        if nextValueInfo.isType(ErrorValue) or nextValueInfo.isType(UndefinedValue):
             return nextValueInfo
 
-        if valueInfo.typeOfValue != nextValueInfo.typeOfValue or valueInfo.columns() != nextValueInfo.columns():
-            return ErrorValue(f"Line {node.lineno}: inconsistent types {valueInfo.typeOfValue} and {nextValueInfo.typeOfValue} or shapes {valueInfo.shapeOfValue} and {(nextValueInfo.shapeOfValue[-1],)}")
-
-        nextValue = [valueInfo.content, *nextValueInfo.content] if not isinstance(nextValueInfo, VectorValue) else [valueInfo.content, nextValueInfo.content]
+        nextValue = [valueInfo.content, *nextValueInfo.content] if not nextValueInfo.isType(VectorValue) else [valueInfo.content, nextValueInfo.content]
 
         return MatrixValue(valueInfo.typeOfValue, rows=nextValueInfo.rows() + 1, columns=nextValueInfo.columns(), value=nextValue)
 
     @when(AST.ValueList)
     def visit(self, node):
         valueInfo = self.visit(node.value)
-        if isinstance(valueInfo, ErrorValue) or isinstance(valueInfo, UndefinedValue):
+        if valueInfo.isType(ErrorValue) or valueInfo.isType(UndefinedValue):
             return valueInfo
 
         if node.nextItem is None:
             return valueInfo
         
         nextValueInfo = self.visit(node.nextItem)
-        if isinstance(nextValueInfo, ErrorValue) or isinstance(nextValueInfo, UndefinedValue):
+        if nextValueInfo.isType(ErrorValue) or nextValueInfo.isType(UndefinedValue):
             return nextValueInfo
 
-        if not node.weak and valueInfo.typeOfValue != nextValueInfo.typeOfValue:
-            return ErrorValue(f"Line {node.lineno}: types {valueInfo.typeOfValue} and {nextValueInfo.typeOfValue} are inconsistent")
-
-        nextValue = [valueInfo.content, *nextValueInfo.content] if not isinstance(nextValueInfo, ScalarValue) else [valueInfo.content, nextValueInfo.content]
+        nextValue = [valueInfo.content, *nextValueInfo.content] if not nextValueInfo.isType(ScalarValue) else [valueInfo.content, nextValueInfo.content]
 
         return VectorValue(valueInfo.typeOfValue, length=nextValueInfo.columns() + 1, value=nextValue, isProperVector=False)
 
     @when(AST.IndexList)
     def visit(self, node):
         valueInfo = self.visit(node.index)
-        if isinstance(valueInfo, ErrorValue) or isinstance(valueInfo, UndefinedValue):
+        if valueInfo.isType(ErrorValue) or valueInfo.isType(UndefinedValue):
             return valueInfo
 
         if node.nextItem is None:
-            if not isinstance(valueInfo, ScalarValue) or valueInfo.typeOfValue != "integer":
-                return ErrorValue(f"Line {node.lineno}: indexes are not integer or too many indexes")
+            if not valueInfo.isType(ScalarValue) or valueInfo.typeOfValue != "integer":
+                raise RuntimeException(f"Line {node.lineno}: first index is not integer or too many indexes")
             return valueInfo
 
         nextValueInfo = self.visit(node.nextItem)
-        if isinstance(nextValueInfo, ErrorValue) or isinstance(nextValueInfo, UndefinedValue):
+        if nextValueInfo.isType(ErrorValue) or nextValueInfo.isType(UndefinedValue):
             return nextValueInfo
 
-        if not isinstance(nextValueInfo, ScalarValue) or nextValueInfo.typeOfValue != "integer":
-            return ErrorValue(f"Line {node.lineno}: indexes are not integer or too many indexes")
+        if not nextValueInfo.isType(ScalarValue) or nextValueInfo.typeOfValue != "integer":
+            raise RuntimeException(f"Line {node.lineno}: second index is not integer or too many indexes")
 
         return VectorValue("integer", length=2, value=[valueInfo.content, nextValueInfo.content])
 
     @when(AST.ArithmeticExpression)
     def visit(self, node):
         leftObject = self.visit(node.leftExpr)
-        if isinstance(leftObject, ErrorValue) or isinstance(leftObject, UndefinedValue):
+        if leftObject.isType(ErrorValue) or leftObject.isType(UndefinedValue):
             return leftObject
 
         rightObject = self.visit(node.rightExpr)
-        if isinstance(rightObject, ErrorValue) or isinstance(rightObject, UndefinedValue):
+        if rightObject.isType(ErrorValue) or rightObject.isType(UndefinedValue):
             return rightObject
 
-        if leftObject.entityType != rightObject.entityType:
-            return ErrorValue(f"Line {node.lineno}: cant do arithmetics between {leftObject.entityType} and {rightObject.entityType}")
-
-        if (leftObject.entityType != "scalar") and "." not in node.action:
-            return ErrorValue(f"Line {node.lineno}: cant do arithmetics using unary operators with {leftObject.entityType} and {rightObject.entityType}")
+        if not leftObject.correctShapes(rightObject):
+            raise RuntimeException(f"Line {node.lineno}: incorrect shapes {leftObject.shapeOfValue} and {rightObject.shapeOfValue}")
 
         return self.calculator.calculate(
             node.action,
@@ -319,11 +340,11 @@ class Interpreter(object):
     @when(AST.ComparisonExpression)
     def visit(self, node):
         leftObject = self.visit(node.leftExpr)
-        if isinstance(leftObject, ErrorValue) or isinstance(leftObject, UndefinedValue):
+        if leftObject.isType(ErrorValue) or leftObject.isType(UndefinedValue):
             return leftObject
 
         rightObject = self.visit(node.rightExpr)
-        if isinstance(rightObject, ErrorValue) or isinstance(rightObject, UndefinedValue):
+        if rightObject.isType(ErrorValue) or rightObject.isType(UndefinedValue):
             return rightObject
 
         return self.calculator.calculate(
@@ -334,15 +355,13 @@ class Interpreter(object):
     @when(AST.NegateExpression)
     def visit(self, node):
         output = self.visit(node.expr)
-        if isinstance(output, ErrorValue) or isinstance(output, UndefinedValue):
+        if output.isType(ErrorValue) or output.isType(UndefinedValue):
             return output
         return self.calculator.calculate("-", [output])
 
     @when(AST.IfStatement)
     def visit(self, node):
         conditionOutput = self.visit(node.condition)
-        if conditionOutput.typeOfValue != "boolean":
-            return ErrorValue(f"Line {node.lineno}: invalid condition")
         if conditionOutput.content:
             return self.visit(node.action)
         elif node.elseAction is not None:
@@ -352,18 +371,15 @@ class Interpreter(object):
     @when(AST.WhileStatement)
     def visit(self, node):
         conditionOutput = self.visit(node.condition)
-        if conditionOutput.typeOfValue != "boolean":
-            return ErrorValue(f"Line {node.lineno}: invalid condition")
-
         try:
             while conditionOutput.content:
                 try:
                     actionOutput = self.visit(node.action)
-                    if isinstance(actionOutput, ErrorValue):
+                    if actionOutput.isType(ErrorValue):
                         return actionOutput
                     conditionOutput = self.visit(node.condition)
                     if conditionOutput.typeOfValue != "boolean":
-                        return ErrorValue(f"Line {node.lineno}: invalid condition")
+                        raise RuntimeException(f"Line {node.lineno}: condition type is not boolean")
                 except ContinueException:
                     pass
         except BreakException:
@@ -374,7 +390,7 @@ class Interpreter(object):
     @when(AST.ForStatement)
     def visit(self, node):
         rangeOutput = self.visit(node.valueRange)
-        if isinstance(rangeOutput, ErrorValue):
+        if rangeOutput.isType(ErrorValue):
             return rangeOutput
 
         loopVariableValue = rangeOutput.getNext()
@@ -385,7 +401,7 @@ class Interpreter(object):
                     self.scopes.put(node.loopVariable, ScalarValue("integer", value=loopVariableValue))
 
                     actionOutput = self.visit(node.action)
-                    if isinstance(actionOutput, ErrorValue):
+                    if actionOutput.isType(ErrorValue):
                         return actionOutput
 
                     loopVariableValue = rangeOutput.getNext()
@@ -399,7 +415,7 @@ class Interpreter(object):
     @when(AST.TransposeExpression)
     def visit(self, node):
         output = self.visit(node.value)
-        if isinstance(output, ErrorValue) or isinstance(output, UndefinedValue):
+        if output.isType(ErrorValue) or output.isType(UndefinedValue):
             return output
         return self.calculator.calculate("'", [output])
 
@@ -407,10 +423,8 @@ class Interpreter(object):
     def visit(self, node):
         valueStart = self.visit(node.rangeStart)
         valueEnd = self.visit(node.rangeEnd)
-        if not isinstance(valueStart, ScalarValue) or not isinstance(valueEnd, ScalarValue):
-            return ErrorValue(f"Line {node.lineno}: range start or end are not scalars but {valueStart.entityType} and {valueEnd.entityType}")
         if valueStart.typeOfValue != "integer" or valueEnd.typeOfValue != "integer":
-            return ErrorValue(f"Line {node.lineno}: invalid range types {valueStart.typeOfValue} : {valueEnd.typeOfValue}")
+            raise RuntimeException(f"Line {node.lineno}: invalid range types {valueStart.typeOfValue} : {valueEnd.typeOfValue}")
         return RangeValue(start=valueStart.content, end=valueEnd.content)
 
     @when(AST.Variable)
@@ -423,34 +437,29 @@ class Interpreter(object):
     @when(AST.IndexedVariable)
     def visit(self, node):
         indexes = self.visit(node.indexes)
-        if isinstance(indexes, ErrorValue) or isinstance(indexes, UndefinedValue):
+        if indexes.isType(ErrorValue) or indexes.isType(UndefinedValue):
             return indexes
 
         variable = self.scopes.get(node.name)
-        if variable is None:
-            return ErrorValue(f"Line {node.lineno}: indexed variable is undefined")
 
         if indexes.content == ":" or indexes.content == (":", ":"):
             variable.indexIterator = createIndexGenerator(0, variable.rows() - 1, 0, variable.columns() - 1)
             return variable
 
-        if isinstance(indexes, ScalarValue):
+        if indexes.isType(ScalarValue):
             if indexes.content >= variable.columns():
-                return ErrorValue(f"Line {node.lineno}: index {indexes.content} out of range for {variable.columns()}")
-            if isinstance(variable, VectorValue):
+                raise RuntimeException(f"Line {node.lineno}: index {indexes.content} out of range for {variable.columns()}")
+            if variable.isType(VectorValue):
                 indexIterator = createIndexGenerator(0, 0, indexes.content, indexes.content)
                 return ScalarValue(variable.typeOfValue, value=variable.valueAt(None, indexes.content), name=node.name, indexIterator=indexIterator)
-            if isinstance(variable, MatrixValue):
+            if variable.isType(MatrixValue):
                 indexIterator = createIndexGenerator(indexes.content, indexes.content, 0, variable.columns() - 1)
                 return VectorValue(variable.typeOfValue, length=variable.columns(), value=variable.valueAt(indexes.content, None), name=node.name, indexIterator=indexIterator)
 
-        if isinstance(variable, VectorValue):
-            return ErrorValue(f"Line {node.lineno}: too many indexes")
-
         if indexes.content[0] != ":" and indexes.content[0] > variable.rows():
-            return ErrorValue(f"Line {node.lineno}: row index out of bounds {indexes.content[0]} for matrix of shape {variable.shapeOfValue}")
+            raise RuntimeException(f"Line {node.lineno}: row index out of bounds {indexes.content[0]} for matrix of shape {variable.shapeOfValue}")
         if indexes.content[1] != ":" and indexes.content[1] > variable.columns():
-            return ErrorValue(f"Line {node.lineno}: column index out of bounds {indexes.content[1]} for matrix of shape {variable.shapeOfValue}")
+            raise RuntimeException(f"Line {node.lineno}: column index out of bounds {indexes.content[1]} for matrix of shape {variable.shapeOfValue}")
 
         if indexes.content[0] == ":":
             indexIterator = createIndexGenerator(0, variable.rows() - 1, indexes.content[1], indexes.content[1])
@@ -465,12 +474,10 @@ class Interpreter(object):
     @when(AST.MatrixInitiator)
     def visit(self, node):
         matrixSize = self.visit(node.size)
-        if isinstance(matrixSize, MatrixValue) or matrixSize.typeOfValue != "integer":
-            return ErrorValue(f"Line {node.lineno}: matrix initiator dimensions are non-scalar or non-vector but {matrixSize.entityType}, or non-int {matrixSize.typeOfValue}")
-        if isinstance(matrixSize, ScalarValue):
+        if matrixSize.isType(MatrixValue) or matrixSize.typeOfValue != "integer":
+            raise RuntimeException(f"Line {node.lineno}: matrix initiator dimensions are non-scalar or non-vector but {matrixSize.entityType}, or non-int but {matrixSize.typeOfValue}")
+        if matrixSize.isType(ScalarValue):
             return MatrixValue("integer", rows=matrixSize.content, columns=matrixSize.content, value=self.calculator.getMatrixValues(node.matrixType, matrixSize.content, matrixSize.content))
-        if matrixSize.columns() > 2:
-            return ErrorValue(f"Line {node.lineno}: too many values while initiating the matrix")
         return MatrixValue("integer", rows=matrixSize.content[0], columns=matrixSize.content[1], value=self.calculator.getMatrixValues(node.matrixType, matrixSize.content[0], matrixSize.content[1]))
 
 def transpose(matrix):
@@ -531,7 +538,6 @@ class Calculator():
         }
 
     def calculate(self, operation, args):
-        # operation = operation.replace("=", "") if operation[0] in "+-*/" else operation
         if operation != operation.replace("=", "") and operation[0] in "+-*/":
             operation = operation.replace("=", "")
             if args[0].isType(VectorValue) or args[0].isType(MatrixValue):
@@ -542,29 +548,29 @@ class Calculator():
 
     def _calculateSingle(self, objectOfInterest, operation):
         if operation == "-":
-            if isinstance(objectOfInterest, ScalarValue):
+            if objectOfInterest.isType(ScalarValue):
                 operation = "neg"
             else:
                 operation = ".neg"
-        if operation == "'" and not isinstance(objectOfInterest, MatrixValue):
+        if operation == "'" and not objectOfInterest.isType(MatrixValue):
             return objectOfInterest
 
         newValue = self.operationTable[operation](objectOfInterest.content)
 
-        if isinstance(objectOfInterest, ScalarValue):
+        if objectOfInterest.isType(ScalarValue):
             return ScalarValue(objectOfInterest.typeOfValue, newValue)
-        if isinstance(objectOfInterest, VectorValue):
+        if objectOfInterest.isType(VectorValue):
             return VectorValue(objectOfInterest.typeOfValue, objectOfInterest.length, newValue)
-        if isinstance(objectOfInterest, MatrixValue):
+        if objectOfInterest.isType(MatrixValue):
             return MatrixValue(objectOfInterest.typeOfValue, len(newValue), len(newValue[0]), newValue)
 
     def _calculateDouble(self, leftObject, operation, rightObject):
         newType = self.typeTable.getType(leftObject.typeOfValue, operation, rightObject.typeOfValue)
         newValue = self.operationTable[operation](leftObject.content, rightObject.content)
 
-        if isinstance(leftObject, ScalarValue):
+        if leftObject.isType(ScalarValue):
             return ScalarValue(newType, newValue)
-        if isinstance(leftObject, VectorValue):
+        if leftObject.isType(VectorValue):
             return VectorValue(newType, leftObject.columns(), newValue)
         return MatrixValue(newType, leftObject.rows(), leftObject.columns(), newValue)
 
