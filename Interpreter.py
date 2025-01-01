@@ -76,7 +76,7 @@ class RangeValue(ValueInfo):
         self.currentStep = self.start
 
     def getNext(self):
-        if self.currentStep == self.end:
+        if self.currentStep > self.end:
             return None
         output = self.currentStep
         self.currentStep += 1
@@ -190,12 +190,13 @@ class Interpreter(object):
             if newValue is None:
                 return ErrorValue(f"Line {node.lineno}: incompatible types {variableInfo.typeOfValue} {node.action} {valueInfo.typeOfValue}")
 
-            variable = self.scopes.get(node.variableId.name)
             if variableInfo.indexIterator is not None:
+                variable = self.scopes.get(node.variableId.name)
                 for varRowIdx, varColIdx, valRowIdx, valColIdx in variableInfo.indexIterator:
                     variable.content[varRowIdx][varColIdx] = newValue.valueAt(valRowIdx, valColIdx)
             else:
-                variable.content = newValue.content
+                newValue.name = variableInfo.name
+                self.scopes.put(variableInfo.name, newValue)
         return SuccessValue()
 
     @when(AST.ReturnValue)
@@ -267,7 +268,7 @@ class Interpreter(object):
         if isinstance(nextValueInfo, ErrorValue) or isinstance(nextValueInfo, UndefinedValue):
             return nextValueInfo
 
-        if valueInfo.typeOfValue != nextValueInfo.typeOfValue:
+        if not node.weak and valueInfo.typeOfValue != nextValueInfo.typeOfValue:
             return ErrorValue(f"Line {node.lineno}: types {valueInfo.typeOfValue} and {nextValueInfo.typeOfValue} are inconsistent")
 
         nextValue = [valueInfo.content, *nextValueInfo.content] if not isinstance(nextValueInfo, ScalarValue) else [valueInfo.content, nextValueInfo.content]
@@ -419,7 +420,6 @@ class Interpreter(object):
             return UndefinedValue()
         return variableInfo
 
-    # TODO: support assigning to indexed vector/matrix ex. M[1, 2] = 3 now overrides the whole matrix variable
     @when(AST.IndexedVariable)
     def visit(self, node):
         indexes = self.visit(node.indexes)

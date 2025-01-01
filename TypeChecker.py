@@ -105,9 +105,6 @@ class TypeChecker(NodeVisitor):
         self.scopes.popScope()
         return output
 
-    # TODO: add type checking when index-assigning, ex
-    # A = [1, 2, 3];
-    # A[0] = 42.0; should throw an error
     def visit_AssignStatement(self, node):
         variableInfo = self.visit(node.variableId)
         if isinstance(variableInfo, ErrorType):
@@ -119,6 +116,8 @@ class TypeChecker(NodeVisitor):
 
         if node.action == "=":
             if isinstance(node.variableId, IndexedVariable):
+                if variableInfo.typeOfValue != valueInfo.typeOfValue:
+                    return ErrorType(f"Line {node.lineno}: trying to assign type {valueInfo.typeOfValue} to an index of variable of type {variableInfo.typeOfValue}")
                 return SuccessType()
             self.scopes.put(node.variableId.name, valueInfo)
         else: # assign based on previous value
@@ -194,7 +193,7 @@ class TypeChecker(NodeVisitor):
         if isinstance(nextValueInfo, ErrorType) or isinstance(nextValueInfo, UndefinedType):
             return nextValueInfo
 
-        if valueInfo.typeOfValue != nextValueInfo.typeOfValue:
+        if not node.weak and valueInfo.typeOfValue != nextValueInfo.typeOfValue:
             return ErrorType(f"Line {node.lineno}: types {valueInfo.typeOfValue} and {nextValueInfo.typeOfValue} are inconsistent")
 
         nextValue = (valueInfo.content, *nextValueInfo.content) if not isinstance(nextValueInfo, ScalarType) else (valueInfo.content, nextValueInfo.content)
@@ -282,12 +281,14 @@ class TypeChecker(NodeVisitor):
             return ErrorType(f"Line {node.lineno}: cant negate string")
         return output
 
-    # TODO: fix invalid condition, type is None for test-program-2
     def visit_IfStatement(self, node):
-        errorMessage = ""
         conditionOutput = self.visit(node.condition)
+        if isinstance(conditionOutput, ErrorType):
+            return conditionOutput
+        if isinstance(conditionOutput, UndefinedType):
+            return ErrorType(f"Line {node.lineno}: one of variables used is undefined")
         if conditionOutput.typeOfValue != "boolean":
-            errorMessage = f"Line {node.lineno}: invalid condition, type is {conditionOutput.typeOfValue}"
+            return ErrorType(f"Line {node.lineno}: invalid condition, type is {conditionOutput.typeOfValue}")
         
         actionOutput = self.visit(node.action)
 
@@ -295,8 +296,6 @@ class TypeChecker(NodeVisitor):
         if node.elseAction is not None:
             elseActionOutput = self.visit(node.elseAction)
 
-        if errorMessage != "":
-            return ErrorType(errorMessage)
         if isinstance(actionOutput, ErrorType):
             return actionOutput
         if isinstance(elseActionOutput, ErrorType):

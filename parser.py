@@ -56,6 +56,7 @@ class Parser(SlyParser):
 
     @_('PRINT values')
     def action_statement(self, p):
+        p.values.weak = True
         return PrintValue(p.values, lineno=p.lineno)
 
     @_('RETURN expr')

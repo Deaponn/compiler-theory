@@ -74,6 +74,7 @@ class ValueList(Node):
         super().__init__(lineno)
         self.value = value
         self.nextItem = nextItem
+        self.weak = False
 
 class IndexList(Node):
     def __init__(self, index, nextItem=None, lineno=-1):
